@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SwitchRoms Scraper v3.0 — Main entry point.
+SwitchRoms Scraper v3.1 — Main entry point.
 
 A professional, modular Nintendo Switch ROM metadata scraper.
 
@@ -10,14 +10,15 @@ Architecture:
   models.py      → Dataclass-based data models
   http_client.py → Retry, backoff, session reuse
   parsers.py     → Pure BeautifulSoup parsing (no network)
-  engine.py      → Concurrency orchestration
-  exporters.py   → JSON / CSV output
+  engine.py      → Concurrency orchestration + auto-paginate
+  exporters.py   → JSON / CSV output (Excel-friendly CSV with UTF-8 BOM)
   cli.py         → Argparse + interactive menu
   scraper.py     → This file (entry point)
 
 Usage:
   python scraper.py                          # interactive mode
   python scraper.py --search Mario --pages 3  # CLI mode
+  python scraper.py --all                     # scrape entire site
   python scraper.py --help                    # full help
 """
 
@@ -47,13 +48,17 @@ def main() -> None:
     """Entry point: parse config, run scraper, export results."""
     print_banner()
 
-    search_q, max_p, fmt_filter, hoster_filter, out_fmt, delay, workers, verbose = parse_args()
+    search_q, max_p, fmt_filter, hoster_filter, out_fmt, delay, workers, verbose, scrape_all = parse_args()
 
     if verbose:
         log.setLevel(logging.DEBUG)
 
-    log.info("Configuration: search=%s | pages=%d | format=%s | hoster=%s | output=%s | workers=%d",
-             search_q or "(none)", max_p, fmt_filter, hoster_filter, out_fmt, workers)
+    if scrape_all:
+        log.info("Configuration: mode=ALL SITE | format=%s | hoster=%s | output=%s | workers=%d",
+                 fmt_filter, hoster_filter, out_fmt, workers)
+    else:
+        log.info("Configuration: search=%s | pages=%d | format=%s | hoster=%s | output=%s | workers=%d",
+                 search_q or "(none)", max_p, fmt_filter, hoster_filter, out_fmt, workers)
 
     # ── Run scraper ────────────────────────────────────────────────────
     engine = ScraperEngine(
@@ -66,6 +71,7 @@ def main() -> None:
     games, elapsed = engine.run(
         search_query=search_q,
         max_pages=max_p,
+        scrape_all=scrape_all,
     )
 
     # ── Export results ────────────────────────────────────────────────

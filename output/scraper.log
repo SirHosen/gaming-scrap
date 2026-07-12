@@ -1,0 +1,13 @@
+2026-07-12 22:35:56 │ INFO     │ [96mConfiguration: search=zelda | pages=1 | format=ALL | hoster=ALL | output=csv | workers=5[0m
+2026-07-12 22:35:56 │ INFO     │ [96m[96m--- Starting scraping session ---[0m[0m
+2026-07-12 22:35:56 │ INFO     │ [96m[PAGE 1/1] Fetching: https://switchroms.io/?s=zelda[0m
+2026-07-12 22:36:00 │ INFO     │ [96mFound 6 games on page 1.[0m
+2026-07-12 22:36:14 │ INFO     │ [96m  [1] [1mShip of Harkinian (The Legend of Zelda Ocarina of Time)[0m — 7 mirrors[0m
+2026-07-12 22:36:34 │ INFO     │ [96m  [2] [1mThe Legend of Zelda: Echoes of Wisdom[0m — 13 mirrors[0m
+2026-07-12 22:36:38 │ INFO     │ [96m  [3] [1mHyrule Warriors: Definitive Edition[0m — 14 mirrors[0m
+2026-07-12 22:36:39 │ INFO     │ [96m  [4] [1mNintendo World Championships: NES Edition[0m — 22 mirrors[0m
+2026-07-12 22:36:47 │ INFO     │ [96m  [5] [1mThe Legend of Zelda: Tears of the Kingdom[0m — 25 mirrors[0m
+2026-07-12 22:37:00 │ INFO     │ [96m  [6] [1mDiablo III: Eternal Collection[0m — 34 mirrors[0m
+2026-07-12 22:37:00 │ INFO     │ [96m[96m--- Exporting results ---[0m[0m
+2026-07-12 22:37:00 │ INFO     │ [96m[92m✔[0m CSV saved: output\switch_games.csv[0m
+2026-07-12 22:37:00 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m

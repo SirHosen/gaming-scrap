@@ -49,12 +49,20 @@ def export_json(games: List[Game]) -> Path:
 
 
 def export_csv(games: List[Game]) -> Path:
-    """Write games to a flat CSV (one row per mirror)."""
+    """
+    Write games to a flat CSV (one row per mirror).
+
+    Uses UTF-8 BOM encoding so Excel correctly detects the encoding
+    and renders special characters (é, —, etc.) without garbling.
+    Uses tab as the delimiter so Excel auto-splits columns cleanly
+    without needing the Text Import Wizard.
+    """
     out_dir = ensure_output_dir()
     path = out_dir / CSV_FILENAME
 
-    with open(path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+    # Write with UTF-8 BOM (utf-8-sig) for Excel compatibility
+    with open(path, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.writer(f, dialect="excel-tab")
         writer.writerow(CSV_HEADERS)
 
         for game in games:

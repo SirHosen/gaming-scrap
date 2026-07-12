@@ -43,23 +43,45 @@ class ScraperEngine:
         self,
         search_query: Optional[str] = None,
         max_pages: int = 1,
+        scrape_all: bool = False,
     ) -> Tuple[List[Game], float]:
         """
         Execute a full scrape run.
+
+        Args:
+            search_query: Optional keyword to search for.
+            max_pages: Number of listing pages to scrape (ignored if scrape_all).
+            scrape_all: If True, auto-paginate through every page until empty.
+
         Returns (list_of_games, elapsed_seconds).
         """
         start = time.time()
         all_games: List[Game] = []
 
-        log.info("%s--- Starting scraping session ---%s", Colours.CYAN, Colours.RESET)
+        if scrape_all:
+            log.info("%s--- Starting FULL SITE scrape (auto-paginate) ---%s", Colours.CYAN, Colours.RESET)
+        else:
+            log.info("%s--- Starting scraping session ---%s", Colours.CYAN, Colours.RESET)
 
-        for page in range(1, max_pages + 1):
+        page = 1
+        while True:
+            # Determine if we should stop
+            if not scrape_all and page > max_pages:
+                break
+
             target_url = build_page_url(page, search_query)
-            log.info("[PAGE %d/%d] Fetching: %s", page, max_pages, target_url)
+            if scrape_all:
+                log.info("[PAGE %d] Fetching: %s", page, target_url)
+            else:
+                log.info("[PAGE %d/%d] Fetching: %s", page, max_pages, target_url)
 
             html = self.client.get(target_url)
             if not html:
                 log.warning("Could not retrieve page %d — skipping.", page)
+                if scrape_all:
+                    log.info("Stopping auto-paginate (page %d unreachable).", page)
+                    break
+                page += 1
                 continue
 
             page_games = parse_listing_page(html)
@@ -72,6 +94,11 @@ class ScraperEngine:
             # Resolve mirrors concurrently for this page's games
             resolved = self._resolve_games_concurrent(page_games)
             all_games.extend(resolved)
+
+            if scrape_all:
+                log.info("%sProgress: %d games scraped so far…%s", Colours.YELLOW, len(all_games), Colours.RESET)
+
+            page += 1
 
         elapsed = time.time() - start
         self.client.close()
