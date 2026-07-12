@@ -11,3 +11,70 @@
 2026-07-12 22:37:00 │ INFO     │ [96m[96m--- Exporting results ---[0m[0m
 2026-07-12 22:37:00 │ INFO     │ [96m[92m✔[0m CSV saved: output\switch_games.csv[0m
 2026-07-12 22:37:00 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m
+2026-07-12 22:46:19 │ INFO     │ [96mConfiguration: mode=ALL SITE | format=ALL | hoster=ALL | output=csv | workers=5[0m
+2026-07-12 22:46:19 │ INFO     │ [96m[96m--- Starting FULL SITE scrape (auto-paginate) ---[0m[0m
+2026-07-12 22:46:19 │ INFO     │ [96m[PAGE 1] Fetching: https://switchroms.io/[0m
+2026-07-12 22:46:22 │ INFO     │ [96mFound 27 games on page 1.[0m
+2026-07-12 22:46:41 │ INFO     │ [96m  [1] [1mMario Kart 8 Deluxe[0m — 9 mirrors[0m
+2026-07-12 22:46:47 │ INFO     │ [96m  [2] [1mSuper Mario Bros. Wonder[0m — 13 mirrors[0m
+2026-07-12 22:46:52 │ INFO     │ [96m  [3] [1mPokémon Violet[0m — 14 mirrors[0m
+2026-07-12 22:46:57 │ INFO     │ [96m  [4] [1mSNK VS. CAPCOM SVC CHAOS[0m — 7 mirrors[0m
+2026-07-12 22:47:00 │ INFO     │ [96m  [5] [1mNARUTO X BORUTO Ultimate Ninja STORM CONNECTIONS Ultimate Edition[0m — 20 mirrors[0m
+2026-07-12 22:47:05 │ INFO     │ [96m  [6] [1mBaten Kaitos I & II HD Remaster[0m — 6 mirrors[0m
+2026-07-12 22:47:07 │ INFO     │ [96m  [7] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 10 mirrors[0m
+2026-07-12 22:47:10 │ INFO     │ [96m  [8] [1mThe Legend of Zelda: Tears of the Kingdom[0m — 25 mirrors[0m
+2026-07-12 22:47:19 │ INFO     │ [96m  [9] [1mMoonleap[0m — 10 mirrors[0m
+2026-07-12 22:47:24 │ INFO     │ [96m  [10] [1mSid Meier’s Civilization VI[0m — 8 mirrors[0m
+2026-07-12 22:47:25 │ INFO     │ [96m  [11] [1mSuikoden I&II HD Remaster Gate Rune and Dunan Unification Wars[0m — 8 mirrors[0m
+2026-07-12 22:47:30 │ INFO     │ [96m  [12] [1mMario & Luigi: Brothership[0m — 9 mirrors[0m
+2026-07-12 22:47:32 │ INFO     │ [96m  [13] [1mSociable Soccer 25[0m — 3 mirrors[0m
+2026-07-12 22:47:35 │ INFO     │ [96m  [14] [1mSpirit Valor[0m — 4 mirrors[0m
+2026-07-12 22:47:36 │ INFO     │ [96m  [15] [1mBIOMORPH[0m — 8 mirrors[0m
+2026-07-12 22:47:38 │ INFO     │ [96m  [16] [1mVampires and Knights : Eclipse Survival & Magic Craft[0m — 3 mirrors[0m
+2026-07-12 22:47:39 │ INFO     │ [96m  [17] [1mThe Renovator: Origins[0m — 3 mirrors[0m
+2026-07-12 22:47:45 │ INFO     │ [96m  [18] [1mSONOKUNI[0m — 4 mirrors[0m
+2026-07-12 22:47:49 │ INFO     │ [96m  [19] [1mMortal Kombat 1 Premium Edition[0m — 25 mirrors[0m
+2026-07-12 22:47:50 │ INFO     │ [96m  [20] [1mHookah Haze[0m — 4 mirrors[0m
+2026-07-12 22:47:51 │ INFO     │ [96m  [21] [1mVagrus - The Riven Realms[0m — 8 mirrors[0m
+2026-07-12 22:47:54 │ INFO     │ [96m  [22] [1mCookie Cutter: Overkill Edition[0m — 4 mirrors[0m
+2026-07-12 22:48:05 │ INFO     │ [96m  [23] [1mGal Gun 2[0m — 12 mirrors[0m
+2026-07-12 22:48:05 │ INFO     │ [96m  [24] [1mKemono Heroes[0m — 8 mirrors[0m
+2026-07-12 22:48:06 │ INFO     │ [96m  [25] [1mRift of the NecroDancer[0m — 8 mirrors[0m
+2026-07-12 22:48:10 │ INFO     │ [96m  [26] [1mTwilight Monk[0m — 7 mirrors[0m
+2026-07-12 22:48:11 │ INFO     │ [96m  [27] [1mSaGa Frontier 2 Remastered[0m — 8 mirrors[0m
+2026-07-12 22:48:11 │ INFO     │ [96m[93mProgress: 27 games scraped so far…[0m[0m
+2026-07-12 22:48:11 │ INFO     │ [96m[PAGE 2] Fetching: https://switchroms.io/page/2/[0m
+2026-07-12 22:48:13 │ INFO     │ [96mFound 27 games on page 2.[0m
+2026-07-12 22:48:34 │ INFO     │ [96m  [1] [1mMario Kart 8 Deluxe[0m — 9 mirrors[0m
+2026-07-12 22:48:43 │ INFO     │ [96m  [2] [1mSuper Mario Bros. Wonder[0m — 13 mirrors[0m
+2026-07-12 22:48:43 │ INFO     │ [96m  [3] [1mPokémon Violet[0m — 14 mirrors[0m
+2026-07-12 22:48:52 │ INFO     │ [96m  [4] [1mSNK VS. CAPCOM SVC CHAOS[0m — 7 mirrors[0m
+2026-07-12 22:48:57 │ INFO     │ [96m  [5] [1mBaten Kaitos I & II HD Remaster[0m — 6 mirrors[0m
+2026-07-12 22:48:57 │ INFO     │ [96m  [6] [1mNARUTO X BORUTO Ultimate Ninja STORM CONNECTIONS Ultimate Edition[0m — 20 mirrors[0m
+2026-07-12 22:49:00 │ INFO     │ [96m  [7] [1mThe Legend of Zelda: Tears of the Kingdom[0m — 25 mirrors[0m
+2026-07-12 22:49:05 │ INFO     │ [96m  [8] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 10 mirrors[0m
+2026-07-12 22:49:14 │ INFO     │ [96m  [9] [1mSuikoden I&II HD Remaster Gate Rune and Dunan Unification Wars[0m — 8 mirrors[0m
+2026-07-12 22:49:17 │ INFO     │ [96m  [10] [1mSid Meier’s Civilization VI[0m — 8 mirrors[0m
+2026-07-12 22:49:21 │ INFO     │ [96m  [11] [1mMoonleap[0m — 10 mirrors[0m
+2026-07-12 22:49:24 │ INFO     │ [96m  [12] [1mSociable Soccer 25[0m — 3 mirrors[0m
+2026-07-12 22:49:28 │ INFO     │ [96m  [13] [1mMario & Luigi: Brothership[0m — 9 mirrors[0m
+2026-07-12 22:49:30 │ INFO     │ [96m  [14] [1mBIOMORPH[0m — 8 mirrors[0m
+2026-07-12 22:49:31 │ INFO     │ [96m  [15] [1mSpirit Valor[0m — 4 mirrors[0m
+2026-07-12 22:49:31 │ INFO     │ [96m  [16] [1mVampires and Knights : Eclipse Survival & Magic Craft[0m — 3 mirrors[0m
+2026-07-12 22:49:36 │ INFO     │ [96m  [17] [1mThe Renovator: Origins[0m — 3 mirrors[0m
+2026-07-12 22:49:39 │ INFO     │ [96m  [18] [1mSONOKUNI[0m — 4 mirrors[0m
+2026-07-12 22:49:44 │ INFO     │ [96m  [19] [1mMortal Kombat 1 Premium Edition[0m — 25 mirrors[0m
+2026-07-12 22:49:44 │ INFO     │ [96m  [20] [1mHookah Haze[0m — 4 mirrors[0m
+2026-07-12 22:49:48 │ INFO     │ [96m  [21] [1mCookie Cutter: Overkill Edition[0m — 4 mirrors[0m
+2026-07-12 22:49:49 │ INFO     │ [96m  [22] [1mVagrus - The Riven Realms[0m — 8 mirrors[0m
+2026-07-12 22:49:54 │ INFO     │ [96m  [23] [1mGal Gun 2[0m — 12 mirrors[0m
+2026-07-12 22:50:00 │ INFO     │ [96m  [24] [1mRift of the NecroDancer[0m — 8 mirrors[0m
+2026-07-12 22:50:00 │ INFO     │ [96m  [25] [1mKemono Heroes[0m — 8 mirrors[0m
+2026-07-12 22:50:03 │ INFO     │ [96m  [26] [1mTwilight Monk[0m — 7 mirrors[0m
+2026-07-12 22:50:04 │ INFO     │ [96m  [27] [1mSaGa Frontier 2 Remastered[0m — 8 mirrors[0m
+2026-07-12 22:50:04 │ INFO     │ [96m[93mProgress: 54 games scraped so far…[0m[0m
+2026-07-12 22:50:04 │ INFO     │ [96m[PAGE 3] Fetching: https://switchroms.io/page/3/[0m
+2026-07-12 22:50:06 │ INFO     │ [96mFound 27 games on page 3.[0m
+2026-07-12 22:50:30 │ INFO     │ [96m  [1] [1mMario Kart 8 Deluxe[0m — 9 mirrors[0m
+2026-07-12 22:50:35 │ INFO     │ [96m  [2] [1mSuper Mario Bros. Wonder[0m — 13 mirrors[0m
+2026-07-12 22:50:38 │ INFO     │ [96m  [3] [1mPokémon Violet[0m — 14 mirrors[0m

@@ -6,10 +6,17 @@ All BeautifulSoup logic is isolated so it can be unit-tested independently.
 
 from __future__ import annotations
 
-from urllib.parse import urljoin, quote_plus
+import warnings
+from urllib.parse import urljoin, quote_plus, urlparse
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
+
+try:  # silence noisy warning when parsing XML sitemaps with the HTML parser
+    from bs4 import XMLParsedAsHTMLWarning
+    warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
+except ImportError:
+    pass
 
 from config import BASE_URL
 from models import Game, Mirror
@@ -33,6 +40,65 @@ def build_page_url(page_num: int, search_query: Optional[str] = None) -> str:
 def build_download_index_url(detail_url: str) -> str:
     """Append /?download to a detail URL to get the mirror index page."""
     return detail_url.rstrip("/") + "/?download"
+
+
+def slug_to_title(url: str) -> str:
+    """Derive a human-ish title from a detail URL slug (fallback only)."""
+    slug = urlparse(url).path.strip("/").split("/")[-1]
+    words = slug.replace("-", " ").split()
+    return " ".join(w.capitalize() for w in words) if words else "Unknown Title"
+
+
+# ── Sitemap parsers (full-site discovery) ──────────────────────────────
+
+def parse_sitemap_locs(xml: str) -> List[str]:
+    """Return every <loc> URL from a sitemap or sitemap index (order preserved)."""
+    soup = BeautifulSoup(xml, "html.parser")
+    return [
+        loc.get_text(strip=True)
+        for loc in soup.find_all("loc")
+        if loc.get_text(strip=True)
+    ]
+
+
+def is_probable_game_url(url: str) -> bool:
+    """
+    Heuristic test for whether a sitemap URL is a game detail page.
+    Game pages on switchroms.io are a single slug segment directly under the
+    domain root, e.g. https://switchroms.io/super-mario-bros-wonder/.
+    """
+    path = urlparse(url).path.strip("/")
+    if not path:
+        return False
+    lowered = path.lower()
+    skip = (
+        "category/", "tag/", "author/", "page/", "wp-content",
+        "wp-json", "feed", "comments", "sitemap", ".xml",
+    )
+    if any(s in lowered for s in skip):
+        return False
+    # game detail URLs are a single slug segment (no nested path)
+    return "/" not in path
+
+
+def parse_detail_title(html: str) -> Optional[str]:
+    """Best-effort extraction of a game's title from its detail/download page."""
+    soup = BeautifulSoup(html, "html.parser")
+    for selector in (".title-post", "h1.post-title", "h1.entry-title", "h1"):
+        tag = soup.select_one(selector)
+        if tag:
+            text = tag.get_text(strip=True)
+            if text:
+                return text
+    # fallback to <title> minus a common site suffix
+    if soup.title and soup.title.get_text(strip=True):
+        title = soup.title.get_text(strip=True)
+        for sep in (" - ", " | ", " – ", " — "):
+            if sep in title:
+                title = title.split(sep)[0].strip()
+                break
+        return title or None
+    return None
 
 
 # ── Listing page parser ────────────────────────────────────────────────────

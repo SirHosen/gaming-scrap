@@ -9,6 +9,21 @@ from __future__ import annotations
 # ── Target site ────────────────────────────────────────────────────────────
 BASE_URL: str = "https://switchroms.io/"
 
+# ── Full-site discovery via XML sitemap (used by "scrape all") ───────────
+# switchroms.io ignores /page/N/ pagination on the homepage (every page loops
+# back to the same latest listing), so a full scrape is driven by the XML
+# sitemap, which reliably lists every individual game page.
+SITEMAP_CANDIDATES: tuple = (
+    "sitemap_index.xml",
+    "sitemap.xml",
+    "wp-sitemap.xml",
+)
+# Sub-sitemaps / URL fragments to skip during discovery (non-game content).
+SITEMAP_SKIP_KEYWORDS: tuple = (
+    "category", "tag", "author", "page-sitemap",
+    "taxonomies", "wp-sitemap-users",
+)
+
 # ── Network behaviour ──────────────────────────────────────────────────────
 DEFAULT_DELAY: float = 1.0          # polite delay between requests (seconds)
 DEFAULT_TIMEOUT: int = 20           # per-request timeout (seconds)
