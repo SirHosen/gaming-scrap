@@ -78,3 +78,149 @@
 2026-07-12 22:50:30 │ INFO     │ [96m  [1] [1mMario Kart 8 Deluxe[0m — 9 mirrors[0m
 2026-07-12 22:50:35 │ INFO     │ [96m  [2] [1mSuper Mario Bros. Wonder[0m — 13 mirrors[0m
 2026-07-12 22:50:38 │ INFO     │ [96m  [3] [1mPokémon Violet[0m — 14 mirrors[0m
+2026-07-13 00:51:44 │ INFO     │ [96mConfiguration: mode=ALL SITE | format=ALL | hoster=ALL | output=csv | workers=5[0m
+2026-07-13 00:51:44 │ INFO     │ [96m[96m--- Starting FULL SITE scrape ---[0m[0m
+2026-07-13 00:51:44 │ INFO     │ [96mLooking for sitemap: https://switchroms.io/sitemap_index.xml[0m
+2026-07-13 00:51:45 │ INFO     │ [96mUsing sitemap: https://switchroms.io/sitemap_index.xml[0m
+2026-07-13 00:51:45 │ INFO     │ [96mReading sub-sitemap: https://switchroms.io/post-sitemap1.xml[0m
+2026-07-13 00:51:47 │ INFO     │ [96mReading sub-sitemap: https://switchroms.io/post-sitemap2.xml[0m
+2026-07-13 00:51:48 │ INFO     │ [96mReading sub-sitemap: https://switchroms.io/post-sitemap3.xml[0m
+2026-07-13 00:51:49 │ INFO     │ [96m[96mSitemap discovery found 491 candidate game pages.[0m[0m
+2026-07-13 00:52:00 │ INFO     │ [96m  [1] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 6 mirrors[0m
+2026-07-13 00:52:03 │ INFO     │ [96m  [2] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:52:06 │ INFO     │ [96m  [3] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 10 mirrors[0m
+2026-07-13 00:52:07 │ INFO     │ [96m  [4] [1mBaten Kaitos I & II HD Remaster[0m — 10 mirrors[0m
+2026-07-13 00:52:13 │ INFO     │ [96m  [5] [1mMonster Jam Showdown[0m — 3 mirrors[0m
+2026-07-13 00:52:13 │ INFO     │ [96m  [6] [1mDigimon Survive[0m — 8 mirrors[0m
+2026-07-13 00:52:18 │ INFO     │ [96m  [7] [1mBIOMORPH[0m — 9 mirrors[0m
+2026-07-13 00:52:18 │ INFO     │ [96m  [8] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 3 mirrors[0m
+2026-07-13 00:52:19 │ INFO     │ [96m  [9] [1mMario & Luigi: Brothership[0m — 8 mirrors[0m
+2026-07-13 00:52:20 │ INFO     │ [96m  [10] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 4 mirrors[0m
+2026-07-13 00:52:24 │ INFO     │ [96m  [11] [1mMario & Luigi: Brothership[0m — 3 mirrors[0m
+2026-07-13 00:52:26 │ INFO     │ [96m  [12] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 4 mirrors[0m
+2026-07-13 00:52:28 │ INFO     │ [96m  [13] [1mUNDER NIGHT IN-BIRTH II Sys:Celes[0m — 25 mirrors[0m
+2026-07-13 00:52:31 │ INFO     │ [96m  [14] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 4 mirrors[0m
+2026-07-13 00:52:33 │ INFO     │ [96m  [15] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:52:33 │ INFO     │ [96m  [16] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 4 mirrors[0m
+2026-07-13 00:52:38 │ INFO     │ [96m  [17] [1mSwitch Rom[0m — 12 mirrors[0m
+2026-07-13 00:52:42 │ INFO     │ [96m  [18] [1mTouhou Danmaku Kagura Phantasia Lost[0m — 8 mirrors[0m
+2026-07-13 00:52:46 │ INFO     │ [96m  [19] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:52:46 │ INFO     │ [96m  [20] [1mMario & Luigi: Brothership[0m — 7 mirrors[0m
+2026-07-13 00:52:46 │ INFO     │ [96m  [21] [1mMario & Luigi: Brothership[0m — 4 mirrors[0m
+2026-07-13 00:52:47 │ INFO     │ [96m  [22] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:52:51 │ INFO     │ [96m  [23] [1mKAMiBAKO - Mythology of Cube[0m — 3 mirrors[0m
+2026-07-13 00:52:55 │ INFO     │ [96m  [24] [1mMario & Luigi: Brothership[0m — 8 mirrors[0m
+2026-07-13 00:52:59 │ INFO     │ [96m  [25] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:53:01 │ INFO     │ [96m  [26] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:53:04 │ INFO     │ [96m  [27] [1mSociable Soccer 25[0m — 8 mirrors[0m
+2026-07-13 00:53:05 │ INFO     │ [96m  [28] [1mSid Meier’s Civilization VI[0m — 12 mirrors[0m
+2026-07-13 00:53:15 │ INFO     │ [96m  [29] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 6 mirrors[0m
+2026-07-13 00:53:15 │ INFO     │ [96m  [30] [1mMario & Luigi: Brothership[0m — 9 mirrors[0m
+2026-07-13 00:53:16 │ INFO     │ [96m  [31] [1mSociable Soccer 25[0m — 13 mirrors[0m
+2026-07-13 00:53:18 │ INFO     │ [96m  [32] [1mMario & Luigi: Brothership[0m — 12 mirrors[0m
+2026-07-13 00:53:22 │ INFO     │ [96m  [33] [1mSociable Soccer 25[0m — 11 mirrors[0m
+2026-07-13 00:53:27 │ INFO     │ [96m  [34] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 7 mirrors[0m
+2026-07-13 00:53:30 │ INFO     │ [96m  [35] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 7 mirrors[0m
+2026-07-13 00:53:34 │ INFO     │ [96m  [36] [1mSnowRunner[0m — 12 mirrors[0m
+2026-07-13 00:53:39 │ INFO     │ [96m  [37] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 15 mirrors[0m
+2026-07-13 00:53:41 │ INFO     │ [96m  [38] [1mMortal Kombat 1 Premium Edition[0m — 12 mirrors[0m
+2026-07-13 00:53:42 │ INFO     │ [96m  [39] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 9 mirrors[0m
+2026-07-13 00:53:52 │ INFO     │ [96m  [40] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 00:53:52 │ INFO     │ [96m[93mProgress: 40/491 pages processed, 40 games with mirrors so far…[0m[0m
+2026-07-13 00:54:10 │ INFO     │ [96m  [1] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 11 mirrors[0m
+2026-07-13 00:54:17 │ INFO     │ [96m  [2] [1mMario & Luigi: Brothership[0m — 15 mirrors[0m
+2026-07-13 00:54:22 │ INFO     │ [96m  [3] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 18 mirrors[0m
+2026-07-13 00:54:27 │ INFO     │ [96m  [4] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 21 mirrors[0m
+2026-07-13 00:54:27 │ INFO     │ [96m  [5] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 22 mirrors[0m
+2026-07-13 00:54:40 │ INFO     │ [96m  [6] [1mMortal Kombat 1 Premium Edition[0m — 14 mirrors[0m
+2026-07-13 00:54:41 │ INFO     │ [96m  [7] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 19 mirrors[0m
+2026-07-13 00:54:44 │ INFO     │ [96m  [8] [1mMario & Luigi: Brothership[0m — 13 mirrors[0m
+2026-07-13 00:54:52 │ INFO     │ [96m  [9] [1mMario & Luigi: Brothership[0m — 16 mirrors[0m
+2026-07-13 00:54:55 │ INFO     │ [96m  [10] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:54:55 │ INFO     │ [96m  [11] [1mMario & Luigi: Brothership[0m — 9 mirrors[0m
+2026-07-13 00:55:05 │ INFO     │ [96m  [12] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 13 mirrors[0m
+2026-07-13 00:55:06 │ INFO     │ [96m  [13] [1mMortal Kombat 1 Premium Edition[0m — 8 mirrors[0m
+2026-07-13 00:55:06 │ INFO     │ [96m  [14] [1mDungeon Drafters[0m — 25 mirrors[0m
+2026-07-13 00:55:11 │ INFO     │ [96m  [15] [1mMario & Luigi: Brothership[0m — 10 mirrors[0m
+2026-07-13 00:55:17 │ INFO     │ [96m  [16] [1mMortal Kombat 1 Premium Edition[0m — 14 mirrors[0m
+2026-07-13 00:55:27 │ INFO     │ [96m  [17] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 13 mirrors[0m
+2026-07-13 00:55:34 │ INFO     │ [96m  [18] [1mMortal Kombat 1 Premium Edition[0m — 14 mirrors[0m
+2026-07-13 00:55:37 │ INFO     │ [96m  [19] [1mMortal Kombat 1 Premium Edition[0m — 20 mirrors[0m
+2026-07-13 00:55:38 │ INFO     │ [96m  [20] [1mMario & Luigi: Brothership[0m — 13 mirrors[0m
+2026-07-13 00:55:47 │ INFO     │ [96m  [21] [1mSnowRunner[0m — 5 mirrors[0m
+2026-07-13 00:55:47 │ INFO     │ [96m  [22] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 00:55:53 │ INFO     │ [96m  [23] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 17 mirrors[0m
+2026-07-13 00:55:54 │ INFO     │ [96m  [24] [1mMonster Jam Showdown[0m — 10 mirrors[0m
+2026-07-13 00:55:56 │ INFO     │ [96m  [25] [1mMario & Luigi: Brothership[0m — 5 mirrors[0m
+2026-07-13 00:56:06 │ INFO     │ [96m  [26] [1mMario & Luigi: Brothership[0m — 12 mirrors[0m
+2026-07-13 00:56:09 │ INFO     │ [96m  [27] [1mI Have No Mouth, and I Must Scream[0m — 10 mirrors[0m
+2026-07-13 00:56:14 │ INFO     │ [96m  [28] [1mMario & Luigi: Brothership[0m — 5 mirrors[0m
+2026-07-13 00:56:17 │ INFO     │ [96m  [29] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 15 mirrors[0m
+2026-07-13 00:56:19 │ INFO     │ [96m  [30] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 15 mirrors[0m
+2026-07-13 00:56:27 │ INFO     │ [96m  [31] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 11 mirrors[0m
+2026-07-13 00:56:38 │ INFO     │ [96m  [32] [1mMario & Luigi: Brothership[0m — 12 mirrors[0m
+2026-07-13 00:56:38 │ INFO     │ [96m  [33] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 10 mirrors[0m
+2026-07-13 00:56:41 │ INFO     │ [96m  [34] [1mSid Meier’s Civilization VI[0m — 10 mirrors[0m
+2026-07-13 00:56:49 │ INFO     │ [96m  [35] [1mI Have No Mouth, and I Must Scream[0m — 6 mirrors[0m
+2026-07-13 00:56:51 │ INFO     │ [96m  [36] [1mMario & Luigi: Brothership[0m — 6 mirrors[0m
+2026-07-13 00:56:52 │ INFO     │ [96m  [37] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:56:56 │ INFO     │ [96m  [38] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 4 mirrors[0m
+2026-07-13 00:56:58 │ INFO     │ [96m  [39] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:57:05 │ INFO     │ [96m  [40] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 75 mirrors[0m
+2026-07-13 00:57:05 │ INFO     │ [96m[93mProgress: 80/491 pages processed, 80 games with mirrors so far…[0m[0m
+2026-07-13 00:57:16 │ INFO     │ [96m  [1] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 6 mirrors[0m
+2026-07-13 00:57:24 │ INFO     │ [96m  [2] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:57:24 │ INFO     │ [96m  [3] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:57:28 │ INFO     │ [96m  [4] [1mSociable Soccer 25[0m — 15 mirrors[0m
+2026-07-13 00:57:34 │ INFO     │ [96m  [5] [1mSid Meier’s Civilization VI[0m — 6 mirrors[0m
+2026-07-13 00:57:35 │ INFO     │ [96m  [6] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:57:40 │ INFO     │ [96m  [7] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 9 mirrors[0m
+2026-07-13 00:57:41 │ INFO     │ [96m  [8] [1mMario & Luigi: Brothership[0m — 24 mirrors[0m
+2026-07-13 00:57:48 │ INFO     │ [96m  [9] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:57:52 │ INFO     │ [96m  [10] [1mMario & Luigi: Brothership[0m — 11 mirrors[0m
+2026-07-13 00:57:54 │ INFO     │ [96m  [11] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:58:00 │ INFO     │ [96m  [12] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:58:01 │ INFO     │ [96m  [13] [1mMario & Luigi: Brothership[0m — 4 mirrors[0m
+2026-07-13 00:58:03 │ INFO     │ [96m  [14] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 14 mirrors[0m
+2026-07-13 00:58:05 │ INFO     │ [96m  [15] [1mMario & Luigi: Brothership[0m — 11 mirrors[0m
+2026-07-13 00:58:12 │ INFO     │ [96m  [16] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 7 mirrors[0m
+2026-07-13 00:58:19 │ INFO     │ [96m  [17] [1mRift of the NecroDancer[0m — 18 mirrors[0m
+2026-07-13 00:58:26 │ INFO     │ [96m  [18] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 14 mirrors[0m
+2026-07-13 00:58:34 │ INFO     │ [96m  [19] [1mSociable Soccer 25[0m — 14 mirrors[0m
+2026-07-13 00:58:37 │ INFO     │ [96m  [20] [1mSnowRunner[0m — 21 mirrors[0m
+2026-07-13 00:58:41 │ INFO     │ [96m  [21] [1mMortal Kombat 1 Premium Edition[0m — 14 mirrors[0m
+2026-07-13 00:58:42 │ INFO     │ [96m  [22] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 10 mirrors[0m
+2026-07-13 00:58:44 │ INFO     │ [96m  [23] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 28 mirrors[0m
+2026-07-13 00:58:50 │ INFO     │ [96m  [24] [1mMario & Luigi: Brothership[0m — 3 mirrors[0m
+2026-07-13 00:58:51 │ INFO     │ [96m  [25] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 5 mirrors[0m
+2026-07-13 00:58:52 │ INFO     │ [96m  [26] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 11 mirrors[0m
+2026-07-13 00:58:52 │ INFO     │ [96m  [27] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 7 mirrors[0m
+2026-07-13 00:58:58 │ INFO     │ [96m  [28] [1mMario & Luigi: Brothership[0m — 4 mirrors[0m
+2026-07-13 00:58:59 │ INFO     │ [96m  [29] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 00:59:14 │ INFO     │ [96m  [30] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 14 mirrors[0m
+2026-07-13 00:59:14 │ INFO     │ [96m  [31] [1mSociable Soccer 25[0m — 9 mirrors[0m
+2026-07-13 00:59:14 │ INFO     │ [96m  [32] [1mDiablo II: Resurrected[0m — 14 mirrors[0m
+2026-07-13 00:59:15 │ INFO     │ [96m  [33] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 00:59:20 │ INFO     │ [96m  [34] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 00:59:34 │ INFO     │ [96m  [35] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 00:59:40 │ INFO     │ [96m  [36] [1mSociable Soccer 25[0m — 16 mirrors[0m
+2026-07-13 00:59:43 │ INFO     │ [96m  [37] [1mI Have No Mouth, and I Must Scream[0m — 15 mirrors[0m
+2026-07-13 00:59:46 │ INFO     │ [96m  [38] [1mMortal Kombat 1 Premium Edition[0m — 20 mirrors[0m
+2026-07-13 00:59:56 │ INFO     │ [96m  [39] [1mSociable Soccer 25[0m — 14 mirrors[0m
+2026-07-13 00:59:57 │ INFO     │ [96m  [40] [1mMario & Luigi: Brothership[0m — 28 mirrors[0m
+2026-07-13 00:59:57 │ INFO     │ [96m[93mProgress: 120/491 pages processed, 120 games with mirrors so far…[0m[0m
+2026-07-13 01:00:03 │ INFO     │ [96m  [1] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 3 mirrors[0m
+2026-07-13 01:00:11 │ INFO     │ [96m  [2] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 8 mirrors[0m
+2026-07-13 01:00:17 │ INFO     │ [96m  [3] [1mMario & Luigi: Brothership[0m — 12 mirrors[0m
+2026-07-13 01:00:20 │ INFO     │ [96m  [4] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 01:00:27 │ INFO     │ [96m  [5] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m
+2026-07-13 01:00:27 │ INFO     │ [96m  [6] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 18 mirrors[0m
+2026-07-13 01:00:28 │ INFO     │ [96m  [7] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 6 mirrors[0m
+2026-07-13 01:00:31 │ INFO     │ [96m  [8] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 12 mirrors[0m
+2026-07-13 01:00:32 │ INFO     │ [96m  [9] [1mMario & Luigi: Brothership[0m — 7 mirrors[0m
+2026-07-13 01:00:51 │ INFO     │ [96m  [10] [1mSid Meier’s Civilization VI[0m — 12 mirrors[0m
+2026-07-13 01:00:54 │ INFO     │ [96m  [11] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 16 mirrors[0m
+2026-07-13 01:01:01 │ INFO     │ [96m  [12] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 20 mirrors[0m
+2026-07-13 01:01:02 │ INFO     │ [96m  [13] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 21 mirrors[0m
+2026-07-13 01:01:12 │ INFO     │ [96m  [14] [1mAtelier Yumia The Alchemist of Memories & the Envisioned Land[0m — 24 mirrors[0m
+2026-07-13 01:01:15 │ INFO     │ [96m  [15] [1mMario & Luigi: Brothership[0m — 14 mirrors[0m

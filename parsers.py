@@ -42,11 +42,26 @@ def build_download_index_url(detail_url: str) -> str:
     return detail_url.rstrip("/") + "/?download"
 
 
+# Trailing slug tokens that are ROM-listing noise rather than part of a title.
+_SLUG_NOISE = {"nsp", "xci", "nsz", "nsw", "rom", "roms", "switch", "eshop"}
+
+
 def slug_to_title(url: str) -> str:
     """Derive a human-ish title from a detail URL slug (fallback only)."""
     slug = urlparse(url).path.strip("/").split("/")[-1]
     words = slug.replace("-", " ").split()
+    # strip trailing noise tokens and standalone numbers (e.g. "...-switch-rom-5")
+    while words and (words[-1].lower() in _SLUG_NOISE or words[-1].isdigit()):
+        words.pop()
     return " ".join(w.capitalize() for w in words) if words else "Unknown Title"
+
+
+def _strip_site_suffix(title: str) -> str:
+    """Remove a trailing ' - SwitchRoms'-style site suffix from a page title."""
+    for sep in (" - ", " | ", " – ", " — ", " » "):
+        if sep in title:
+            title = title.split(sep)[0].strip()
+    return title.strip()
 
 
 # ── Sitemap parsers (full-site discovery) ──────────────────────────────
@@ -82,22 +97,44 @@ def is_probable_game_url(url: str) -> bool:
 
 
 def parse_detail_title(html: str) -> Optional[str]:
-    """Best-effort extraction of a game's title from its detail/download page."""
+    """
+    Best-effort extraction of a game's title from its detail/download page.
+
+    IMPORTANT: switchroms.io detail pages contain a "latest games" sidebar
+    widget that reuses the `.title-post` class from the listing page. Reading
+    that class here would return the newest game on EVERY page (e.g. always
+    "Atelier Yumia..."), which is exactly the duplicate-title bug we must avoid.
+    So we rely only on per-page unique sources: og:title, the document <title>,
+    then a scoped main-content <h1>.
+    """
     soup = BeautifulSoup(html, "html.parser")
-    for selector in (".title-post", "h1.post-title", "h1.entry-title", "h1"):
-        tag = soup.select_one(selector)
-        if tag:
-            text = tag.get_text(strip=True)
-            if text:
-                return text
-    # fallback to <title> minus a common site suffix
+
+    # 1. Open Graph title (set per-post by SEO plugins) — most reliable
+    og = soup.find("meta", attrs={"property": "og:title"})
+    if og and og.get("content") and og["content"].strip():
+        cleaned = _strip_site_suffix(og["content"].strip())
+        if cleaned:
+            return cleaned
+
+    # 2. Twitter title fallback
+    tw = soup.find("meta", attrs={"name": "twitter:title"})
+    if tw and tw.get("content") and tw["content"].strip():
+        cleaned = _strip_site_suffix(tw["content"].strip())
+        if cleaned:
+            return cleaned
+
+    # 3. Document <title>
     if soup.title and soup.title.get_text(strip=True):
-        title = soup.title.get_text(strip=True)
-        for sep in (" - ", " | ", " – ", " — "):
-            if sep in title:
-                title = title.split(sep)[0].strip()
-                break
-        return title or None
+        cleaned = _strip_site_suffix(soup.title.get_text(strip=True))
+        if cleaned:
+            return cleaned
+
+    # 4. Scoped main-content heading (NEVER the generic `.title-post` widget)
+    for selector in ("h1.entry-title", "h1.post-title", "h1.title-single"):
+        tag = soup.select_one(selector)
+        if tag and tag.get_text(strip=True):
+            return tag.get_text(strip=True)
+
     return None
 
 
