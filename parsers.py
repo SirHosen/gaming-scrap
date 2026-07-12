@@ -6,6 +6,7 @@ All BeautifulSoup logic is isolated so it can be unit-tested independently.
 
 from __future__ import annotations
 
+import re
 import warnings
 from urllib.parse import urljoin, quote_plus, urlparse
 from typing import List, Optional
@@ -57,11 +58,41 @@ def slug_to_title(url: str) -> str:
 
 
 def _strip_site_suffix(title: str) -> str:
-    """Remove a trailing ' - SwitchRoms'-style site suffix from a page title."""
-    for sep in (" - ", " | ", " – ", " — ", " » "):
-        if sep in title:
-            title = title.split(sep)[0].strip()
-    return title.strip()
+    """Remove only a trailing ' - SwitchRoms'-style site-name suffix (safe for
+    titles that legitimately contain dashes)."""
+    return re.sub(
+        r"\s*[|\-–—»]\s*Switch\s*Roms?\s*$", "", title, flags=re.IGNORECASE
+    ).strip()
+
+
+# Markers that indicate the start of ROM-listing noise appended to a page title,
+# e.g. "Mario Kart 8 Deluxe NSP XCI Switch Rom V1.0 [UPDATE] Free Download".
+_TITLE_CUT_RE = re.compile(
+    r"\s+(?:NSP\b|XCI\b|NSZ\b|NSW\b|Switch\s+Rom\b|Free\s+Download\b|\[).*$",
+    re.IGNORECASE,
+)
+_RELEASE_TAG_RE = re.compile(r"\[(UPDATE|DLC|BASE|DEMO)\]", re.IGNORECASE)
+
+
+def _clean_game_title(raw: str) -> str:
+    """
+    Turn a noisy SEO page title into a clean game name, preserving a release
+    tag when present.
+
+    "The Legend of Zelda: Tears of the Kingdom NSP, XCI Switch Rom V1.2.1
+    [UPDATE] Free Download"
+        -> "The Legend of Zelda: Tears of the Kingdom [UPDATE]"
+    """
+    title = _strip_site_suffix(raw.strip())
+    # Preserve a release-type tag (UPDATE / DLC / BASE / DEMO) if present.
+    tag_match = _RELEASE_TAG_RE.search(title)
+    tag = f" [{tag_match.group(1).upper()}]" if tag_match else ""
+    # Cut everything from the first ROM-listing marker onward.
+    cut = _TITLE_CUT_RE.search(title)
+    if cut:
+        title = title[: cut.start()]
+    title = title.strip(" -–—|,").strip()
+    return f"{title}{tag}" if title else title
 
 
 # ── Sitemap parsers (full-site discovery) ──────────────────────────────
@@ -109,31 +140,35 @@ def parse_detail_title(html: str) -> Optional[str]:
     """
     soup = BeautifulSoup(html, "html.parser")
 
-    # 1. Open Graph title (set per-post by SEO plugins) — most reliable
+    # 1. Open Graph title (set per-post by the SEO plugin) — most reliable
     og = soup.find("meta", attrs={"property": "og:title"})
     if og and og.get("content") and og["content"].strip():
-        cleaned = _strip_site_suffix(og["content"].strip())
+        cleaned = _clean_game_title(og["content"])
         if cleaned:
             return cleaned
 
     # 2. Twitter title fallback
     tw = soup.find("meta", attrs={"name": "twitter:title"})
     if tw and tw.get("content") and tw["content"].strip():
-        cleaned = _strip_site_suffix(tw["content"].strip())
+        cleaned = _clean_game_title(tw["content"])
         if cleaned:
             return cleaned
 
     # 3. Document <title>
     if soup.title and soup.title.get_text(strip=True):
-        cleaned = _strip_site_suffix(soup.title.get_text(strip=True))
+        cleaned = _clean_game_title(soup.title.get_text(strip=True))
         if cleaned:
             return cleaned
 
-    # 4. Scoped main-content heading (NEVER the generic `.title-post` widget)
-    for selector in ("h1.entry-title", "h1.post-title", "h1.title-single"):
+    # 4. Scoped main-content heading. switchroms.io uses <h1 class="h1-title">.
+    #    NEVER read `.title-post` — that is the "Recommended for You" widget
+    #    which repeats the same newest game on every detail page.
+    for selector in ("h1.h1-title", "h1.entry-title", "h1.post-title", "h1.title-single"):
         tag = soup.select_one(selector)
         if tag and tag.get_text(strip=True):
-            return tag.get_text(strip=True)
+            cleaned = _clean_game_title(tag.get_text(strip=True))
+            if cleaned:
+                return cleaned
 
     return None
 
