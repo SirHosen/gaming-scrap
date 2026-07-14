@@ -165,3 +165,19 @@ CACHE_TTL: int = 86400              # cache entry lifetime in seconds (0 = forev
 # falls back to the threaded client automatically when it's missing.
 ASYNC_ENABLED_DEFAULT: bool = False
 ASYNC_CONCURRENCY: int = 10        # max simultaneous async requests
+
+# ── Automation & notifications (Phase 4) ──────────────
+# User secrets (bot tokens, webhook URLs, SMTP credentials) are NOT stored here.
+# They live in a .env or config.yaml/config.json file loaded by settings.py and
+# are git-ignored. These are only structural / non-secret defaults.
+#
+# Config files searched (in the current directory) by settings.py, first wins:
+CONFIG_FILE_CANDIDATES: tuple = ("config.yaml", "config.yml", "config.json")
+ENV_FILENAME: str = ".env"
+
+# Scheduler (--watch) defaults.
+SCHEDULE_DEFAULT_INTERVAL_MIN: float = 60.0   # minutes between scheduled runs
+SCHEDULE_DEFAULT_TASK: str = "both"           # scrape | check | both
+
+# Per-request timeout (seconds) for notification webhook posts (Telegram/Discord).
+NOTIFY_TIMEOUT: int = 15

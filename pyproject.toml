@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nestfetch"
-version = "4.2.0"
+version = "4.3.0"
 description = "A professional, modular, multi-site game-download metadata scraper."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -28,6 +28,9 @@ dependencies = [
 async = ["aiohttp>=3.9.0"]
 # Headless-browser fallback for JS / timer ad-gates.
 browser = ["playwright>=1.44.0"]
+# YAML config files (Phase 4). JSON config works with no extra deps; install
+# this only if you prefer config.yaml over config.json.
+config = ["pyyaml>=6.0"]
 # Test tooling.
 dev = ["pytest>=8.0.0"]
 
@@ -45,6 +48,7 @@ py-modules = [
     "config", "logger", "models", "http_client", "async_client",
     "parsers", "engine", "exporters", "cli", "scraper",
     "link_checker", "link_resolver", "database",
+    "settings", "notifier", "scheduler",
 ]
 
 [tool.setuptools.packages.find]

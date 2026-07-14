@@ -28,7 +28,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.2 — Multi-Site Game Download Scraper
+              NESTfetch v4.3 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -71,6 +71,8 @@ def interactive_menu() -> Tuple[str, dict]:
     print("  [4] Check scraped links from a CSV (dead / expired link validator)")
     print("  [5] Show scrape history (from the local database)")
     print("  [6] Export previously scraped data from the database")
+    print("  [7] Watch mode — run scrape/check on a schedule with notifications")
+    print("  [8] Test notification setup (Telegram / Discord / email)")
     mode = _prompt("Select option", "1")
 
     # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
@@ -115,6 +117,54 @@ def interactive_menu() -> Tuple[str, dict]:
             "output": OUTPUT_MAP.get(exp_opt, "both"),
             "db_path": None,
             "active_only": True,
+            "verbose": False,
+        }
+
+    # ── Mode 7: watch mode (scheduler + notifications) ──────────────────
+    if mode == "7":
+        import os
+        from config import OUTPUT_DIR, CSV_FILENAME
+        print(f"\n{Colours.BOLD}Watch mode — periodic scrape/check with notifications{Colours.RESET}")
+        print(f"  {Colours.GREY}Tip: configure channels in .env or config.yaml (see the *.example files).{Colours.RESET}")
+        print("  [1] Scrape only")
+        print("  [2] Check links only")
+        print("  [3] Both scrape + check")
+        task_opt = _prompt("Select task", "3")
+        task = {"1": "scrape", "2": "check", "3": "both"}.get(task_opt, "both")
+        interval_in = _prompt("Interval in minutes", "60")
+        try:
+            interval = float(interval_in)
+        except ValueError:
+            interval = 60.0
+        return "watch", {
+            "site": site,
+            "task": task,
+            "interval": interval,
+            "iterations": None,
+            "notify": True,
+            "config": None,
+            "search": None,
+            "pages": 1,
+            "format": "ALL",
+            "hoster": "ALL",
+            "output": "both",
+            "delay": 1.0,
+            "workers": 5,
+            "scrape_all": False,
+            "no_db": False,
+            "db_path": None,
+            "use_async": False,
+            "use_cache": CACHE_ENABLED_DEFAULT,
+            "rate_limit": PER_HOST_RATE_LIMIT,
+            "verbose": False,
+            "check_output": None,
+            "csv_path": os.path.join(OUTPUT_DIR, CSV_FILENAME),
+        }
+
+    # ── Mode 8: test notification setup ─────────────────────────────────
+    if mode == "8":
+        return "notify-test", {
+            "config": None,
             "verbose": False,
         }
 
@@ -186,7 +236,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.2 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.3 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -261,6 +311,23 @@ Examples:
     parser.add_argument("--rate-limit", dest="rate_limit", type=float,
                         default=PER_HOST_RATE_LIMIT,
                         help="Minimum seconds between requests to the same host (0 = off)")
+
+    # ── Phase 4: automation & notifications ──────────────────
+    parser.add_argument("--watch", action="store_true",
+                        help="Run scrape/check repeatedly on a schedule with notifications")
+    parser.add_argument("--interval", type=float, default=60.0,
+                        help="Minutes between watch-mode runs (default: 60)")
+    parser.add_argument("--task", type=str, default="both",
+                        choices=["scrape", "check", "both"],
+                        help="Which task watch mode runs each cycle (default: both)")
+    parser.add_argument("--iterations", type=int, default=None,
+                        help="Stop watch mode after N cycles (default: run forever)")
+    parser.add_argument("--notify", action="store_true",
+                        help="Send notifications after a one-off scrape/check run")
+    parser.add_argument("--notify-test", dest="notify_test", action="store_true",
+                        help="Send a test notification to every configured channel and exit")
+    parser.add_argument("--config", type=str, default=None,
+                        help="Path to a config.yaml / config.json settings file")
     return parser
 
 
@@ -295,6 +362,41 @@ def parse_args() -> Tuple[str, dict]:
             "verbose": args.verbose,
         }
 
+    # Send a test notification and exit.
+    if getattr(args, "notify_test", False):
+        return "notify-test", {
+            "config": args.config,
+            "verbose": args.verbose,
+        }
+
+    # Watch mode: run scrape/check on a schedule with notifications.
+    if getattr(args, "watch", False):
+        from link_checker import default_csv_path
+        return "watch", {
+            "site": args.site,
+            "task": args.task,
+            "interval": args.interval,
+            "iterations": args.iterations,
+            "notify": True,
+            "config": args.config,
+            "search": args.search,
+            "pages": args.pages,
+            "format": args.format,
+            "hoster": args.hoster,
+            "output": args.output,
+            "delay": args.delay,
+            "workers": args.workers,
+            "scrape_all": args.all,
+            "no_db": args.no_db,
+            "db_path": args.db,
+            "use_async": args.use_async,
+            "use_cache": args.use_cache,
+            "rate_limit": args.rate_limit,
+            "verbose": args.verbose,
+            "check_output": args.check_output,
+            "csv_path": str(default_csv_path()),
+        }
+
     # If no meaningful args were passed, go interactive
     if len(sys.argv) == 1:
         return interactive_menu()
@@ -314,6 +416,8 @@ def parse_args() -> Tuple[str, dict]:
             "verbose": args.verbose,
             "no_db": args.no_db,
             "db_path": args.db,
+            "notify": args.notify,
+            "config": args.config,
         }
 
     return "scrape", {
@@ -332,4 +436,6 @@ def parse_args() -> Tuple[str, dict]:
         "use_async": args.use_async,
         "use_cache": args.use_cache,
         "rate_limit": args.rate_limit,
+        "notify": args.notify,
+        "config": args.config,
     }

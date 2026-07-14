@@ -74,10 +74,11 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 - [x] Packaging: `pip install .` → command `nestfetch` (`pyproject.toml`, extras `[async]/[browser]/[dev]`).
 **Hasil:** scrape besar jadi lebih cepat & sopan, plus jaring pengaman test sebelum tiap rilis.
 
-### Phase 4 — Otomatisasi & notifikasi 🔔
-- [ ] Scheduler: cek link / scan game baru secara berkala.
-- [ ] Notifikasi ke Telegram / Discord / email saat: link baru mati, atau game baru muncul.
-- [ ] File konfigurasi (`.env` / `config.yaml`) untuk token & jadwal.
+### Phase 4 — Otomatisasi & notifikasi 🔔 ✅ SELESAI (v4.3)
+- [x] Scheduler (`--watch`): scrape/cek link berkala (`--interval`, `--task`, `--iterations`) — pure stdlib, clock injectable (teruji).
+- [x] Notifikasi ke Telegram / Discord / email saat game baru muncul atau link baru mati (`--notify`, transport injectable & teruji offline).
+- [x] File konfigurasi (`.env` / `config.yaml` / `config.json`) untuk token & jadwal — precedence env > .env > file > default, channel auto-aktif bila kredensial ada; `--notify-test` untuk uji setup.
+**Hasil:** NESTfetch bisa jalan sendiri berkala dan langsung memberi tahu kamu saat ada game baru atau link mati — tanpa re-run manual.
 
 ### Phase 5 — UI 🖥️
 - [ ] Pilih: **web dashboard** (Flask/FastAPI + tabel filter/search) atau **GUI desktop**.

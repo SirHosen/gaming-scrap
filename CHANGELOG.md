@@ -10,9 +10,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Phase 4 — scheduler + notifications (Telegram / Discord / email).
 - Phase 5 — web dashboard / desktop UI.
 - More site adapters (Windows games, emulators, Linux, ...).
+
+---
+
+## [4.3.0] - 2026-07-15
+
+### Added
+- **Automation & notifications (Phase 4).**
+  - **Watch mode / scheduler** — new `--watch` runs a scrape and/or link-check
+    on a fixed interval (`--interval <minutes>`, default 60), with
+    `--task {scrape,check,both}` and `--iterations N` (default: forever). Pure
+    standard library; the clock is injectable so it's fully unit-tested.
+  - **Multi-channel notifications** — Telegram, Discord, and email alerts when a
+    scrape finds **new games** or a link check finds **newly-dead links**.
+    Add `--notify` to a one-off scrape/check, or rely on watch mode. Transports
+    use only `urllib`/`smtplib` and are injectable for offline tests.
+  - **Settings & secrets loader** — `settings.py` reads config from environment
+    variables, a `.env` file, or `config.yaml`/`config.json` (precedence:
+    env > .env > config file > defaults). Channels auto-enable when their creds
+    are present. Added `.env.example` and `config.example.yaml`.
+  - **`--notify-test`** sends a test message to every configured channel.
+  - Interactive menu gains **[7] watch mode** and **[8] test notifications**.
+- **Tests.** New offline suites for settings loading, the notifier (fake
+  transports), and the scheduler (injected clock).
+- **Packaging.** `settings`, `notifier`, `scheduler` added to the installed
+  modules; new optional extra `[config]` (PyYAML) for YAML config files.
+
+### Changed
+- Link checks now also return `newly_dead_urls`, and the scrape/check flow is
+  refactored into reusable `do_scrape()` / `run_link_check()` helpers so watch
+  mode can drive them and raise notifications.
+- `.gitignore` now ignores real `config.yaml`/`config.json`/`.env` files while
+  keeping the `*.example` templates tracked.
 
 ---
 
@@ -141,7 +172,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.1.0
 [4.0.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.0.0

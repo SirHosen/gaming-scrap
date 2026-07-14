@@ -1,9 +1,43 @@
-# NESTfetch v4.2
+# NESTfetch v4.3
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.3 — Automation & notifications (Phase 4)
+
+NESTfetch can now run itself and tell you when something changes — no more manual
+re-runs to spot new games or freshly-dead links:
+
+- **Watch mode (scheduler)** — `--watch` runs a scrape and/or link-check on a
+  fixed interval (`--interval <minutes>`, default 60). Choose what each cycle
+  does with `--task {scrape,check,both}` and stop after N cycles with
+  `--iterations N` (default: run forever until Ctrl-C).
+- **Notifications** — get pinged on **Telegram**, **Discord**, and/or **email**
+  when a scrape finds **new games** or a link check finds **newly-dead links**.
+  Add `--notify` to a one-off `scrape`/`--check-links` run, or let watch mode
+  notify automatically.
+- **Config & secrets, out of the code** — tokens/webhooks/SMTP creds are read
+  from environment variables, a `.env` file, or a `config.yaml`/`config.json`
+  (precedence: env > .env > config file > defaults). A channel auto-enables when
+  its credentials are present. Copy `.env.example` or `config.example.yaml` to
+  get started. JSON config needs **no** extra dependencies; YAML needs PyYAML
+  (`pip install nestfetch[config]`).
+- **Test your setup** — `--notify-test` sends a test message to every configured
+  channel so you can confirm it works before leaving it running.
+
+```bash
+cp .env.example .env                 # then fill in your tokens/webhook/SMTP
+python scraper.py --notify-test      # confirm channels are wired up
+python scraper.py --watch --interval 60 --task both   # scrape+check hourly, notify
+python scraper.py --all --notify     # one-off full scrape + notify on new games
+python scraper.py --check-links --notify              # notify on newly-dead links
+```
+
+Pure standard library for Telegram/Discord/email/JSON — the only optional add-on
+is PyYAML if you prefer YAML config. New offline tests cover settings loading,
+the notifier (with fake transports), and the scheduler.
 
 ## What's New in v4.2 — Performance & quality (Phase 3)
 

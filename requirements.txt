@@ -11,6 +11,11 @@ beautifulsoup4>=4.12.3
 #   pip install playwright && python -m playwright install chromium
 # playwright>=1.44.0
 
+# Optional — YAML config files (Phase 4). JSON config needs no extra deps; only
+# install this if you prefer config.yaml over config.json.
+#   pip install pyyaml        (or: pip install nestfetch[config])
+# pyyaml>=6.0
+
 # Dev / test only:
 #   pip install pytest        (or: pip install nestfetch[dev])
 # pytest>=8.0.0

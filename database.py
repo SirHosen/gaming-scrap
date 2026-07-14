@@ -303,7 +303,7 @@ def record_link_checks(conn: sqlite3.Connection, checks) -> Dict[str, int]:
     """
     init_db(conn)
     now = _now()
-    stats = {"active": 0, "dead": 0, "unknown": 0, "newly_dead": 0}
+    stats = {"active": 0, "dead": 0, "unknown": 0, "newly_dead": 0, "newly_dead_urls": []}
 
     for c in checks:
         url = (c.get("url") or "").strip()
@@ -327,6 +327,7 @@ def record_link_checks(conn: sqlite3.Connection, checks) -> Dict[str, int]:
             )
             if is_dead:
                 stats["newly_dead"] += 1
+                stats["newly_dead_urls"].append(url)
         else:
             first_dead = row["first_dead_at"]
             last_active = row["last_active_at"]
@@ -336,6 +337,7 @@ def record_link_checks(conn: sqlite3.Connection, checks) -> Dict[str, int]:
                 if not first_dead:
                     first_dead = now
                     stats["newly_dead"] += 1
+                    stats["newly_dead_urls"].append(url)
             else:
                 consecutive = 0
                 if is_active:

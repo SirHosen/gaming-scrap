@@ -1,0 +1,40 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# NESTfetch configuration (Phase 4)
+# Copy this file to  config.yaml  and fill in your own values.
+# config.yaml is git-ignored so your secrets never get committed.
+#
+# You can also use environment variables (NESTFETCH_*) or a .env file instead.
+# Precedence (highest wins):  env vars  >  .env  >  this file.
+#
+# NOTE: reading YAML needs the optional PyYAML package (`pip install pyyaml`).
+#       If you'd rather not install it, use config.json or a .env file.
+# ─────────────────────────────────────────────────────────────────────────────
+
+telegram:
+  enabled: false
+  token: "123456789:ABCdefYourBotTokenHere"   # from @BotFather
+  chat_id: "123456789"                          # your chat / channel id
+
+discord:
+  enabled: false
+  webhook_url: "https://discord.com/api/webhooks/XXXXXXXX/YYYYYYYY"
+
+email:
+  enabled: false
+  smtp_host: "smtp.gmail.com"
+  smtp_port: 587
+  username: "you@gmail.com"
+  password: "your-app-password"    # Gmail: use an App Password, not your login
+  from_addr: "you@gmail.com"
+  to: ["you@gmail.com"]            # one or more recipients
+  use_tls: true
+
+# Which events should trigger a notification.
+notify:
+  on_new_games: true    # ping when a scrape finds new games
+  on_dead_links: true   # ping when a link check finds newly-dead links
+
+# Defaults for `--watch` scheduler mode.
+schedule:
+  task: both            # scrape | check | both
+  interval_minutes: 60
