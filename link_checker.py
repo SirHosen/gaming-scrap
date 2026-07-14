@@ -1,0 +1,393 @@
+#!/usr/bin/env python3
+"""
+Link checker — verify whether previously scraped download links are still alive.
+
+Reads a scraped CSV (produced by exporters.export_csv), checks each mirror's
+final direct link against its file host, and writes an annotated report CSV with
+three new columns: Link Status (ACTIVE / DEAD / UNKNOWN), HTTP Code, and a
+human-readable Check Detail.
+
+Why not just look at the HTTP status code?
+  Most file hosts (Mediafire, 1fichier, Terabox, ...) return HTTP 200 even for a
+  deleted file and instead show an "Invalid or Deleted File" message in the HTML.
+  So we check BOTH the status code AND host-specific "dead" text markers.
+
+The checker is read-only against the network (GET, streamed, first chunk only)
+and never modifies the source CSV.
+"""
+
+from __future__ import annotations
+
+import csv
+import threading
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import requests
+
+from config import (
+    OUTPUT_DIR,
+    CSV_FILENAME,
+    LINK_CHECK_REPORT_FILENAME,
+    DEFAULT_TIMEOUT,
+    DEFAULT_HEADERS,
+    MAX_WORKERS,
+)
+from logger import log, Colours
+
+
+# ── Status constants ───────────────────────────────────────────────────────
+STATUS_ACTIVE = "ACTIVE"
+STATUS_DEAD = "DEAD"
+STATUS_UNKNOWN = "UNKNOWN"
+
+# Extra report columns appended to the original CSV headers.
+REPORT_COLUMNS = ["Link Status", "HTTP Code", "Check Detail", "Checked At"]
+
+# Default column names as written by exporters.export_csv.
+DEFAULT_LINK_COLUMN = "Final Direct Link"
+DEFAULT_FALLBACK_COLUMN = "Redirect URL"
+DEFAULT_HOSTER_COLUMN = "Mirror Hoster"
+
+
+# ── Host-specific "file is dead" text markers (all lower-case) ─────────────
+DEAD_MARKERS: Dict[str, Tuple[str, ...]] = {
+    "mediafire": (
+        "invalid or deleted file",
+        "the key you provided does not exist",
+        "file has been removed",
+        "removed for violation",
+        "file has been deleted",
+    ),
+    "1fichier": (
+        "the requested file has been deleted",
+        "file not found",
+        "could not be found",
+        "the file may have been deleted",
+    ),
+    "terabox": (
+        "page that doesn't exist",
+        "share link has expired",
+        "file does not exist",
+        "shared file does not exist",
+    ),
+    "megaup": (
+        "file not found",
+        "the file was deleted",
+        "file has been removed",
+    ),
+    "mega": (
+        "no longer available",
+        "the file you are trying to download is no longer available",
+    ),
+    "send.cm": (
+        "file not found",
+        "no such file",
+        "file has been deleted",
+    ),
+    "up-4ever": (
+        "file not found",
+        "the file was deleted",
+    ),
+    "buzzheavier": (
+        "not found",
+    ),
+}
+
+# Applied to every host as a last-resort fallback.
+GENERIC_DEAD_MARKERS: Tuple[str, ...] = (
+    "file not found",
+    "404 not found",
+    "page not found",
+    "file does not exist",
+    "no longer available",
+    "has been deleted",
+)
+
+
+# ── Thread-local sessions (requests.Session is not meant to be shared) ─────
+_local = threading.local()
+
+
+def _session() -> requests.Session:
+    sess = getattr(_local, "session", None)
+    if sess is None:
+        sess = requests.Session()
+        sess.headers.update(DEFAULT_HEADERS)
+        _local.session = sess
+    return sess
+
+
+def _host_key(hoster: str, url: str) -> str:
+    """Best-effort identification of the file host from the hoster label or URL."""
+    h = (hoster or "").lower()
+    u = (url or "").lower()
+    for key in DEAD_MARKERS:
+        if key in h:
+            return key
+    if "mediafire" in u:
+        return "mediafire"
+    if "1fichier" in u:
+        return "1fichier"
+    if "terabox" in u or "1024tera" in u or "teraboxapp" in u:
+        return "terabox"
+    if "buzzheavier" in u:
+        return "buzzheavier"
+    if "send.cm" in u or "send-cm" in u:
+        return "send.cm"
+    if "up-4ever" in u or "up-load" in u or "up4ever" in u:
+        return "up-4ever"
+    if "megaup" in u:
+        return "megaup"
+    if "mega.nz" in u or "mega.io" in u:
+        return "mega"
+    return ""
+
+
+# ── Core single-link check ─────────────────────────────────────────────────
+
+def check_link(
+    url: str,
+    hoster: str = "",
+    session: Optional[requests.Session] = None,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> Tuple[str, str, str]:
+    """
+    Check a single link.
+
+    Returns (status, http_code, detail) where status is ACTIVE / DEAD / UNKNOWN.
+
+    - Hard 404/410 -> DEAD
+    - 401/403/5xx -> UNKNOWN (blocked / anti-bot / server error, not necessarily dead)
+    - 200 with a host-specific "deleted" marker in the HTML -> DEAD
+    - 200 non-HTML body (direct file) or clean HTML -> ACTIVE
+    """
+    if not url or url.strip().upper() in ("", "N/A"):
+        return STATUS_UNKNOWN, "-", "No link to check"
+
+    sess = session or _session()
+    try:
+        resp = sess.get(
+            url, timeout=timeout, allow_redirects=True, stream=True,
+        )
+        code = resp.status_code
+
+        if code in (404, 410):
+            return STATUS_DEAD, str(code), f"HTTP {code} not found"
+        if code in (401, 403):
+            return STATUS_UNKNOWN, str(code), f"HTTP {code} (blocked / anti-bot)"
+        if code >= 500:
+            return STATUS_UNKNOWN, str(code), f"HTTP {code} server error"
+
+        content_type = resp.headers.get("Content-Type", "").lower()
+
+        # A direct binary response means the file is being served -> alive.
+        if content_type and "text/html" not in content_type:
+            return STATUS_ACTIVE, str(code), f"HTTP {code}, {content_type.split(';')[0]}"
+
+        # Read a bounded slice of the HTML body to scan for dead markers.
+        body = ""
+        try:
+            raw = next(resp.iter_content(chunk_size=200_000), b"")
+            if isinstance(raw, bytes):
+                body = raw.decode("utf-8", errors="ignore")
+            else:
+                body = raw or ""
+        except Exception:
+            body = ""
+        finally:
+            resp.close()
+
+        low = body.lower()
+        key = _host_key(hoster, str(resp.url))
+        markers = DEAD_MARKERS.get(key, ()) + GENERIC_DEAD_MARKERS
+        for marker in markers:
+            if marker in low:
+                return STATUS_DEAD, str(code), f"HTTP {code}: matched '{marker}'"
+
+        if code == 200:
+            return STATUS_ACTIVE, "200", "HTTP 200, no dead markers found"
+        return STATUS_UNKNOWN, str(code), f"HTTP {code}"
+
+    except requests.Timeout:
+        return STATUS_UNKNOWN, "TIMEOUT", "Request timed out"
+    except requests.RequestException as exc:
+        return STATUS_UNKNOWN, "ERROR", f"{type(exc).__name__}: {exc}"
+
+
+# ── CSV IO helpers ─────────────────────────────────────────────────────────
+
+def _read_rows(csv_path: Path) -> Tuple[List[str], List[dict], str]:
+    """Read a scraped CSV, auto-detecting tab vs comma delimiter."""
+    with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
+        sample = f.read(8192)
+        f.seek(0)
+        delimiter = "\t" if "\t" in sample else ","
+        reader = csv.DictReader(f, delimiter=delimiter)
+        rows = list(reader)
+        fieldnames = list(reader.fieldnames or [])
+    return fieldnames, rows, delimiter
+
+
+def _target_link(row: dict, link_col: str, fallback_col: str) -> str:
+    """Pick the best URL to check for a row (final link, else redirect URL)."""
+    val = (row.get(link_col) or "").strip()
+    if val and val.upper() != "N/A":
+        return val
+    fb = (row.get(fallback_col) or "").strip()
+    if fb and fb.upper() != "N/A":
+        return fb
+    return ""
+
+
+# ── Public entry point ─────────────────────────────────────────────────────
+
+def check_csv_links(
+    csv_path: str | Path,
+    output_path: Optional[str | Path] = None,
+    workers: int = MAX_WORKERS,
+    delay: float = 0.0,
+    timeout: int = DEFAULT_TIMEOUT,
+    link_column: str = DEFAULT_LINK_COLUMN,
+    fallback_column: str = DEFAULT_FALLBACK_COLUMN,
+    hoster_column: str = DEFAULT_HOSTER_COLUMN,
+) -> Optional[Path]:
+    """
+    Read a scraped CSV, check every link, and write an annotated report CSV.
+
+    Returns the path to the written report, or None if the input was invalid.
+    """
+    csv_path = Path(csv_path)
+    if not csv_path.exists():
+        log.error("%sCSV not found:%s %s", Colours.RED, Colours.RESET, csv_path)
+        return None
+
+    fieldnames, rows, _ = _read_rows(csv_path)
+    if not rows:
+        log.warning("CSV has no data rows: %s", csv_path)
+        return None
+
+    if link_column not in fieldnames and fallback_column not in fieldnames:
+        log.error(
+            "%sCSV has neither '%s' nor '%s' column. Found columns: %s%s",
+            Colours.RED, link_column, fallback_column, fieldnames, Colours.RESET,
+        )
+        return None
+
+    log.info(
+        "%s--- Starting LINK CHECK ---%s  (%d rows from %s)",
+        Colours.CYAN, Colours.RESET, len(rows), csv_path,
+    )
+
+    # Collect unique URLs (many rows may share the same link) + a hoster hint.
+    hoster_by_url: Dict[str, str] = {}
+    for row in rows:
+        u = _target_link(row, link_column, fallback_column)
+        if u and u not in hoster_by_url:
+            hoster_by_url[u] = row.get(hoster_column, "") if hoster_column in fieldnames else ""
+
+    unique_urls = list(hoster_by_url.keys())
+    total_unique = len(unique_urls)
+    log.info("Checking %d unique links with %d workers…", total_unique, workers)
+
+    def _worker(u: str) -> Tuple[str, Tuple[str, str, str]]:
+        if delay:
+            time.sleep(delay)
+        return u, check_link(u, hoster_by_url.get(u, ""), session=_session(), timeout=timeout)
+
+    results: Dict[str, Tuple[str, str, str]] = {}
+    done = 0
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        futures = {pool.submit(_worker, u): u for u in unique_urls}
+        for future in as_completed(futures):
+            u, res = future.result()
+            results[u] = res
+            done += 1
+            if done % 25 == 0 or done == total_unique:
+                log.info(
+                    "%sProgress: %d/%d links checked…%s",
+                    Colours.YELLOW, done, total_unique, Colours.RESET,
+                )
+
+    # ── Write annotated report ─────────────────────────────────────────
+    if output_path is None:
+        output_path = Path(OUTPUT_DIR) / LINK_CHECK_REPORT_FILENAME
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    out_headers = fieldnames + [c for c in REPORT_COLUMNS if c not in fieldnames]
+
+    counts = {STATUS_ACTIVE: 0, STATUS_DEAD: 0, STATUS_UNKNOWN: 0}
+    dead_rows: List[Tuple[str, str, str]] = []  # (title, hoster, detail)
+
+    with open(output_path, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=out_headers, dialect="excel-tab", extrasaction="ignore"
+        )
+        writer.writeheader()
+        for row in rows:
+            u = _target_link(row, link_column, fallback_column)
+            if u:
+                status, code, detail = results.get(
+                    u, (STATUS_UNKNOWN, "-", "not checked")
+                )
+            else:
+                status, code, detail = (STATUS_UNKNOWN, "-", "No link to check")
+
+            counts[status] = counts.get(status, 0) + 1
+            if status == STATUS_DEAD:
+                dead_rows.append(
+                    (
+                        row.get("Game Title", "?"),
+                        row.get(hoster_column, "?"),
+                        detail,
+                    )
+                )
+
+            out = dict(row)
+            out["Link Status"] = status
+            out["HTTP Code"] = code
+            out["Check Detail"] = detail
+            out["Checked At"] = now
+            writer.writerow(out)
+
+    _print_summary(counts, dead_rows, output_path, len(rows))
+    return output_path
+
+
+def _print_summary(
+    counts: Dict[str, int],
+    dead_rows: List[Tuple[str, str, str]],
+    output_path: Path,
+    total_rows: int,
+) -> None:
+    """Print a coloured summary of the link-check run."""
+    active = counts.get(STATUS_ACTIVE, 0)
+    dead = counts.get(STATUS_DEAD, 0)
+    unknown = counts.get(STATUS_UNKNOWN, 0)
+
+    print(f"\n{Colours.GREEN}{Colours.BOLD}════════════════ LINK CHECK SUMMARY ════════════════{Colours.RESET}")
+    print(f"  Total Links Checked : {Colours.WHITE}{total_rows}{Colours.RESET}")
+    print(f"  {Colours.GREEN}✔ ACTIVE{Colours.RESET}            : {Colours.WHITE}{active}{Colours.RESET}")
+    print(f"  {Colours.RED}✗ DEAD{Colours.RESET}              : {Colours.WHITE}{dead}{Colours.RESET}")
+    print(f"  {Colours.YELLOW}? UNKNOWN{Colours.RESET}           : {Colours.WHITE}{unknown}{Colours.RESET}")
+    print(f"  Report Saved        : {Colours.WHITE}{output_path}{Colours.RESET}")
+    print(f"{Colours.GREEN}═════════════════════════════════════════════════════{Colours.RESET}")
+
+    if dead_rows:
+        preview = dead_rows[:15]
+        print(f"\n{Colours.RED}{Colours.BOLD}Dead / expired links ({len(dead_rows)}):{Colours.RESET}")
+        for title, hoster, detail in preview:
+            print(f"  {Colours.RED}✗{Colours.RESET} {title}  [{hoster}]  — {Colours.GREY}{detail}{Colours.RESET}")
+        if len(dead_rows) > len(preview):
+            print(f"  {Colours.GREY}…and {len(dead_rows) - len(preview)} more (see report CSV).{Colours.RESET}")
+    print()
+
+
+def default_csv_path() -> Path:
+    """Convenience: the default scraped CSV location."""
+    return Path(OUTPUT_DIR) / CSV_FILENAME

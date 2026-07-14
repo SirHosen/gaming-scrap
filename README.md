@@ -1,6 +1,34 @@
-# SwitchRoms Scraper v3.1
+# SwitchRoms Scraper v3.2
 
 A professional, modular Nintendo Switch ROM metadata scraper for `switchroms.io`.
+
+## What's New in v3.2
+
+### 🔗 Link Checker (dead / expired link validator)
+
+Setelah scraping, banyak link download bisa kadaluarsa atau filenya sudah dihapus dari hoster. Fitur baru ini membaca CSV hasil scraping dan memeriksa setiap link, lalu menandai statusnya:
+
+| Status | Arti |
+|--------|------|
+| **ACTIVE** | Link hidup — file masih tersedia. |
+| **DEAD** | Link mati / kadaluarsa — HTTP 404/410, atau halaman host menampilkan pesan "Invalid or Deleted File", "file has been deleted", dll. |
+| **UNKNOWN** | Tidak bisa dipastikan — diblokir anti-bot (403), timeout, error jaringan, atau tidak ada link untuk dicek. |
+
+**Kenapa tidak cukup cek HTTP status saja?** Sebagian besar hoster (Mediafire, 1fichier, Terabox, dsb.) tetap mengembalikan HTTP 200 untuk file yang sudah dihapus, tapi menampilkan pesan "deleted" di HTML-nya. Jadi checker memeriksa **status code + penanda teks khusus per-host**.
+
+Hasilnya ditulis ke `output/link_check_report.csv` — salinan CSV asli plus 4 kolom baru: `Link Status`, `HTTP Code`, `Check Detail`, `Checked At`. Buka di Excel lalu filter kolom `Link Status = DEAD` untuk melihat semua link kadaluarsa.
+
+**Cara pakai:**
+```bash
+# Interaktif: pilih menu opsi [4]
+python scraper.py
+
+# CLI: cek CSV default (output/switch_games.csv)
+python scraper.py --check-links
+
+# CLI: cek CSV tertentu, 20 worker, simpan report ke lokasi custom
+python scraper.py --check-links path/ke/data.csv --workers 20 --check-output report.csv
+```
 
 ## What's New in v3.1
 
@@ -42,6 +70,7 @@ switchroms-scraper/
 ├── parsers.py          # Pure BeautifulSoup parsing functions
 ├── engine.py           # Scraper orchestration + concurrency + auto-paginate
 ├── exporters.py        # JSON / Excel-friendly CSV export
+├── link_checker.py     # Dead / expired link validator (reads CSV → report CSV)
 ├── requirements.txt    # Python dependencies
 ├── README.md           # This file
 └── output/             # Generated output files (auto-created)
@@ -103,8 +132,13 @@ python scraper.py --verbose
 | `--delay` | `-d` | 1.0 | Delay between requests (seconds) |
 | `--workers` | `-w` | 5 | Concurrent thread pool size |
 | `--verbose` | `-v` | False | Enable debug logging |
+| `--check-links` | `-c` | None | Check links in a scraped CSV (optional path; default `output/switch_games.csv`) |
+| `--check-output` | | None | Where to save the link-check report (default `output/link_check_report.csv`) |
 
 ## Output Format
+
+### Link Check Report (`output/link_check_report.csv`)
+Salinan CSV hasil scraping + 4 kolom tambahan: `Link Status` (ACTIVE/DEAD/UNKNOWN), `HTTP Code`, `Check Detail`, `Checked At`. Filter `Link Status = DEAD` di Excel untuk melihat link kadaluarsa.
 
 ### CSV (Excel-friendly)
 - **Encoding**: UTF-8 with BOM (`utf-8-sig`) → Excel auto-detects encoding

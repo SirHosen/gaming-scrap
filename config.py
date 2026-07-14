@@ -39,6 +39,7 @@ OUTPUT_DIR: str = "output"
 JSON_FILENAME: str = "switch_games.json"
 CSV_FILENAME: str = "switch_games.csv"
 LOG_FILENAME: str = "scraper.log"
+LINK_CHECK_REPORT_FILENAME: str = "link_check_report.csv"
 
 # ── Browser-like headers ──────────────────────────────────────────────────
 DEFAULT_HEADERS: dict = {

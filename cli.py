@@ -24,7 +24,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
      ╚═══██╗ ██║███╗██║██║   ██║   ██║     ██╔══██║██╔══██╗██║   ██║██║╚██╔╝██║╚════██║
     ██████╔╝ ╚███╔███╔╝██║   ██║   ╚██████╗██║  ██║██║  ██║╚██████╔╝██║ ╚═╝ ██║███████║
     ╚═════╝   ╚══╝╚══╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
-                      NINTENDO SWITCH ROMS SCRAPER v3.1
+                      NINTENDO SWITCH ROMS SCRAPER v3.2
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -41,16 +41,35 @@ def _prompt(label: str, default: str = "") -> str:
     return val if val else default
 
 
-def interactive_menu() -> Tuple[str | None, int, str, str, str, bool]:
+def interactive_menu() -> Tuple[str, dict]:
     """
     Interactive CLI menu when no CLI args are provided.
-    Returns: (search_query, max_pages, format_filter, hoster_filter, output_format, scrape_all)
+    Returns an (action, params) tuple where action is "scrape" or "check".
     """
     print(f"\n{Colours.BOLD}1. Select Action Mode:{Colours.RESET}")
     print("  [1] Scrape latest games (Homepage)")
     print("  [2] Search specific games by keyword")
     print("  [3] Scrape ALL games on the entire website (auto-paginate)")
+    print("  [4] Check scraped links from a CSV (dead / expired link validator)")
     mode = _prompt("Select option", "1")
+
+    # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
+    if mode == "4":
+        import os
+        from config import OUTPUT_DIR, CSV_FILENAME
+        default_csv = os.path.join(OUTPUT_DIR, CSV_FILENAME)
+        print(f"\n{Colours.BOLD}Link Checker — verify scraped download links{Colours.RESET}")
+        print(f"  {Colours.GREY}Reads a scraped CSV and flags each link ACTIVE / DEAD / UNKNOWN.{Colours.RESET}")
+        csv_path = _prompt("Path to scraped CSV", default_csv)
+        workers_in = _prompt("Concurrent workers", "10")
+        workers = int(workers_in) if workers_in.isdigit() and int(workers_in) > 0 else 10
+        return "check", {
+            "csv_path": csv_path,
+            "workers": workers,
+            "delay": 0.0,
+            "output": None,
+            "verbose": False,
+        }
 
     search_q: str | None = None
     scrape_all = False
@@ -96,7 +115,17 @@ def interactive_menu() -> Tuple[str | None, int, str, str, str, bool]:
     save_opt = _prompt("Select output format", "3")
     output_fmt = OUTPUT_MAP.get(save_opt, "both")
 
-    return search_q, max_p, format_filter, hoster_filter, output_fmt, scrape_all
+    return "scrape", {
+        "search": search_q,
+        "pages": max_p,
+        "format": format_filter,
+        "hoster": hoster_filter,
+        "output": output_fmt,
+        "delay": 1.0,
+        "workers": 5,
+        "verbose": False,
+        "scrape_all": scrape_all,
+    }
 
 
 # ── argparse CLI ───────────────────────────────────────────────────────────
@@ -104,7 +133,7 @@ def interactive_menu() -> Tuple[str | None, int, str, str, str, bool]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="SwitchRoms Scraper v3.1 — Nintendo Switch ROM metadata scraper",
+        description="SwitchRoms Scraper v3.2 — Nintendo Switch ROM metadata scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -119,6 +148,12 @@ Examples:
 
   # Scrape ALL games on the entire website (auto-paginate)
   python scraper.py --all --output csv
+
+  # Check whether links in the default scraped CSV are still alive
+  python scraper.py --check-links
+
+  # Check links in a specific CSV, faster with 20 workers
+  python scraper.py --check-links output/switch_games.csv --workers 20
 """,
     )
     parser.add_argument("--search", "-s", type=str, default=None,
@@ -143,30 +178,49 @@ Examples:
                         help="Number of concurrent workers (default: 5)")
     parser.add_argument("--verbose", "-v", action="store_true",
                         help="Enable debug logging")
+    parser.add_argument("--check-links", "-c", nargs="?", const="__DEFAULT__", default=None,
+                        help="Check whether links in a scraped CSV are still active. "
+                             "Optionally pass a CSV path (default: output/switch_games.csv).")
+    parser.add_argument("--check-output", type=str, default=None,
+                        help="Path to write the link-check report CSV "
+                             "(default: output/link_check_report.csv)")
     return parser
 
 
-def parse_args() -> Tuple[str | None, int, str, str, str, float, int, bool, bool]:
+def parse_args() -> Tuple[str, dict]:
     """
     If CLI args are provided, use argparse. Otherwise, launch interactive menu.
-    Returns: (search, pages, format, hoster, output, delay, workers, verbose, scrape_all)
+    Returns an (action, params) tuple where action is "scrape" or "check".
     """
     parser = build_arg_parser()
     args = parser.parse_args()
 
     # If no meaningful args were passed, go interactive
     if len(sys.argv) == 1:
-        search_q, max_p, fmt, hoster, out, scrape_all = interactive_menu()
-        return search_q, max_p, fmt, hoster, out, 1.0, 5, False, scrape_all
+        return interactive_menu()
 
-    return (
-        args.search,
-        args.pages,
-        args.format,
-        args.hoster,
-        args.output,
-        args.delay,
-        args.workers,
-        args.verbose,
-        args.all,
-    )
+    # Link-check mode takes precedence when --check-links is supplied.
+    if args.check_links is not None:
+        from link_checker import default_csv_path
+        csv_path = args.check_links
+        if csv_path == "__DEFAULT__":
+            csv_path = str(default_csv_path())
+        return "check", {
+            "csv_path": csv_path,
+            "workers": args.workers,
+            "delay": args.delay,
+            "output": args.check_output,
+            "verbose": args.verbose,
+        }
+
+    return "scrape", {
+        "search": args.search,
+        "pages": args.pages,
+        "format": args.format,
+        "hoster": args.hoster,
+        "output": args.output,
+        "delay": args.delay,
+        "workers": args.workers,
+        "verbose": args.verbose,
+        "scrape_all": args.all,
+    }

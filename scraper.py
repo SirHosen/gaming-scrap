@@ -44,14 +44,48 @@ def print_summary(games, elapsed: float) -> None:
     print(f"{Colours.GREEN}══════════════════════════════════════════════════════{Colours.RESET}\n")
 
 
+def run_link_check(params: dict) -> None:
+    """Check whether links in a previously scraped CSV are still alive."""
+    from link_checker import check_csv_links
+
+    csv_path = params["csv_path"]
+    log.info("%sLink check target:%s %s", Colours.CYAN, Colours.RESET, csv_path)
+    report = check_csv_links(
+        csv_path,
+        output_path=params.get("output"),
+        workers=params.get("workers", 5),
+        delay=params.get("delay", 0.0),
+    )
+    if report:
+        log.info("%s[FINISHED]%s Link check complete.", Colours.BOLD + Colours.GREEN, Colours.RESET)
+    else:
+        log.warning("Link check did not produce a report (see errors above).")
+
+
 def main() -> None:
-    """Entry point: parse config, run scraper, export results."""
+    """Entry point: parse config, run scraper or link checker."""
     print_banner()
 
-    search_q, max_p, fmt_filter, hoster_filter, out_fmt, delay, workers, verbose, scrape_all = parse_args()
+    action, params = parse_args()
 
-    if verbose:
+    if params.get("verbose"):
         log.setLevel(logging.DEBUG)
+
+    # ── Link-check mode: validate an existing CSV, then exit ────────────
+    if action == "check":
+        run_link_check(params)
+        log.info("%s[FINISHED]%s System terminated successfully.", Colours.BOLD + Colours.GREEN, Colours.RESET)
+        return
+
+    # ── Scrape mode ────────────────────────────────────────────────────
+    search_q = params["search"]
+    max_p = params["pages"]
+    fmt_filter = params["format"]
+    hoster_filter = params["hoster"]
+    out_fmt = params["output"]
+    delay = params["delay"]
+    workers = params["workers"]
+    scrape_all = params["scrape_all"]
 
     if scrape_all:
         log.info("Configuration: mode=ALL SITE | format=%s | hoster=%s | output=%s | workers=%d",
