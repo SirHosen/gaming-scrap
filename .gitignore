@@ -27,8 +27,14 @@ output/
 # ── Secrets / config ────────────────────────────────────
 .env
 .env.*
+!.env.example
+config.yaml
+config.yml
+config.json
 config.local.py
 *.secret
+# ...but keep the sample templates in the repo
+!config.example.yaml
 
 # ── Tooling caches ──────────────────────────────────────
 .pytest_cache/

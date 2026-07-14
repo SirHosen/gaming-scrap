@@ -10,8 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Phase 5 — web dashboard / desktop UI.
 - More site adapters (Windows games, emulators, Linux, ...).
+
+---
+
+## [4.4.0] - 2026-07-15
+
+### Added
+- **Web dashboard (Phase 5).** A new `--serve` command launches a local
+  single-page dashboard built entirely on the standard-library `http.server`
+  — **zero extra dependencies**, runs fully offline, no Flask/FastAPI needed.
+  - Browse and **search** the scraped catalogue, filtered by site and category,
+    with per-game mirror counts and live link-health badges (active / dead).
+  - View summary **stat cards**, recent **scrape history**, and a **dead-links**
+    table, all served from the SQLite database.
+  - **Trigger a scrape or link-check from the browser** — jobs run in the
+    background (one at a time), with status polled live and results auto-refreshed.
+  - Configurable bind address via `--host` / `--port` (defaults
+    `127.0.0.1:8787`, i.e. localhost-only); interactive menu gains **[9] launch
+    web dashboard**.
+- **Tests.** New offline suite `tests/test_webapp.py` covering the data-payload
+  functions (against a temp DB), the request→params builders, and the
+  `JobRunner` single-flight/error handling — no sockets or network required.
+- **Packaging.** `webapp` added to the installed modules; new config keys
+  `WEB_DEFAULT_HOST` / `WEB_DEFAULT_PORT`.
+
+### Changed
+- The dashboard's data functions are deliberately separated from the HTTP layer
+  so they stay unit-testable offline.
 
 ---
 
@@ -172,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...HEAD
+[4.4.0]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.1.0

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NESTfetch v4.3 — Main entry point.
+NESTfetch v4.4 — Main entry point.
 
 A professional, modular, MULTI-SITE game-download metadata scraper.
 (Originally a single-site Nintendo Switch ROM scraper.)
@@ -19,6 +19,7 @@ Architecture:
   settings.py    → User settings/secrets loader (.env / config.yaml / env vars)
   notifier.py    → Telegram / Discord / email notifications
   scheduler.py   → Periodic "watch" runner
+  webapp.py      → Zero-dependency web dashboard (Phase 5)
   cli.py         → Argparse + interactive menu
   scraper.py     → This file (entry point)
 
@@ -28,6 +29,7 @@ Usage:
   python scraper.py --all                     # scrape entire site
   python scraper.py --watch --interval 60     # scheduler + notifications
   python scraper.py --notify-test             # test your notification setup
+  python scraper.py --serve                   # launch the local web dashboard
   python scraper.py --help                    # full help
 """
 
@@ -314,6 +316,17 @@ def main() -> None:
     # Watch mode: run scrape/check on a schedule with notifications.
     if action == "watch":
         _run_watch(params)
+        return
+
+    # Web dashboard mode: launch the local dashboard server (blocks until Ctrl-C).
+    if action == "serve":
+        import webapp
+        webapp.serve(
+            host=params.get("host") or webapp.WEB_DEFAULT_HOST,
+            port=params.get("port") or webapp.WEB_DEFAULT_PORT,
+            db_path=params.get("db_path"),
+            open_browser=params.get("open_browser", False),
+        )
         return
 
     # Link-check mode: validate an existing CSV, then exit.

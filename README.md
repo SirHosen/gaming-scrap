@@ -1,9 +1,33 @@
-# NESTfetch v4.3
+# NESTfetch v4.4
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.4 — Web dashboard (Phase 5)
+
+NESTfetch now has a browser UI — no more terminal-only. It's built on Python's
+standard-library `http.server`, so it's **zero-dependency** and runs offline:
+
+- **Launch it** — `python scraper.py --serve` then open http://127.0.0.1:8787
+  (change with `--host` / `--port`, or pick **[9]** in the interactive menu).
+- **Browse & search the catalogue** — filter by site and category, with per-game
+  mirror counts and live **link-health badges** (active / dead).
+- **See stats, history & dead links** — summary cards, recent scrape runs, and a
+  dedicated dead-links table, all read from the local SQLite database.
+- **Run scrapes & link-checks from the browser** — click *Run scrape* or
+  *Check links*; the job runs in the background (one at a time) and the page
+  refreshes automatically when it finishes.
+
+```bash
+python scraper.py --serve                 # dashboard at http://127.0.0.1:8787
+python scraper.py --serve --port 9000     # custom port
+python scraper.py --serve --host 0.0.0.0  # expose on your LAN (use with care)
+```
+
+No Flask/FastAPI, no build step — the whole UI ships in `webapp.py` and is
+unit-tested offline (`tests/test_webapp.py`).
 
 ## What's New in v4.3 — Automation & notifications (Phase 4)
 

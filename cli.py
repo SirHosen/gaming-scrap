@@ -13,6 +13,7 @@ from typing import Tuple
 from config import (
     FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP,
     CACHE_ENABLED_DEFAULT, ASYNC_ENABLED_DEFAULT, PER_HOST_RATE_LIMIT,
+    WEB_DEFAULT_HOST, WEB_DEFAULT_PORT,
 )
 from logger import log, Colours
 from sites.registry import available_sites, site_names, DEFAULT_SITE
@@ -28,7 +29,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.3 — Multi-Site Game Download Scraper
+              NESTfetch v4.4 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -73,6 +74,7 @@ def interactive_menu() -> Tuple[str, dict]:
     print("  [6] Export previously scraped data from the database")
     print("  [7] Watch mode — run scrape/check on a schedule with notifications")
     print("  [8] Test notification setup (Telegram / Discord / email)")
+    print("  [9] Launch web dashboard (browse catalogue + run scrape/check in a browser)")
     mode = _prompt("Select option", "1")
 
     # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
@@ -168,6 +170,24 @@ def interactive_menu() -> Tuple[str, dict]:
             "verbose": False,
         }
 
+    # -- Mode 9: launch the web dashboard --
+    if mode == "9":
+        print(f"\n{Colours.BOLD}Web dashboard — browse the catalogue in your browser{Colours.RESET}")
+        print(f"  {Colours.GREY}Serves a local page to view games, history & dead links, and trigger scrapes.{Colours.RESET}")
+        host_in = _prompt("Host to bind", WEB_DEFAULT_HOST)
+        port_in = _prompt("Port", str(WEB_DEFAULT_PORT))
+        try:
+            port = int(port_in)
+        except ValueError:
+            port = WEB_DEFAULT_PORT
+        return "serve", {
+            "host": host_in or WEB_DEFAULT_HOST,
+            "port": port,
+            "db_path": None,
+            "open_browser": True,
+            "verbose": False,
+        }
+
     search_q: str | None = None
     scrape_all = False
 
@@ -236,7 +256,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.3 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.4 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -328,6 +348,14 @@ Examples:
                         help="Send a test notification to every configured channel and exit")
     parser.add_argument("--config", type=str, default=None,
                         help="Path to a config.yaml / config.json settings file")
+
+    # -- Phase 5: web dashboard --
+    parser.add_argument("--serve", action="store_true",
+                        help="Launch the local web dashboard (browse catalogue + run scrape/check)")
+    parser.add_argument("--host", type=str, default=WEB_DEFAULT_HOST,
+                        help=f"Host/interface for --serve (default: {WEB_DEFAULT_HOST})")
+    parser.add_argument("--port", type=int, default=WEB_DEFAULT_PORT,
+                        help=f"Port for --serve (default: {WEB_DEFAULT_PORT})")
     return parser
 
 
@@ -366,6 +394,16 @@ def parse_args() -> Tuple[str, dict]:
     if getattr(args, "notify_test", False):
         return "notify-test", {
             "config": args.config,
+            "verbose": args.verbose,
+        }
+
+    # Launch the web dashboard and block.
+    if getattr(args, "serve", False):
+        return "serve", {
+            "host": args.host,
+            "port": args.port,
+            "db_path": args.db,
+            "open_browser": False,
             "verbose": args.verbose,
         }
 

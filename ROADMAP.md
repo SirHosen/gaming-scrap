@@ -80,9 +80,11 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 - [x] File konfigurasi (`.env` / `config.yaml` / `config.json`) untuk token & jadwal — precedence env > .env > file > default, channel auto-aktif bila kredensial ada; `--notify-test` untuk uji setup.
 **Hasil:** NESTfetch bisa jalan sendiri berkala dan langsung memberi tahu kamu saat ada game baru atau link mati — tanpa re-run manual.
 
-### Phase 5 — UI 🖥️
-- [ ] Pilih: **web dashboard** (Flask/FastAPI + tabel filter/search) atau **GUI desktop**.
-- [ ] Jalankan scrape & link-check lewat klik, lihat hasil + histori, filter per situs/kategori.
+### Phase 5 — UI 🖥️ ✅ SELESAI (v4.4)
+- [x] **Web dashboard** dibangun di atas `http.server` standar (ZERO dependency — tanpa Flask/FastAPI), jalan offline: `python scraper.py --serve` (default http://127.0.0.1:8787).
+- [x] Jalankan scrape & link-check lewat klik (job berjalan di background, status di-poll), lihat catalogue + histori + dead-links, filter/search per situs/kategori.
+- [x] Fungsi data (stats/games/runs/dead-links/sites) dipisah dari layer HTTP sehingga teruji penuh offline (`tests/test_webapp.py`).
+**Hasil:** seluruh fitur NESTfetch kini bisa dijalankan & dipantau dari browser, bukan hanya terminal.
 
 ### (Berjalan paralel) Menambah situs baru ➕
 Setelah Phase 1 selesai, situs baru bisa ditambah kapan saja (butuh contoh HTML

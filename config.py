@@ -181,3 +181,9 @@ SCHEDULE_DEFAULT_TASK: str = "both"           # scrape | check | both
 
 # Per-request timeout (seconds) for notification webhook posts (Telegram/Discord).
 NOTIFY_TIMEOUT: int = 15
+
+# ── Web dashboard (Phase 5) ────────────────────
+# The zero-dependency dashboard (webapp.py) binds to localhost by default so it
+# is not exposed to your network. Pass --host 0.0.0.0 to share it on your LAN.
+WEB_DEFAULT_HOST: str = "127.0.0.1"
+WEB_DEFAULT_PORT: int = 8787
