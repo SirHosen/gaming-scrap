@@ -10,12 +10,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Phase 2 — SQLite persistence + scrape history (new / changed / removed games,
-  when a link first went dead).
 - Phase 3 — async HTTP, smarter retries, pytest suite, packaging.
 - Phase 4 — scheduler + notifications (Telegram / Discord / email).
 - Phase 5 — web dashboard / desktop UI.
 - More site adapters (Windows games, emulators, Linux, ...).
+
+---
+
+## [4.1.0] - 2026-07-15
+
+### Added
+- **SQLite persistence + scrape history (Phase 2).** Every scrape is now stored
+  in a local SQLite database (`output/nestfetch.db`), on top of the CSV/JSON.
+  - normalised schema: `scrape_runs`, `games`, `mirrors`, `link_checks`;
+  - **run diffing** — after each scrape NESTfetch reports what's **new**,
+    **changed**, or **removed** vs. the previous run (removed detection only on
+    full-site scrapes, so a keyword search never wrongly marks games removed);
+  - **link-health history** — link checks are recorded per URL and NESTfetch
+    tracks when a link **first went dead** (`first_dead_at`), how long it has
+    been dead (`consecutive_dead`), and when it was last alive; a recovered link
+    resets its dead marker;
+  - **export from the database** without re-scraping (`--db-export`).
+- New CLI: `--history` (recent runs + dead-link snapshot), `--db-export`,
+  `--no-db` (skip persistence), and `--db PATH` (custom database file). The
+  interactive menu gains matching options [5] history and [6] export-from-DB.
+
+### Changed
+- Link-check results are now persisted to the database automatically after each
+  run (unless `--no-db`).
 
 ---
 
@@ -96,7 +118,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.1.0
 [4.0.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.0.0
 [3.3.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.3.0
 [3.2.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.2.0

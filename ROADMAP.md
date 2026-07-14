@@ -59,12 +59,13 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 - [x] Output CSV/JSON + link checker tetap jalan seperti sebelumnya (diverifikasi via test offline).
 **Hasil:** program berperilaku persis sama, tapi kini siap ditambah situs lain — cukup bikin 1 file di `sites/`.
 
-### Phase 2 — Database & histori (SQLite) 🗄️
-- [ ] Skema SQLite: `games`, `mirrors`, `link_checks` (+ timestamp).
-- [ ] Simpan tiap hasil scrape ke DB (bukan cuma CSV).
-- [ ] Deteksi perubahan antar-scrape: game **baru / berubah / hilang**.
-- [ ] Lacak kapan sebuah link **mulai mati** (histori status).
-- [ ] Export CSV/JSON/recap tetap ada, ditarik dari DB.
+### Phase 2 — Database & histori (SQLite) 🗄️ ✅ SELESAI (v4.1)
+- [x] Skema SQLite: `scrape_runs`, `games`, `mirrors`, `link_checks` (+ timestamp).
+- [x] Simpan tiap hasil scrape ke DB (di samping CSV/JSON) — `output/nestfetch.db`.
+- [x] Deteksi perubahan antar-scrape: game **baru / berubah / hilang** (removed hanya saat full scrape).
+- [x] Lacak kapan sebuah link **mulai mati** (`first_dead_at` + histori status).
+- [x] Export CSV/JSON ditarik dari DB (`--db-export`), plus `--history` & `--no-db`.
+**Hasil:** tiap scrape kini punya memori — bisa lihat apa yang baru/berubah/hilang dan kapan link mulai mati.
 
 ### Phase 3 — Performa & kualitas ⚡
 - [ ] Migrasi HTTP ke async (`aiohttp`) — jauh lebih cepat untuk ratusan halaman.

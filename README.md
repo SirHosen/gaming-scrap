@@ -1,9 +1,32 @@
-# NESTfetch v4.0
+# NESTfetch v4.1
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.1 — Database & history (Phase 2)
+
+Every scrape is now saved to a local **SQLite database** (`output/nestfetch.db`)
+alongside the usual CSV/JSON, unlocking history and change tracking:
+
+- **Run diffing** — after each scrape NESTfetch tells you what's **new**,
+  **changed**, or **removed** since last time. (Removed detection only kicks in
+  on a full-site scrape, so a keyword search never wrongly flags games as gone.)
+- **Link-health history** — link-check results are stored per URL, and NESTfetch
+  tracks **when a link first went dead**, how long it's been dead, and when it
+  was last alive. A recovered link resets its dead marker.
+- **Export from the database** anytime, no re-scrape needed.
+
+```bash
+python scraper.py --history            # recent runs + dead-link snapshot
+python scraper.py --db-export -o csv   # rebuild CSV/JSON from the database
+python scraper.py --all --no-db        # scrape without touching the database
+python scraper.py --db mydata.db ...   # use a custom database file
+```
+
+Schema: `scrape_runs`, `games`, `mirrors`, `link_checks`. Pure standard-library
+`sqlite3` — no new dependencies. The database lives in `output/` (git-ignored).
 
 ## What's New in v4.0 — Multi-site foundation (Phase 1)
 

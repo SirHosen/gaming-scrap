@@ -25,7 +25,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.0 — Multi-Site Game Download Scraper
+              NESTfetch v4.1 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -66,6 +66,8 @@ def interactive_menu() -> Tuple[str, dict]:
     print("  [2] Search specific games by keyword")
     print("  [3] Scrape ALL games on the entire website (auto-paginate)")
     print("  [4] Check scraped links from a CSV (dead / expired link validator)")
+    print("  [5] Show scrape history (from the local database)")
+    print("  [6] Export previously scraped data from the database")
     mode = _prompt("Select option", "1")
 
     # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
@@ -84,6 +86,32 @@ def interactive_menu() -> Tuple[str, dict]:
             "workers": workers,
             "delay": 0.0,
             "output": None,
+            "verbose": False,
+            "no_db": False,
+            "db_path": None,
+        }
+
+    # ── Mode 5: show scrape history from the database ────────────────────
+    if mode == "5":
+        return "history", {
+            "site": None,
+            "db_path": None,
+            "limit": 20,
+            "verbose": False,
+        }
+
+    # ── Mode 6: export previously scraped data from the database ─────────
+    if mode == "6":
+        print(f"\n{Colours.BOLD}Export from database — choose output format:{Colours.RESET}")
+        print("  [1] Excel Spreadsheet (CSV)")
+        print("  [2] Database File (JSON)")
+        print("  [3] Both formats")
+        exp_opt = _prompt("Select output format", "3")
+        return "db-export", {
+            "site": site,
+            "output": OUTPUT_MAP.get(exp_opt, "both"),
+            "db_path": None,
+            "active_only": True,
             "verbose": False,
         }
 
@@ -142,6 +170,8 @@ def interactive_menu() -> Tuple[str, dict]:
         "workers": 5,
         "verbose": False,
         "scrape_all": scrape_all,
+        "no_db": False,
+        "db_path": None,
     }
 
 
@@ -150,7 +180,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.0 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.1 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -206,6 +236,14 @@ Examples:
                         help=f"Which site to scrape (default: {DEFAULT_SITE})")
     parser.add_argument("--list-sites", action="store_true",
                         help="List all supported sites and exit")
+    parser.add_argument("--no-db", action="store_true",
+                        help="Do not save this run to the local SQLite history database")
+    parser.add_argument("--db", type=str, default=None,
+                        help="Path to the SQLite database file (default: output/nestfetch.db)")
+    parser.add_argument("--history", action="store_true",
+                        help="Show recent scrape runs from the database and exit")
+    parser.add_argument("--db-export", action="store_true",
+                        help="Export previously scraped data straight from the database and exit")
     return parser
 
 
@@ -220,6 +258,25 @@ def parse_args() -> Tuple[str, dict]:
     # List supported sites and exit.
     if getattr(args, "list_sites", False):
         return "list-sites", {}
+
+    # Show scrape history and exit.
+    if getattr(args, "history", False):
+        return "history", {
+            "site": None,
+            "db_path": args.db,
+            "limit": 20,
+            "verbose": args.verbose,
+        }
+
+    # Export previously scraped data from the database and exit.
+    if getattr(args, "db_export", False):
+        return "db-export", {
+            "site": args.site,
+            "output": args.output,
+            "db_path": args.db,
+            "active_only": True,
+            "verbose": args.verbose,
+        }
 
     # If no meaningful args were passed, go interactive
     if len(sys.argv) == 1:
@@ -238,6 +295,8 @@ def parse_args() -> Tuple[str, dict]:
             "delay": args.delay,
             "output": args.check_output,
             "verbose": args.verbose,
+            "no_db": args.no_db,
+            "db_path": args.db,
         }
 
     return "scrape", {
@@ -251,4 +310,6 @@ def parse_args() -> Tuple[str, dict]:
         "workers": args.workers,
         "verbose": args.verbose,
         "scrape_all": args.all,
+        "no_db": args.no_db,
+        "db_path": args.db,
     }

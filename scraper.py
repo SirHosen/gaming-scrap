@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NESTfetch v4.0 — Main entry point.
+NESTfetch v4.1 — Main entry point.
 
 A professional, modular, MULTI-SITE game-download metadata scraper.
 (Originally a single-site Nintendo Switch ROM scraper.)
@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import logging
 
+import database as db
 from cli import parse_args, print_banner
 from engine import ScraperEngine
 from exporters import export_data
@@ -74,6 +75,21 @@ def run_link_check(params: dict) -> None:
         delay=params.get("delay", 0.0),
     )
     if report:
+        # ── Persist link health to the database (first_dead_at tracking) ──
+        if not params.get("no_db"):
+            try:
+                conn = db.connect(params.get("db_path"))
+                stats = db.record_link_checks_from_report(conn, report)
+                conn.close()
+                if stats:
+                    log.info(
+                        "%sSaved link health to database%s (active=%d, dead=%d, unknown=%d, newly dead=%d)",
+                        Colours.CYAN, Colours.RESET,
+                        stats.get("active", 0), stats.get("dead", 0),
+                        stats.get("unknown", 0), stats.get("newly_dead", 0),
+                    )
+            except Exception as exc:
+                log.warning("Could not record link checks to database: %s", exc)
         log.info("%s[FINISHED]%s Link check complete.", Colours.BOLD + Colours.GREEN, Colours.RESET)
     else:
         log.warning("Link check did not produce a report (see errors above).")
@@ -91,6 +107,31 @@ def main() -> None:
     # ── List-sites mode: show supported sites, then exit ───────────────
     if action == "list-sites":
         print_sites()
+        return
+
+    # ── History mode: show recent scrape runs from the database ────────
+    if action == "history":
+        db.print_history(
+            db.connect(params.get("db_path")),
+            site=params.get("site"),
+            limit=params.get("limit", 10),
+        )
+        return
+
+    # ── DB-export mode: export previously scraped data from the DB ──────
+    if action == "db-export":
+        conn = db.connect(params.get("db_path"))
+        games = db.export_from_db(
+            conn,
+            site=params.get("site"),
+            active_only=params.get("active_only", True),
+        )
+        conn.close()
+        if games:
+            log.info("%s--- Exporting %d games from database ---%s", Colours.CYAN, len(games), Colours.RESET)
+            export_data(games, params.get("output", "both"))
+        else:
+            log.warning("No games in the database to export (run a scrape first).")
         return
 
     # ── Link-check mode: validate an existing CSV, then exit ────────────
@@ -140,6 +181,18 @@ def main() -> None:
     if games:
         log.info("%s--- Exporting results ---%s", Colours.CYAN, Colours.RESET)
         export_data(games, out_fmt)
+
+        # ── Persist to the SQLite history database + report the diff ────
+        if not params.get("no_db"):
+            try:
+                run_mode = "all" if scrape_all else ("search" if search_q else "latest")
+                conn = db.connect(params.get("db_path"))
+                summary = db.save_scrape(conn, games, site, mode=run_mode)
+                conn.close()
+                db.log_run_summary(summary)
+            except Exception as exc:
+                log.warning("Could not save scrape to database: %s", exc)
+
         print_summary(games, elapsed)
     else:
         log.warning("Scraping completed but no links matched your filters/search.")

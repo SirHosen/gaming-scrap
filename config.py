@@ -43,6 +43,11 @@ LINK_CHECK_REPORT_FILENAME: str = "link_check_report.csv"
 LINK_CHECK_ACTIVE_FILENAME: str = "link_check_active.csv"
 LINK_CHECK_RECAP_FILENAME: str = "link_check_recap.txt"
 
+# ── Database (SQLite scrape history) ─────────────────
+# Every scrape is recorded here so NESTfetch can diff runs (new/changed/removed)
+# and track when a link first went dead. Lives inside OUTPUT_DIR (git-ignored).
+DB_FILENAME: str = "nestfetch.db"
+
 # ── Browser-like headers ──────────────────────────────────────────────────
 DEFAULT_HEADERS: dict = {
     "User-Agent": (
