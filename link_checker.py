@@ -220,12 +220,26 @@ def check_link(
 
 # ── CSV IO helpers ─────────────────────────────────────────────────────────
 
+def _detect_delimiter(header_line: str) -> str:
+    """
+    Pick the most likely delimiter from a CSV header line.
+
+    Handles tab (our exporter), semicolon (Excel in ID/EU locales re-saves CSV
+    with ';'), comma, and pipe. Chooses whichever appears most in the header.
+    """
+    candidates = ["\t", ";", ",", "|"]
+    counts = {d: header_line.count(d) for d in candidates}
+    best = max(candidates, key=lambda d: counts[d])
+    return best if counts[best] > 0 else ","
+
+
 def _read_rows(csv_path: Path) -> Tuple[List[str], List[dict], str]:
-    """Read a scraped CSV, auto-detecting tab vs comma delimiter."""
+    """Read a scraped CSV, auto-detecting the delimiter (tab / ; / , / |)."""
     with open(csv_path, "r", encoding="utf-8-sig", newline="") as f:
         sample = f.read(8192)
         f.seek(0)
-        delimiter = "\t" if "\t" in sample else ","
+        first_line = sample.splitlines()[0] if sample else ""
+        delimiter = _detect_delimiter(first_line)
         reader = csv.DictReader(f, delimiter=delimiter)
         rows = list(reader)
         fieldnames = list(reader.fieldnames or [])
@@ -265,7 +279,7 @@ def check_csv_links(
         log.error("%sCSV not found:%s %s", Colours.RED, Colours.RESET, csv_path)
         return None
 
-    fieldnames, rows, _ = _read_rows(csv_path)
+    fieldnames, rows, in_delimiter = _read_rows(csv_path)
     if not rows:
         log.warning("CSV has no data rows: %s", csv_path)
         return None
@@ -324,9 +338,11 @@ def check_csv_links(
     counts = {STATUS_ACTIVE: 0, STATUS_DEAD: 0, STATUS_UNKNOWN: 0}
     dead_rows: List[Tuple[str, str, str]] = []  # (title, hoster, detail)
 
+    # Write the report with the SAME delimiter as the input so it opens cleanly
+    # in the user's Excel (e.g. ';' for ID/EU locales, tab for our exporter).
     with open(output_path, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(
-            f, fieldnames=out_headers, dialect="excel-tab", extrasaction="ignore"
+            f, fieldnames=out_headers, delimiter=in_delimiter, extrasaction="ignore"
         )
         writer.writeheader()
         for row in rows:

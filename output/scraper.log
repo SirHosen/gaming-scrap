@@ -514,3 +514,7 @@
 2026-07-13 03:00:31 │ INFO     │ [96m[96m--- Exporting results ---[0m[0m
 2026-07-13 03:00:31 │ INFO     │ [96m[92m✔[0m CSV saved: output\switch_games.csv[0m
 2026-07-13 03:00:31 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m
+2026-07-14 17:47:16 │ INFO     │ [96m[96mLink check target:[0m output\switch_games.csv[0m
+2026-07-14 17:47:16 │ ERROR    │ [91m[91mCSV has neither 'Final Direct Link' nor 'Redirect URL' column. Found columns: ['Game Title;Front Page Info (Size/Version);Front Page Info (Genre/Publisher);Detail URL;ROM Format;File Size;Mirror Hoster;Redirect URL;Final Direct Link'][0m[0m
+2026-07-14 17:47:16 │ WARNING  │ [93mLink check did not produce a report (see errors above).[0m
+2026-07-14 17:47:16 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m
