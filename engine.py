@@ -14,11 +14,16 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional, Tuple
 
-from config import MAX_WORKERS
+from pathlib import Path
+
+from config import (
+    MAX_WORKERS, OUTPUT_DIR, CACHE_DIRNAME, CACHE_TTL, PER_HOST_RATE_LIMIT,
+)
 from logger import log, Colours
-from http_client import HttpClient
+from http_client import HttpClient, ResponseCache
 from models import Game
 from sites.base import SiteAdapter
+import async_client
 
 
 class ScraperEngine:
@@ -32,12 +37,19 @@ class ScraperEngine:
         max_workers: int = MAX_WORKERS,
         format_filter: str = "ALL",
         hoster_filter: str = "ALL",
+        use_async: bool = False,
+        use_cache: bool = False,
+        rate_limit: float = PER_HOST_RATE_LIMIT,
     ):
         self.adapter = adapter
-        self.client = HttpClient(delay=delay)
+        cache = None
+        if use_cache:
+            cache = ResponseCache(Path(OUTPUT_DIR) / CACHE_DIRNAME, ttl=CACHE_TTL)
+        self.client = HttpClient(delay=delay, cache=cache, rate_limit=rate_limit)
         self.max_workers = max_workers
         self.format_filter = format_filter
         self.hoster_filter = hoster_filter
+        self.use_async = use_async
 
     # ── public API ─────────────────────────────────────────────
 
@@ -156,8 +168,27 @@ class ScraperEngine:
 
     # ── internal ───────────────────────────────────────────
 
+    def _async_prefetch(self, game_urls: List[str]) -> None:
+        """Optionally fetch every download-index page up-front (async), then prime
+        the HTTP client so the normal sync flow reads them instantly."""
+        index_urls = [self.adapter.build_download_index_url(u) for u in game_urls]
+        mode = "async (aiohttp)" if async_client.aiohttp_available() else "threaded fallback"
+        log.info("%sPrefetching %d pages via %s…%s", Colours.CYAN, len(index_urls), mode, Colours.RESET)
+        prefetched = async_client.fetch_many(
+            index_urls,
+            headers=dict(self.client.session.headers),
+            timeout=self.client.timeout,
+        )
+        primed = sum(1 for html in prefetched.values() if html)
+        for url, html in prefetched.items():
+            if html:
+                self.client.prime(url, html)
+        log.info("%sPrefetch complete: %d/%d pages ready.%s", Colours.CYAN, primed, len(index_urls), Colours.RESET)
+
     def _resolve_from_urls(self, game_urls: List[str]) -> List[Game]:
         """Resolve a large list of game detail URLs in progress-logged batches."""
+        if self.use_async:
+            self._async_prefetch(game_urls)
         stubs = [
             self.adapter.stamp(Game(
                 title=self.adapter.slug_to_title(u),

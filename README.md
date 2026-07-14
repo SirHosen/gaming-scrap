@@ -1,9 +1,37 @@
-# NESTfetch v4.1
+# NESTfetch v4.2
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.2 — Performance & quality (Phase 3)
+
+Under-the-hood upgrades that make big scrapes faster, gentler, and safer to ship:
+
+- **Optional async fetching** — pass `--async` to fetch game detail pages
+  concurrently (needs `aiohttp`; install with `pip install nestfetch[async]`).
+  If `aiohttp` isn't installed, NESTfetch transparently falls back to its
+  threaded client, so nothing breaks.
+- **Smart retries** — automatic exponential backoff with jitter on transient
+  errors (`429/500/502/503/504`), and it honours the server's `Retry-After`
+  header. `404`s are never retried.
+- **Polite per-host rate limiting** — `--rate-limit <seconds>` enforces a minimum
+  gap between requests to the *same* host, so you don't hammer a mirror.
+- **On-disk HTTP caching** — `--cache` reuses recent responses (TTL-based) so
+  re-runs and interrupted scrapes don't re-download everything.
+- **Test suite (pytest)** — offline unit tests for the HTTP client, async
+  fetcher, engine, exporters, database, and link resolver. Run with `pytest`
+  (`pip install nestfetch[dev]`).
+- **Packaging** — `pip install .` now installs a `nestfetch` command
+  (see `pyproject.toml`).
+
+```bash
+python scraper.py --all --async --cache --rate-limit 1.0   # fast + polite + cached
+pip install .            # then just:  nestfetch --all
+pip install nestfetch[async,dev]                            # extras
+pytest                                                     # run the test suite
+```
 
 ## What's New in v4.1 — Database & history (Phase 2)
 

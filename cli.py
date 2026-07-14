@@ -10,7 +10,10 @@ import argparse
 import sys
 from typing import Tuple
 
-from config import FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP
+from config import (
+    FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP,
+    CACHE_ENABLED_DEFAULT, ASYNC_ENABLED_DEFAULT, PER_HOST_RATE_LIMIT,
+)
 from logger import log, Colours
 from sites.registry import available_sites, site_names, DEFAULT_SITE
 
@@ -25,7 +28,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.1 — Multi-Site Game Download Scraper
+              NESTfetch v4.2 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -172,6 +175,9 @@ def interactive_menu() -> Tuple[str, dict]:
         "scrape_all": scrape_all,
         "no_db": False,
         "db_path": None,
+        "use_async": False,
+        "use_cache": CACHE_ENABLED_DEFAULT,
+        "rate_limit": PER_HOST_RATE_LIMIT,
     }
 
 
@@ -180,7 +186,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.1 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.2 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -244,6 +250,17 @@ Examples:
                         help="Show recent scrape runs from the database and exit")
     parser.add_argument("--db-export", action="store_true",
                         help="Export previously scraped data straight from the database and exit")
+
+    # ── Phase 3: performance & resilience ────────────────────
+    parser.add_argument("--async", dest="use_async", action="store_true",
+                        help="Prefetch pages concurrently with aiohttp "
+                             "(falls back to threads if aiohttp isn't installed)")
+    parser.add_argument("--cache", dest="use_cache", action="store_true",
+                        default=CACHE_ENABLED_DEFAULT,
+                        help="Cache HTTP responses on disk to skip re-downloading pages")
+    parser.add_argument("--rate-limit", dest="rate_limit", type=float,
+                        default=PER_HOST_RATE_LIMIT,
+                        help="Minimum seconds between requests to the same host (0 = off)")
     return parser
 
 
@@ -312,4 +329,7 @@ def parse_args() -> Tuple[str, dict]:
         "scrape_all": args.all,
         "no_db": args.no_db,
         "db_path": args.db,
+        "use_async": args.use_async,
+        "use_cache": args.use_cache,
+        "rate_limit": args.rate_limit,
     }

@@ -139,3 +139,29 @@ DIRECT_HOST_DOMAINS: tuple = (
     "filefactory.com", "pixeldrain.com", "gofile.io", "krakenfiles.com",
     "drive.google.com", "dropbox.com",
 )
+
+# ── HTTP resilience & performance (Phase 3) ──────────────────
+# Status codes worth retrying (transient server / rate-limit responses).
+RETRY_STATUS_CODES: tuple = (429, 500, 502, 503, 504)
+# Random jitter (0..N seconds) added to each backoff sleep so many concurrent
+# workers don't all retry at the same instant ("thundering herd").
+BACKOFF_JITTER: float = 0.5
+# Honour a server's `Retry-After` header on 429 / 503 (capped at BACKOFF_CAP).
+RESPECT_RETRY_AFTER: bool = True
+# Per-host polite rate limit: minimum seconds between requests to the SAME host,
+# enforced across ALL worker threads. 0 disables it (rely on DEFAULT_DELAY only).
+PER_HOST_RATE_LIMIT: float = 0.0
+
+# ── Response cache (skip re-downloading unchanged pages) ────────
+# Optional on-disk cache of GET bodies keyed by URL — great for re-runs and
+# link checks. Stored in OUTPUT_DIR/CACHE_DIRNAME (git-ignored).
+CACHE_ENABLED_DEFAULT: bool = False
+CACHE_DIRNAME: str = ".http_cache"
+CACHE_TTL: int = 86400              # cache entry lifetime in seconds (0 = forever)
+
+# ── Async HTTP (optional, experimental) ─────────────────────
+# Fetch many pages concurrently with aiohttp — faster than the thread pool for
+# hundreds of pages. OFF by default; needs the optional 'aiohttp' package and
+# falls back to the threaded client automatically when it's missing.
+ASYNC_ENABLED_DEFAULT: bool = False
+ASYNC_CONCURRENCY: int = 10        # max simultaneous async requests

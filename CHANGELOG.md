@@ -10,10 +10,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Phase 3 — async HTTP, smarter retries, pytest suite, packaging.
 - Phase 4 — scheduler + notifications (Telegram / Discord / email).
 - Phase 5 — web dashboard / desktop UI.
 - More site adapters (Windows games, emulators, Linux, ...).
+
+---
+
+## [4.2.0] - 2026-07-15
+
+### Added
+- **Optional async fetching (Phase 3).** New `--async` flag fetches detail pages
+  concurrently via `aiohttp` (`pip install nestfetch[async]`); falls back to the
+  threaded client automatically when `aiohttp` isn't installed.
+- **On-disk HTTP caching.** New `--cache` flag reuses recent responses
+  (TTL-based, sha256-keyed) so re-runs skip already-downloaded pages.
+- **Polite per-host rate limiting.** New `--rate-limit <seconds>` enforces a
+  minimum interval between requests to the same host.
+- **Test suite (pytest).** Offline unit tests for the HTTP client, async
+  fetcher, engine, exporters, database, and link resolver, under `tests/`.
+- **Packaging.** `pyproject.toml` added — `pip install .` installs a `nestfetch`
+  console command; optional extras `[async]`, `[browser]`, `[dev]`.
+
+### Changed
+- **Smarter retries** in the HTTP client: exponential backoff with jitter on
+  `429/500/502/503/504`, honours the `Retry-After` header, and never retries
+  `404`s.
+- Engine can optionally pre-fetch detail pages concurrently before resolving
+  mirrors when `--async` is enabled.
 
 ---
 
@@ -118,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...HEAD
+[4.2.0]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.1.0
 [4.0.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.0.0
 [3.3.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.3.0

@@ -67,11 +67,12 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 - [x] Export CSV/JSON ditarik dari DB (`--db-export`), plus `--history` & `--no-db`.
 **Hasil:** tiap scrape kini punya memori — bisa lihat apa yang baru/berubah/hilang dan kapan link mulai mati.
 
-### Phase 3 — Performa & kualitas ⚡
-- [ ] Migrasi HTTP ke async (`aiohttp`) — jauh lebih cepat untuk ratusan halaman.
-- [ ] Retry pintar + caching + rate-limit sopan per-situs.
-- [ ] Test suite (pytest) untuk parser tiap situs + link checker (fixtures HTML offline).
-- [ ] Packaging: `pip install .` / bundling `.exe` (opsional).
+### Phase 3 — Performa & kualitas ⚡ ✅ SELESAI (v4.2)
+- [x] Migrasi HTTP ke async (`aiohttp`) — opsional `--async`, fallback ke threaded jika tak terpasang.
+- [x] Retry pintar (backoff + jitter, hormati `Retry-After`) + caching on-disk (`--cache`) + rate-limit sopan per-host (`--rate-limit`).
+- [x] Test suite (pytest) untuk HTTP client, async fetcher, engine, exporter, database, link resolver (fixtures offline).
+- [x] Packaging: `pip install .` → command `nestfetch` (`pyproject.toml`, extras `[async]/[browser]/[dev]`).
+**Hasil:** scrape besar jadi lebih cepat & sopan, plus jaring pengaman test sebelum tiap rilis.
 
 ### Phase 4 — Otomatisasi & notifikasi 🔔
 - [ ] Scheduler: cek link / scan game baru secara berkala.

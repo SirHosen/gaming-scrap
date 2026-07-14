@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nestfetch"
+version = "4.2.0"
+description = "A professional, modular, multi-site game-download metadata scraper."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Citra GivenchyA", email = "givenchyacitra@gmail.com" }]
+keywords = ["scraper", "roms", "download", "games", "cli", "switch"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Topic :: Internet :: WWW/HTTP",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.3",
+]
+
+[project.optional-dependencies]
+# Async fetching (Phase 3): faster large scrapes. Falls back to threads if absent.
+async = ["aiohttp>=3.9.0"]
+# Headless-browser fallback for JS / timer ad-gates.
+browser = ["playwright>=1.44.0"]
+# Test tooling.
+dev = ["pytest>=8.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/USERNAME/nestfetch"
+Changelog = "https://github.com/USERNAME/nestfetch/blob/main/CHANGELOG.md"
+
+[project.scripts]
+# Installs a `nestfetch` command that runs scraper.main().
+nestfetch = "scraper:main"
+
+[tool.setuptools]
+# Flat module layout (each .py at the repo root) + the sites/ package.
+py-modules = [
+    "config", "logger", "models", "http_client", "async_client",
+    "parsers", "engine", "exporters", "cli", "scraper",
+    "link_checker", "link_resolver", "database",
+]
+
+[tool.setuptools.packages.find]
+include = ["sites*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

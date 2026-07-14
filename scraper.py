@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NESTfetch v4.1 — Main entry point.
+NESTfetch v4.2 — Main entry point.
 
 A professional, modular, MULTI-SITE game-download metadata scraper.
 (Originally a single-site Nintendo Switch ROM scraper.)
@@ -169,6 +169,9 @@ def main() -> None:
         max_workers=workers,
         format_filter=fmt_filter,
         hoster_filter=hoster_filter,
+        use_async=params.get("use_async", False),
+        use_cache=params.get("use_cache", False),
+        rate_limit=params.get("rate_limit", 0.0),
     )
 
     games, elapsed = engine.run(
