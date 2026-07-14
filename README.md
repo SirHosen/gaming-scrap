@@ -1,6 +1,38 @@
-# SwitchRoms Scraper v3.3
+# NESTfetch v4.0
 
-A professional, modular Nintendo Switch ROM metadata scraper for `switchroms.io`.
+A professional, modular, **multi-site game-download metadata scraper**.
+Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
+now being rebuilt into a platform that can scrape many game-download sites
+(Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.0 — Multi-site foundation (Phase 1)
+
+The core has been refactored from a single-site scraper into a **pluggable
+multi-site architecture**. The scraping engine no longer knows anything about
+any specific website — it is driven entirely by a **`SiteAdapter`**.
+
+```
+sites/
+  base.py        # SiteAdapter — the contract every site must implement
+  registry.py    # the list of supported sites (+ default)
+  switchroms.py  # switchroms.io adapter (migrated from the old code)
+```
+
+**Adding a new site = writing one file** in `sites/` and registering it — no
+engine changes needed. Each scraped record now also carries its provenance:
+`Source Site`, `Platform`, and `Category` columns (in both CSV and JSON).
+
+New CLI:
+```bash
+python scraper.py --list-sites                 # show all supported sites
+python scraper.py --site switchroms --all      # scrape a specific site
+```
+Interactive mode now asks which site to target first. Everything else
+(scraping, filters, Excel-friendly CSV/JSON, the link checker) works exactly as
+before — this phase is a foundation, not a behaviour change.
+
+> Roadmap for the remaining phases (database & history, performance/async, tests,
+> automation & notifications, UI, and more sites) lives in `ROADMAP.md`.
 
 ## What's New in v3.3
 

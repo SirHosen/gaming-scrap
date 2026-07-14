@@ -17,6 +17,9 @@ from models import Game
 
 CSV_HEADERS = [
     "Game Title",
+    "Source Site",
+    "Platform",
+    "Category",
     "Front Page Info (Size/Version)",
     "Front Page Info (Genre/Publisher)",
     "Detail URL",
@@ -69,6 +72,9 @@ def export_csv(games: List[Game]) -> Path:
             for mirror in game.mirrors:
                 writer.writerow([
                     game.title,
+                    game.source_site,
+                    game.platform,
+                    game.category,
                     game.meta_size,
                     game.meta_genre,
                     game.detail_url,

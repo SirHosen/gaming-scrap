@@ -12,19 +12,20 @@ from typing import Tuple
 
 from config import FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP
 from logger import log, Colours
+from sites.registry import available_sites, site_names, DEFAULT_SITE
 
 
 # ── Banner ─────────────────────────────────────────────────────────────────
 
 BANNER = f"""{Colours.CYAN}{Colours.BOLD}
   ════════════════════════════════════════════════════════════════════════════
-     ██████╗ ██╗    ██╗██╗████████╗ ██████╗██╗  ██╗██████╗  ██████╗ ███╗   ███╗███████╗
-    ██╔════╝ ██║    ██║██║╚══██╔══╝██╔════╝██║  ██║██╔══██╗██╔═══██╗████╗ ████║██╔════╝
-    ╚█████╗  ██║ █╗ ██║██║   ██║   ██║     ███████║██████╔╝██║   ██║██╔████╔██║███████╗
-     ╚═══██╗ ██║███╗██║██║   ██║   ██║     ██╔══██║██╔══██╗██║   ██║██║╚██╔╝██║╚════██║
-    ██████╔╝ ╚███╔███╔╝██║   ██║   ╚██████╗██║  ██║██║  ██║╚██████╔╝██║ ╚═╝ ██║███████║
-    ╚═════╝   ╚══╝╚══╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
-                      NINTENDO SWITCH ROMS SCRAPER v3.3
+   ███╗   ██╗███████╗███████╗████████╗███████╗███████╗████████╗ ██████╗██╗  ██╗
+   ████╗  ██║██╔════╝██╔════╝╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔════╝██║  ██║
+   ██╔██╗ ██║█████╗  ███████╗   ██║   █████╗  █████╗     ██║   ██║     ███████║
+   ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
+   ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
+   ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
+              NESTfetch v4.0 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -46,6 +47,20 @@ def interactive_menu() -> Tuple[str, dict]:
     Interactive CLI menu when no CLI args are provided.
     Returns an (action, params) tuple where action is "scrape" or "check".
     """
+    # ── Step 0: choose which site to scrape ────────────────────────
+    metas = available_sites()
+    print(f"\n{Colours.BOLD}Select Target Site:{Colours.RESET}")
+    for i, m in enumerate(metas, 1):
+        print(f"  [{i}] {m.name} — {m.platform} ({m.category})")
+    site_in = _prompt("Select site", "1")
+    if site_in.isdigit() and 1 <= int(site_in) <= len(metas):
+        site = metas[int(site_in) - 1].name
+    elif site_in in site_names():
+        site = site_in
+    else:
+        site = DEFAULT_SITE
+    print(f"  {Colours.GREEN}→ Using site: {site}{Colours.RESET}")
+
     print(f"\n{Colours.BOLD}1. Select Action Mode:{Colours.RESET}")
     print("  [1] Scrape latest games (Homepage)")
     print("  [2] Search specific games by keyword")
@@ -64,6 +79,7 @@ def interactive_menu() -> Tuple[str, dict]:
         workers_in = _prompt("Concurrent workers", "10")
         workers = int(workers_in) if workers_in.isdigit() and int(workers_in) > 0 else 10
         return "check", {
+            "site": site,
             "csv_path": csv_path,
             "workers": workers,
             "delay": 0.0,
@@ -116,6 +132,7 @@ def interactive_menu() -> Tuple[str, dict]:
     output_fmt = OUTPUT_MAP.get(save_opt, "both")
 
     return "scrape", {
+        "site": site,
         "search": search_q,
         "pages": max_p,
         "format": format_filter,
@@ -133,7 +150,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="SwitchRoms Scraper v3.3 — Nintendo Switch ROM metadata scraper",
+        description="NESTfetch v4.0 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -184,6 +201,11 @@ Examples:
     parser.add_argument("--check-output", type=str, default=None,
                         help="Path to write the link-check report CSV "
                              "(default: output/link_check_report.csv)")
+    parser.add_argument("--site", type=str, default=DEFAULT_SITE,
+                        choices=site_names(),
+                        help=f"Which site to scrape (default: {DEFAULT_SITE})")
+    parser.add_argument("--list-sites", action="store_true",
+                        help="List all supported sites and exit")
     return parser
 
 
@@ -194,6 +216,10 @@ def parse_args() -> Tuple[str, dict]:
     """
     parser = build_arg_parser()
     args = parser.parse_args()
+
+    # List supported sites and exit.
+    if getattr(args, "list_sites", False):
+        return "list-sites", {}
 
     # If no meaningful args were passed, go interactive
     if len(sys.argv) == 1:
@@ -206,6 +232,7 @@ def parse_args() -> Tuple[str, dict]:
         if csv_path == "__DEFAULT__":
             csv_path = str(default_csv_path())
         return "check", {
+            "site": args.site,
             "csv_path": csv_path,
             "workers": args.workers,
             "delay": args.delay,
@@ -214,6 +241,7 @@ def parse_args() -> Tuple[str, dict]:
         }
 
     return "scrape", {
+        "site": args.site,
         "search": args.search,
         "pages": args.pages,
         "format": args.format,

@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """
-SwitchRoms Scraper v3.1 — Main entry point.
+NESTfetch v4.0 — Main entry point.
 
-A professional, modular Nintendo Switch ROM metadata scraper.
+A professional, modular, MULTI-SITE game-download metadata scraper.
+(Originally a single-site Nintendo Switch ROM scraper.)
 
 Architecture:
   config.py      → All tunable parameters
   logger.py      → Coloured console + file logging
-  models.py      → Dataclass-based data models
+  models.py      → Dataclass-based data models (with source_site/category/platform)
   http_client.py → Retry, backoff, session reuse
-  parsers.py     → Pure BeautifulSoup parsing (no network)
-  engine.py      → Concurrency orchestration + auto-paginate
+  sites/         → Pluggable per-site adapters (base + registry + one file per site)
+  parsers.py     → switchroms.io BeautifulSoup parsing (used by its adapter)
+  engine.py      → Site-agnostic concurrency orchestration + auto-paginate
   exporters.py   → JSON / CSV output (Excel-friendly CSV with UTF-8 BOM)
-  cli.py         → Argparse + interactive menu
+  cli.py         → Argparse + interactive menu (site selection, --site, --list-sites)
   scraper.py     → This file (entry point)
 
 Usage:
@@ -30,6 +32,7 @@ from cli import parse_args, print_banner
 from engine import ScraperEngine
 from exporters import export_data
 from logger import log, Colours
+from sites.registry import get_adapter, available_sites
 
 
 def print_summary(games, elapsed: float) -> None:
@@ -42,6 +45,20 @@ def print_summary(games, elapsed: float) -> None:
     if games:
         print(f"  Average Speed          : {Colours.WHITE}{elapsed / len(games):.2f} sec/game{Colours.RESET}")
     print(f"{Colours.GREEN}══════════════════════════════════════════════════════{Colours.RESET}\n")
+
+
+def print_sites() -> None:
+    """List every supported site and exit."""
+    metas = available_sites()
+    print(f"\n{Colours.CYAN}{Colours.BOLD}Supported sites ({len(metas)}):{Colours.RESET}")
+    for m in metas:
+        print(f"  {Colours.GREEN}{m.name}{Colours.RESET}")
+        print(f"      Platform : {m.platform}")
+        print(f"      Category : {m.category}")
+        print(f"      URL      : {m.base_url}")
+        if m.description:
+            print(f"      {Colours.GREY}{m.description}{Colours.RESET}")
+    print()
 
 
 def run_link_check(params: dict) -> None:
@@ -71,6 +88,11 @@ def main() -> None:
     if params.get("verbose"):
         log.setLevel(logging.DEBUG)
 
+    # ── List-sites mode: show supported sites, then exit ───────────────
+    if action == "list-sites":
+        print_sites()
+        return
+
     # ── Link-check mode: validate an existing CSV, then exit ────────────
     if action == "check":
         run_link_check(params)
@@ -94,8 +116,14 @@ def main() -> None:
         log.info("Configuration: search=%s | pages=%d | format=%s | hoster=%s | output=%s | workers=%d",
                  search_q or "(none)", max_p, fmt_filter, hoster_filter, out_fmt, workers)
 
+    # ── Resolve the selected site adapter ──────────────────────────────
+    site = params.get("site") or "switchroms"
+    adapter = get_adapter(site)
+    log.info("%sTarget site:%s %s (%s)", Colours.CYAN, Colours.RESET, adapter.name, adapter.platform)
+
     # ── Run scraper ────────────────────────────────────────────────────
     engine = ScraperEngine(
+        adapter,
         delay=delay,
         max_workers=workers,
         format_filter=fmt_filter,

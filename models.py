@@ -33,9 +33,17 @@ class Game:
     detail_url: str = ""          # game detail page URL
     mirrors: List[Mirror] = field(default_factory=list)
 
+    # ── Multi-site provenance (added in NESTfetch v4.0) ─────────────────
+    source_site: str = ""         # adapter name, e.g. "switchroms"
+    category: str = ""            # e.g. "switch-rom", "windows", "emulator", "linux"
+    platform: str = ""            # human label, e.g. "Nintendo Switch", "PC (Windows)"
+
     def to_dict(self) -> dict:
         return {
             "title": self.title,
+            "source_site": self.source_site,
+            "category": self.category,
+            "platform": self.platform,
             "front_page_info": {
                 "size_version": self.meta_size,
                 "publisher_genre": self.meta_genre,
