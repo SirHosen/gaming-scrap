@@ -31,6 +31,36 @@ Interactive mode now asks which site to target first. Everything else
 (scraping, filters, Excel-friendly CSV/JSON, the link checker) works exactly as
 before — this phase is a foundation, not a behaviour change.
 
+### 🔗 Shortener & ad-gate link resolver
+
+Some download links on these sites are wrapped in URL shorteners or ad-gate
+pages (ouo.io, exe.io, gplinks, linkvertise, bit.ly, ...) that show an ad
+before reaching the real host. The link checker now **detects and unwraps** them:
+
+- classifies every link as `DIRECT`, `SHORTENER`, `AD_GATE`, or `UNKNOWN`;
+- best-effort unwrap by following redirects + embedded `?url=`/base64 targets +
+  `<meta refresh>` + links to known direct hosts, to reveal the true destination;
+- adds two columns to the report — **Link Type** and **Resolved Link** — and
+  validates the *resolved* URL so ACTIVE/DEAD reflects the real file host.
+
+Domain lists live in `config.py` (`SHORTENER_DOMAINS`, `AD_GATE_DOMAINS`,
+`DIRECT_HOST_DOMAINS`) — extend them anytime. Toggle with `RESOLVE_LINKS_DEFAULT`.
+
+**Tough ad-gates (timer + JavaScript).** Gates like linkvertise or modern
+ouo.io/gplinks build the real link with JS after a countdown, so the lightweight
+methods above can't see it. For these there's an optional **headless-browser
+fallback** (Playwright) that waits out the timer and clicks through:
+
+    pip install playwright && python -m playwright install chromium
+
+Then set `RESOLVE_USE_BROWSER_FALLBACK = True` in `config.py`. It's off by
+default because it needs the extra browser download and is slower; when off (or
+if Playwright isn't installed) those links are simply flagged as unresolved so
+you can open them manually.
+
+> ⚠️ Unwrapping links may conflict with a shortener's Terms of Service. Use
+> responsibly and only on links you're allowed to access.
+
 > Roadmap for the remaining phases (database & history, performance/async, tests,
 > automation & notifications, UI, and more sites) lives in `ROADMAP.md`.
 

@@ -37,8 +37,12 @@ from config import (
     DEFAULT_TIMEOUT,
     DEFAULT_HEADERS,
     MAX_WORKERS,
+    RESOLVE_LINKS_DEFAULT,
+    RESOLVE_MAX_HOPS,
+    RESOLVE_TIMEOUT,
 )
 from logger import log, Colours
+from link_resolver import resolve_url, classify_url
 
 
 # ── Status constants ───────────────────────────────────────────────────────
@@ -47,7 +51,10 @@ STATUS_DEAD = "DEAD"
 STATUS_UNKNOWN = "UNKNOWN"
 
 # Extra report columns appended to the original CSV headers.
-REPORT_COLUMNS = ["Link Status", "HTTP Code", "Check Detail", "Checked At"]
+REPORT_COLUMNS = [
+    "Link Type", "Resolved Link",
+    "Link Status", "HTTP Code", "Check Detail", "Checked At",
+]
 
 # Default column names as written by exporters.export_csv.
 DEFAULT_LINK_COLUMN = "Final Direct Link"
@@ -287,7 +294,7 @@ def _write_recap(
 
     lines: List[str] = []
     lines.append("=" * 60)
-    lines.append("         SWITCHROMS LINK CHECK — RECAP")
+    lines.append("         NESTFETCH LINK CHECK — RECAP")
     lines.append("=" * 60)
     lines.append(f"Source CSV               : {source}")
     lines.append(f"Generated                : {now}")
@@ -320,6 +327,7 @@ def check_csv_links(
     link_column: str = DEFAULT_LINK_COLUMN,
     fallback_column: str = DEFAULT_FALLBACK_COLUMN,
     hoster_column: str = DEFAULT_HOSTER_COLUMN,
+    resolve: bool = RESOLVE_LINKS_DEFAULT,
 ) -> Optional[Path]:
     """
     Read a scraped CSV, check every link, and write an annotated report CSV.
@@ -347,6 +355,12 @@ def check_csv_links(
         "%s--- Starting LINK CHECK ---%s  (%d rows from %s)",
         Colours.CYAN, Colours.RESET, len(rows), csv_path,
     )
+    log.info(
+        "Shortener / ad-gate resolution: %s%s%s",
+        Colours.GREEN if resolve else Colours.YELLOW,
+        "ON" if resolve else "OFF",
+        Colours.RESET,
+    )
 
     # Collect unique URLs (many rows may share the same link) + a hoster hint.
     hoster_by_url: Dict[str, str] = {}
@@ -359,18 +373,23 @@ def check_csv_links(
     total_unique = len(unique_urls)
     log.info("Checking %d unique links with %d workers…", total_unique, workers)
 
-    def _worker(u: str) -> Tuple[str, Tuple[str, str, str]]:
+    def _worker(u: str):
         if delay:
             time.sleep(delay)
-        return u, check_link(u, hoster_by_url.get(u, ""), session=_session(), timeout=timeout)
+        sess = _session()
+        rr = resolve_url(u, session=sess, max_hops=RESOLVE_MAX_HOPS,
+                         timeout=RESOLVE_TIMEOUT) if resolve else None
+        target = rr.final_url if (rr and rr.final_url) else u
+        chk = check_link(target, hoster_by_url.get(u, ""), session=sess, timeout=timeout)
+        return u, rr, chk
 
-    results: Dict[str, Tuple[str, str, str]] = {}
+    results: Dict[str, Tuple[object, Tuple[str, str, str]]] = {}
     done = 0
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(_worker, u): u for u in unique_urls}
         for future in as_completed(futures):
-            u, res = future.result()
-            results[u] = res
+            u, rr, chk = future.result()
+            results[u] = (rr, chk)
             done += 1
             if done % 25 == 0 or done == total_unique:
                 log.info(
@@ -396,15 +415,23 @@ def check_csv_links(
     for row in rows:
         u = _target_link(row, link_column, fallback_column)
         if u:
-            status, code, detail = results.get(u, (STATUS_UNKNOWN, "-", "not checked"))
+            rr, (status, code, detail) = results.get(
+                u, (None, (STATUS_UNKNOWN, "-", "not checked"))
+            )
         else:
-            status, code, detail = (STATUS_UNKNOWN, "-", "No link to check")
+            rr, (status, code, detail) = (None, (STATUS_UNKNOWN, "-", "No link to check"))
 
         counts[status] = counts.get(status, 0) + 1
         if status == STATUS_DEAD:
             dead_rows.append((row.get(title_col, "?"), row.get(hoster_column, "?"), detail))
 
         out = dict(row)
+        if rr is not None:
+            out["Link Type"] = rr.link_type
+            out["Resolved Link"] = rr.final_url if (rr.final_url and rr.final_url != u) else ""
+        else:
+            out["Link Type"] = classify_url(u) if u else "UNKNOWN"
+            out["Resolved Link"] = ""
         out["Link Status"] = status
         out["HTTP Code"] = code
         out["Check Detail"] = detail

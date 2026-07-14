@@ -1,2 +1,7 @@
 requests>=2.31.0
 beautifulsoup4>=4.12.3
+
+# Optional — headless-browser fallback for JS/timer ad-gates (off by default).
+# Enable RESOLVE_USE_BROWSER_FALLBACK=True in config.py, then install:
+#   pip install playwright && python -m playwright install chromium
+# playwright>=1.44.0

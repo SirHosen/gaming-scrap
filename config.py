@@ -92,3 +92,45 @@ OUTPUT_MAP: dict = {
     "2": "json",
     "3": "both",
 }
+
+# ── Link shortener / ad-gate resolution ──────────────────────────
+# Some download links are wrapped in URL shorteners or "wait for the ad, then
+# continue" ad-gate pages. The link checker can unwrap these to reveal (and
+# validate) the real host link. Extend these lists anytime — no code changes.
+RESOLVE_LINKS_DEFAULT: bool = True   # unwrap shorteners/ad-gates during link check
+RESOLVE_MAX_HOPS: int = 5            # max unwrap steps per link (avoid loops)
+RESOLVE_TIMEOUT: int = 15           # per-hop timeout (seconds)
+
+# Optional headless-browser fallback for ad-gates that build the real link with
+# JavaScript / a countdown timer (linkvertise, modern ouo.io/gplinks, ...).
+# Off by default: it needs the extra 'playwright' package + a Chromium download
+# and is much slower. Enable after:
+#   pip install playwright && python -m playwright install chromium
+RESOLVE_USE_BROWSER_FALLBACK: bool = False
+RESOLVE_BROWSER_TIMEOUT: int = 45   # max seconds to drive the browser per link
+
+# Pure redirect shorteners — resolved simply by following HTTP redirects.
+SHORTENER_DOMAINS: tuple = (
+    "bit.ly", "tinyurl.com", "t.co", "goo.gl", "is.gd", "v.gd", "rb.gy",
+    "cutt.ly", "shorturl.at", "rebrand.ly", "ow.ly", "buff.ly", "t.ly",
+    "s.id", "shrtco.de", "clck.ru", "tiny.cc", "soo.gd", "tny.im",
+)
+
+# Ad-gate / interstitial shorteners — show an ad + countdown before the link.
+# Unwrapped best-effort (redirects, meta-refresh, embedded target, continue link).
+AD_GATE_DOMAINS: tuple = (
+    "ouo.io", "ouo.press", "exe.io", "exey.io", "adf.ly", "sh.st",
+    "adfoc.us", "shrinkme.io", "shrinkearn.com", "gplinks.co", "gplinks.in",
+    "droplink.co", "linkvertise.com", "link-to.net", "za.gl", "oke.io",
+    "clk.sh", "cpmlink.net", "short.pe", "mboost.me", "fc.lc",
+    "try2link.com", "adshrink.it", "linkpays.in", "earn4link.in", "gyanilinks.com",
+)
+
+# Domains treated as FINAL download destinations (never a shortener/ad-gate).
+DIRECT_HOST_DOMAINS: tuple = (
+    "mediafire.com", "1fichier.com", "terabox.com", "teraboxapp.com",
+    "1024terabox.com", "1024tera.com", "mega.nz", "mega.io", "megaup.net",
+    "send.cm", "up-4ever.net", "up-4ever.com", "buzzheavier.com", "qiwi.gg",
+    "filefactory.com", "pixeldrain.com", "gofile.io", "krakenfiles.com",
+    "drive.google.com", "dropbox.com",
+)

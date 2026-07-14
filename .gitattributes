@@ -1,0 +1,13 @@
+# Normalise line endings across platforms
+* text=auto eol=lf
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+
+# Treat these as binary (no EOL munging / diffing)
+*.zip binary
+*.png binary
+*.jpg binary
+*.ico binary
