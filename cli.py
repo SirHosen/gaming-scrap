@@ -24,7 +24,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
      ╚═══██╗ ██║███╗██║██║   ██║   ██║     ██╔══██║██╔══██╗██║   ██║██║╚██╔╝██║╚════██║
     ██████╔╝ ╚███╔███╔╝██║   ██║   ╚██████╗██║  ██║██║  ██║╚██████╔╝██║ ╚═╝ ██║███████║
     ╚═════╝   ╚══╝╚══╝ ╚═╝   ╚═╝    ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝
-                      NINTENDO SWITCH ROMS SCRAPER v3.2
+                      NINTENDO SWITCH ROMS SCRAPER v3.3
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -133,7 +133,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="SwitchRoms Scraper v3.2 — Nintendo Switch ROM metadata scraper",
+        description="SwitchRoms Scraper v3.3 — Nintendo Switch ROM metadata scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

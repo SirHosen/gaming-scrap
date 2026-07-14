@@ -1,6 +1,20 @@
-# SwitchRoms Scraper v3.2
+# SwitchRoms Scraper v3.3
 
 A professional, modular Nintendo Switch ROM metadata scraper for `switchroms.io`.
+
+## What's New in v3.3
+
+### 📋 Rekap link aktif (active-only split + recap)
+
+Selain report lengkap, link checker sekarang otomatis **memisahkan hasilnya** biar gampang direkap. Sekali jalan menghasilkan 3 file di folder `output/`:
+
+| File | Isi |
+|------|-----|
+| `link_check_report.csv` | Semua baris + status (ACTIVE / DEAD / UNKNOWN). |
+| `link_check_active.csv` | **Hanya baris dengan link ACTIVE** — tinggal pakai, sudah bersih dari link mati/unknown. |
+| `link_check_recap.txt` | Ringkasan: jumlah link aktif/mati/unknown, jumlah judul game yang punya link aktif, plus **daftar judulnya**. |
+
+Catatan: satu judul game bisa punya beberapa mirror. Di hitungan "judul game dengan link aktif", judul yang sama **dihitung sekali** (unik). Di akhir run, ringkasan + daftar judul game aktif juga langsung tampil di terminal.
 
 ## What's New in v3.2
 
@@ -16,7 +30,7 @@ Setelah scraping, banyak link download bisa kadaluarsa atau filenya sudah dihapu
 
 **Kenapa tidak cukup cek HTTP status saja?** Sebagian besar hoster (Mediafire, 1fichier, Terabox, dsb.) tetap mengembalikan HTTP 200 untuk file yang sudah dihapus, tapi menampilkan pesan "deleted" di HTML-nya. Jadi checker memeriksa **status code + penanda teks khusus per-host**.
 
-Hasilnya ditulis ke `output/link_check_report.csv` — salinan CSV asli plus 4 kolom baru: `Link Status`, `HTTP Code`, `Check Detail`, `Checked At`. Buka di Excel lalu filter kolom `Link Status = DEAD` untuk melihat semua link kadaluarsa.
+Hasilnya ditulis ke folder `output/` — report lengkap (`link_check_report.csv`) berisi salinan CSV asli plus 4 kolom baru: `Link Status`, `HTTP Code`, `Check Detail`, `Checked At`. Selain itu otomatis dibuat `link_check_active.csv` (khusus link aktif) dan `link_check_recap.txt` (rekap + daftar judul game aktif). Buka di Excel lalu filter kolom `Link Status = DEAD` untuk melihat semua link kadaluarsa.
 
 **Cara pakai:**
 ```bash

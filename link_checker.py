@@ -32,6 +32,8 @@ from config import (
     OUTPUT_DIR,
     CSV_FILENAME,
     LINK_CHECK_REPORT_FILENAME,
+    LINK_CHECK_ACTIVE_FILENAME,
+    LINK_CHECK_RECAP_FILENAME,
     DEFAULT_TIMEOUT,
     DEFAULT_HEADERS,
     MAX_WORKERS,
@@ -257,6 +259,56 @@ def _target_link(row: dict, link_col: str, fallback_col: str) -> str:
     return ""
 
 
+def _write_csv(path: Path, headers: List[str], rows: List[dict], delimiter: str) -> None:
+    """Write rows to a CSV using the given delimiter (utf-8-sig for Excel)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", newline="", encoding="utf-8-sig") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=headers, delimiter=delimiter, extrasaction="ignore"
+        )
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _write_recap(
+    path: Path,
+    counts: Dict[str, int],
+    active_titles: List[str],
+    total_rows: int,
+    source: Path,
+    now: str,
+) -> None:
+    """Write a plain-text recap: counts + list of games with an active link."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    active = counts.get(STATUS_ACTIVE, 0)
+    dead = counts.get(STATUS_DEAD, 0)
+    unknown = counts.get(STATUS_UNKNOWN, 0)
+
+    lines: List[str] = []
+    lines.append("=" * 60)
+    lines.append("         SWITCHROMS LINK CHECK — RECAP")
+    lines.append("=" * 60)
+    lines.append(f"Source CSV               : {source}")
+    lines.append(f"Generated                : {now}")
+    lines.append("")
+    lines.append(f"Total links checked      : {total_rows}")
+    lines.append(f"ACTIVE links             : {active}")
+    lines.append(f"DEAD links               : {dead}")
+    lines.append(f"UNKNOWN links            : {unknown}")
+    lines.append(f"Games with ACTIVE link   : {len(active_titles)} (unique titles)")
+    lines.append("")
+    lines.append("-" * 60)
+    lines.append(f"GAMES WITH AN ACTIVE DOWNLOAD LINK ({len(active_titles)}):")
+    lines.append("-" * 60)
+    if active_titles:
+        for i, title in enumerate(active_titles, 1):
+            lines.append(f"{i:>4}. {title}")
+    else:
+        lines.append("(none)")
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 # ── Public entry point ─────────────────────────────────────────────────────
 
 def check_csv_links(
@@ -334,51 +386,68 @@ def check_csv_links(
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     out_headers = fieldnames + [c for c in REPORT_COLUMNS if c not in fieldnames]
+    title_col = "Game Title" if "Game Title" in fieldnames else (fieldnames[0] if fieldnames else "Game Title")
 
     counts = {STATUS_ACTIVE: 0, STATUS_DEAD: 0, STATUS_UNKNOWN: 0}
     dead_rows: List[Tuple[str, str, str]] = []  # (title, hoster, detail)
+    annotated_rows: List[dict] = []             # every row + status columns
+    active_rows: List[dict] = []                # only rows whose link is ACTIVE
 
-    # Write the report with the SAME delimiter as the input so it opens cleanly
-    # in the user's Excel (e.g. ';' for ID/EU locales, tab for our exporter).
-    with open(output_path, "w", newline="", encoding="utf-8-sig") as f:
-        writer = csv.DictWriter(
-            f, fieldnames=out_headers, delimiter=in_delimiter, extrasaction="ignore"
-        )
-        writer.writeheader()
-        for row in rows:
-            u = _target_link(row, link_column, fallback_column)
-            if u:
-                status, code, detail = results.get(
-                    u, (STATUS_UNKNOWN, "-", "not checked")
-                )
-            else:
-                status, code, detail = (STATUS_UNKNOWN, "-", "No link to check")
+    for row in rows:
+        u = _target_link(row, link_column, fallback_column)
+        if u:
+            status, code, detail = results.get(u, (STATUS_UNKNOWN, "-", "not checked"))
+        else:
+            status, code, detail = (STATUS_UNKNOWN, "-", "No link to check")
 
-            counts[status] = counts.get(status, 0) + 1
-            if status == STATUS_DEAD:
-                dead_rows.append(
-                    (
-                        row.get("Game Title", "?"),
-                        row.get(hoster_column, "?"),
-                        detail,
-                    )
-                )
+        counts[status] = counts.get(status, 0) + 1
+        if status == STATUS_DEAD:
+            dead_rows.append((row.get(title_col, "?"), row.get(hoster_column, "?"), detail))
 
-            out = dict(row)
-            out["Link Status"] = status
-            out["HTTP Code"] = code
-            out["Check Detail"] = detail
-            out["Checked At"] = now
-            writer.writerow(out)
+        out = dict(row)
+        out["Link Status"] = status
+        out["HTTP Code"] = code
+        out["Check Detail"] = detail
+        out["Checked At"] = now
+        annotated_rows.append(out)
+        if status == STATUS_ACTIVE:
+            active_rows.append(out)
 
-    _print_summary(counts, dead_rows, output_path, len(rows))
+    # 1) Full annotated report (all rows). Same delimiter as input so Excel opens
+    #    it cleanly (';' for ID/EU locales, tab for our exporter, etc.).
+    _write_csv(output_path, out_headers, annotated_rows, in_delimiter)
+
+    # 2) Active-only report — just the rows whose link is still ACTIVE.
+    active_path = output_path.parent / LINK_CHECK_ACTIVE_FILENAME
+    _write_csv(active_path, out_headers, active_rows, in_delimiter)
+
+    # 3) Unique game titles that have at least one ACTIVE link (order preserved).
+    active_titles: List[str] = []
+    seen: set = set()
+    for r in active_rows:
+        t = (r.get(title_col) or "").strip()
+        if t and t not in seen:
+            seen.add(t)
+            active_titles.append(t)
+
+    # 4) Human-readable recap (counts + list of games with an active link).
+    recap_path = output_path.parent / LINK_CHECK_RECAP_FILENAME
+    _write_recap(recap_path, counts, active_titles, len(rows), csv_path, now)
+
+    _print_summary(
+        counts, dead_rows, active_titles,
+        output_path, active_path, recap_path, len(rows),
+    )
     return output_path
 
 
 def _print_summary(
     counts: Dict[str, int],
     dead_rows: List[Tuple[str, str, str]],
+    active_titles: List[str],
     output_path: Path,
+    active_path: Path,
+    recap_path: Path,
     total_rows: int,
 ) -> None:
     """Print a coloured summary of the link-check run."""
@@ -387,12 +456,23 @@ def _print_summary(
     unknown = counts.get(STATUS_UNKNOWN, 0)
 
     print(f"\n{Colours.GREEN}{Colours.BOLD}════════════════ LINK CHECK SUMMARY ════════════════{Colours.RESET}")
-    print(f"  Total Links Checked : {Colours.WHITE}{total_rows}{Colours.RESET}")
-    print(f"  {Colours.GREEN}✔ ACTIVE{Colours.RESET}            : {Colours.WHITE}{active}{Colours.RESET}")
-    print(f"  {Colours.RED}✗ DEAD{Colours.RESET}              : {Colours.WHITE}{dead}{Colours.RESET}")
-    print(f"  {Colours.YELLOW}? UNKNOWN{Colours.RESET}           : {Colours.WHITE}{unknown}{Colours.RESET}")
-    print(f"  Report Saved        : {Colours.WHITE}{output_path}{Colours.RESET}")
+    print(f"  Total Links Checked      : {Colours.WHITE}{total_rows}{Colours.RESET}")
+    print(f"  {Colours.GREEN}✔ ACTIVE links{Colours.RESET}           : {Colours.WHITE}{active}{Colours.RESET}")
+    print(f"  {Colours.RED}✗ DEAD links{Colours.RESET}             : {Colours.WHITE}{dead}{Colours.RESET}")
+    print(f"  {Colours.YELLOW}? UNKNOWN links{Colours.RESET}          : {Colours.WHITE}{unknown}{Colours.RESET}")
+    print(f"  {Colours.GREEN}★ Games w/ active link{Colours.RESET}    : {Colours.WHITE}{len(active_titles)}{Colours.RESET} {Colours.GREY}(unique titles){Colours.RESET}")
+    print(f"  Full report    : {Colours.WHITE}{output_path}{Colours.RESET}")
+    print(f"  {Colours.GREEN}Active only{Colours.RESET}     : {Colours.WHITE}{active_path}{Colours.RESET}")
+    print(f"  Recap (titles) : {Colours.WHITE}{recap_path}{Colours.RESET}")
     print(f"{Colours.GREEN}═════════════════════════════════════════════════════{Colours.RESET}")
+
+    if active_titles:
+        a_preview = active_titles[:20]
+        print(f"\n{Colours.GREEN}{Colours.BOLD}Games with an ACTIVE download link ({len(active_titles)}):{Colours.RESET}")
+        for i, title in enumerate(a_preview, 1):
+            print(f"  {Colours.GREEN}✔{Colours.RESET} {i}. {title}")
+        if len(active_titles) > len(a_preview):
+            print(f"  {Colours.GREY}…and {len(active_titles) - len(a_preview)} more (see {recap_path.name}).{Colours.RESET}")
 
     if dead_rows:
         preview = dead_rows[:15]
