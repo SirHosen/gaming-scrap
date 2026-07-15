@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NESTfetch v4.5 — Main entry point.
+NESTfetch v4.6 — Main entry point.
 
 A professional, modular, MULTI-SITE game-download metadata scraper.
 (Originally a single-site Nintendo Switch ROM scraper.)

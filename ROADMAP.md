@@ -94,8 +94,14 @@ tetap bisa pakai adapter Python sebagai escape hatch. Lihat
 `sites/configs/README.md` untuk skema-nya. Tetap butuh contoh HTML live per situs
 (dari proses Gemini) untuk mengisi selector-nya.
 
+**Preset config ✅ SELESAI (v4.6):** situs sejenis kini berbagi satu "patokan"
+(preset) lewat `extends`, jadi tiap situs baru cukup file ~4 baris. Ditambah
+dukungan token `{base}`, mode mirror `labeled_group` (nama hoster = teks di depan
+link), dan `resolve.mode: "none"` untuk situs yang link-nya lewat shortener/captcha.
+
 Situs yang masih mau ditambah (butuh sampel HTML):
-- [ ] Situs game Windows
+- [x] Situs game Windows — **DODI Repacks** (`--site dodi`) via preset `_preset_wordpress-repack.json`
+- [ ] Situs game Windows lain (tinggal file ~4 baris `extends`)
 - [ ] Situs emulator
 - [ ] Situs game Linux
 - [ ] dst.

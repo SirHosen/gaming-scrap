@@ -1,9 +1,38 @@
-# NESTfetch v4.5
+# NESTfetch v4.6
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.6 — Config presets + first real Windows site (DODI Repacks)
+
+The config engine grew up so that families of similar sites share one reusable
+"blueprint" instead of copy-pasting selectors into every file.
+
+- **Config presets (`extends`)** — a shared preset holds all the common logic for
+  a family of sites (e.g. WordPress-based repack sites live in
+  `sites/configs/_preset_wordpress-repack.json`). A real site then only needs a
+  tiny file: `dodi.json` is literally 4 lines (`extends` + `name` + `base_url` +
+  `description`). Adding the next repack site is another 4-line file. Presets are
+  `_`-prefixed so they are never loaded as sites themselves.
+- **`{base}` URL token** — presets stay site-agnostic: `"page_url": "{base}page/{page}/"`
+  is filled with each site's own `base_url` at runtime.
+- **Labeled-group mirrors (`mirror_mode: "labeled_group"`)** — handles download
+  blocks where the hoster name is plain text in front of one or more links, e.g.
+  `Torrent – Click Here – or – Click Here – or – Click Here`. Each link becomes
+  its own mirror tagged with that hoster; empty/blacklisted labels are skipped.
+- **`resolve.mode: "none"`** — for sites whose mirror links go through a
+  shortener/countdown/captcha gate (like DODI's `zovo.ink`) that can't be
+  resolved without a browser, the scraper stores the mirror link as-is instead
+  of trying (and failing) to fetch a final URL.
+- **First real Windows site onboarded: DODI Repacks** (`--site dodi`) — search,
+  pagination (`/page/N/`), size pulled from the title (`From 27.7 GB`), and
+  per-hoster mirrors, all config-only.
+
+```bash
+python scraper.py --site dodi --search "spider-man" --all-pages
+```
 
 ## What's New in v4.5 — Config-driven sites (add a site without code)
 

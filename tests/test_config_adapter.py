@@ -253,6 +253,92 @@ def test_discover_configs_skips_underscore_and_invalid():
     print("  [ok] discover_configs skips _/invalid")
 
 
+def test_extends_preset_merge():
+    tmp = tempfile.mkdtemp()
+    preset = {
+        "category": "windows", "platform": "Windows PC", "description": "preset",
+        "listing": {
+            "first_page_url": "{base}", "page_url": "{base}page/{page}/",
+            "search_first_url": "{base}?s={query}", "search_url": "{base}page/{page}/?s={query}",
+            "item": "article.post",
+            "fields": {"title": "h2 a", "detail_url": {"selector": "h2 a", "attr": "href"}},
+        },
+        "detail": {"mirror_mode": "labeled_group", "mirror_item": ".entry-content p"},
+        "resolve": {"mode": "none"},
+    }
+    with open(os.path.join(tmp, "_preset_wp.json"), "w", encoding="utf-8") as f:
+        json.dump(preset, f)
+    child = {"extends": "wp", "name": "MySite", "base_url": "https://c.com/",
+             "description": "child override"}
+    with open(os.path.join(tmp, "child.json"), "w", encoding="utf-8") as f:
+        json.dump(child, f)
+    loaded = discover_configs(tmp)
+    assert [c["name"] for c in loaded] == ["mysite"], loaded   # preset (underscore) skipped
+    cfg = loaded[0]
+    assert cfg["category"] == "windows"                 # inherited from preset
+    assert cfg["platform"] == "Windows PC"              # inherited from preset
+    assert cfg["listing"]["item"] == "article.post"     # inherited from preset
+    assert cfg["base_url"] == "https://c.com/"          # from child
+    assert cfg["description"] == "child override"       # child overrides preset
+    assert "extends" not in cfg
+    a = GenericConfigAdapter(cfg)
+    assert a.resolves_final_link is False
+    print("  [ok] extends/preset merge")
+
+
+def test_missing_preset_skipped():
+    tmp = tempfile.mkdtemp()
+    with open(os.path.join(tmp, "orphan.json"), "w", encoding="utf-8") as f:
+        json.dump({"extends": "nope", "name": "x", "base_url": "https://x.com/"}, f)
+    assert discover_configs(tmp) == []   # skipped with a warning, not a crash
+    print("  [ok] missing preset skipped gracefully")
+
+
+def test_base_token_urls():
+    cfg = make_config()
+    cfg["base_url"] = "https://b.com/"
+    cfg["listing"]["first_page_url"] = "{base}"
+    cfg["listing"]["page_url"] = "{base}page/{page}/"
+    cfg["listing"]["search_first_url"] = "{base}?s={query}"
+    cfg["listing"]["search_url"] = "{base}page/{page}/?s={query}"
+    a = GenericConfigAdapter(cfg)
+    assert a.build_listing_url(1) == "https://b.com/"
+    assert a.build_listing_url(3) == "https://b.com/page/3/"
+    assert a.build_listing_url(1, "mario") == "https://b.com/?s=mario"
+    assert a.build_listing_url(2, "mario") == "https://b.com/page/2/?s=mario"
+    print("  [ok] {base} token URLs")
+
+
+def test_labeled_group_and_resolve_none():
+    cfg = make_config(full_site=False)
+    cfg["detail"] = {
+        "mirror_mode": "labeled_group",
+        "mirror_item": ".entry-content p",
+        "group_link_selector": "a[href]",
+        "group_skip_hosters": ["youtube", "subscribe"],
+    }
+    cfg["resolve"] = {"mode": "none"}
+    a = GenericConfigAdapter(cfg)
+    assert a.resolves_final_link is False
+    html = '''
+    <div class="entry-content">
+      <h1><strong>Download Mirrors</strong></h1>
+      <p><strong>Torrent <span>– <a href="https://zovo.ink/a">Click Here</a> – or – <a href="/rel/b">Click Here</a></span></strong></p>
+      <p><strong>OneDrive – <a href="https://zovo.ink/d">Click Here</a></strong></p>
+      <p>Just a description, no links.</p>
+      <p><a href="https://youtube.com/x">Youtube – Subscribe</a></p>
+    </div>'''
+    mirrors = a.parse_mirrors(html, "https://ex.com/game/x/")
+    assert len(mirrors) == 3, [(m.hoster, m.redirect_url) for m in mirrors]
+    assert mirrors[0].hoster == "Torrent"
+    assert mirrors[0].redirect_url == "https://zovo.ink/a"
+    assert mirrors[1].redirect_url == "https://ex.com/rel/b"   # relative -> absolute
+    assert mirrors[2].hoster == "OneDrive"
+    tor = a.parse_mirrors(html, "x", hoster_filter="TORRENT")
+    assert len(tor) == 2 and all(m.hoster == "Torrent" for m in tor)
+    print("  [ok] labeled_group + resolve mode none")
+
+
 TESTS = [
     test_build_listing_url,
     test_parse_listing,
@@ -264,6 +350,10 @@ TESTS = [
     test_validate_config_errors,
     test_supports_full_site_and_discovery,
     test_discover_configs_skips_underscore_and_invalid,
+    test_extends_preset_merge,
+    test_missing_preset_skipped,
+    test_base_token_urls,
+    test_labeled_group_and_resolve_none,
 ]
 
 

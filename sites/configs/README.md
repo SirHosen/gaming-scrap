@@ -101,8 +101,85 @@ Anywhere the schema below expects a value, you can use one of:
 ```
 
 **Required keys:** `name`, `base_url`, `category`, `platform`, `listing.item`,
-`listing.fields.title`, `listing.fields.detail_url`, `detail.mirror_item`,
-`resolve.final_link`. Everything else is optional.
+`listing.fields.title`, `listing.fields.detail_url`, `detail.mirror_item`, and
+`resolve.final_link` **unless** you set `resolve.mode: "none"` (see below).
+Everything else is optional. With `extends` (below), a required key may come from
+the preset instead of the site file.
+
+## Sharing config across many sites (presets + `extends`)
+
+Most sites are not unique — whole *families* share the same engine (lots of game
+repack sites are WordPress blogs with an identical layout). Instead of copying
+selectors into every file, put the shared "blueprint" in a **preset** and let each
+real site inherit it.
+
+- A **preset** is just a normal config file whose name starts with `_` (e.g.
+  `_preset_wordpress-repack.json`). Because it starts with `_` it is **never**
+  loaded as a site on its own — it only exists to be inherited.
+- A **site** inherits a preset with `"extends": "<preset-name>"`. The loader looks
+  for `_preset_<name>.json` (or `_<name>.json`) in this folder and **deep-merges**
+  the preset underneath the site, so anything in the site file overrides the
+  preset. Presets may themselves `extends` another preset.
+
+That means a real site can be tiny. The entire `dodi.json` is:
+
+```jsonc
+{
+  "extends": "wordpress-repack",
+  "name": "dodi",
+  "base_url": "https://dodi-repacks.site/",
+  "description": "DODI Repacks — compressed Windows PC game repacks"
+}
+```
+
+Adding the next WordPress-style repack site is another ~4-line file pointing at
+the same preset. Only sites that genuinely differ need their own selectors.
+
+### `{base}` URL token
+
+So a preset can stay site-agnostic, listing URL templates may use `{base}`, which
+is replaced with that site's `base_url` at runtime (alongside `{page}` /
+`{query}`):
+
+```jsonc
+"first_page_url":   "{base}",
+"page_url":         "{base}page/{page}/",
+"search_first_url": "{base}?s={query}",
+"search_url":       "{base}page/{page}/?s={query}"
+```
+
+### `detail.mirror_mode: "labeled_group"`
+
+Some sites don't give each mirror its own row — instead the **hoster name is plain
+text in front of one or more links**, e.g.
+`Torrent – Click Here – or – Click Here – or – Click Here`. Set this mode and each
+`<a>` becomes its own mirror tagged with the leading label:
+
+```jsonc
+"detail": {
+  "mirror_mode": "labeled_group",
+  "mirror_item": ".entry-content p",     // each block that starts with a hoster label
+  "group_link_selector": "a[href]",       // which links inside count (default a[href])
+  "group_skip_hosters": ["youtube", "subscribe"], // ignore these labels
+  "group_label_pattern": null              // optional regex; only keep labels that match
+}
+```
+
+Blocks whose label comes out empty (e.g. a bare YouTube link with no leading
+text) are skipped automatically.
+
+### `resolve.mode: "none"`
+
+When a site's mirror links go through a shortener / countdown / captcha gate that
+can only be passed in a real browser (e.g. DODI's `zovo.ink` → `go.zovo.ink` →
+`tii.la`), there is no reliable final URL to fetch server-side. Set:
+
+```jsonc
+"resolve": { "mode": "none" }
+```
+
+and the engine keeps the mirror link **as-is** instead of trying (and failing) to
+resolve a final link. `resolve.final_link` is then not required.
 
 ## Adding a site in 3 steps
 

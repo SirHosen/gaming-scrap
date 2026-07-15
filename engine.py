@@ -268,14 +268,20 @@ class ScraperEngine:
             self.hoster_filter,
         )
 
-        # Resolve each mirror's final link
-        for mirror in mirrors:
-            log.debug("  Fetching final link: %s (%s)", mirror.hoster, mirror.format)
-            redirect_html = self.client.get(mirror.redirect_url)
-            if redirect_html:
-                mirror.final_link = self.adapter.resolve_final_link(redirect_html)
-            else:
-                mirror.final_link = "N/A"
+        # Resolve each mirror's final link — unless this adapter's mirror links
+        # are already final (e.g. shortener/ad-gate pages that need JS/captcha,
+        # like DODI Repacks). In that case we keep the mirror URL as-is.
+        if getattr(self.adapter, "resolves_final_link", True):
+            for mirror in mirrors:
+                log.debug("  Fetching final link: %s (%s)", mirror.hoster, mirror.format)
+                redirect_html = self.client.get(mirror.redirect_url)
+                if redirect_html:
+                    mirror.final_link = self.adapter.resolve_final_link(redirect_html)
+                else:
+                    mirror.final_link = "N/A"
+        else:
+            for mirror in mirrors:
+                mirror.final_link = mirror.redirect_url
 
         game.mirrors = mirrors
         return game

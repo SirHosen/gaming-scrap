@@ -14,6 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.6.0] - 2026-07-15
+
+### Added
+- **Config presets (`extends`).** A config can now inherit a shared preset via
+  `"extends": "<preset>"`, deep-merged so the child overrides the preset. This
+  lets a family of similar sites share one blueprint
+  (`sites/configs/_preset_wordpress-repack.json`) while each real site is a tiny
+  file. Presets are `_`-prefixed and never loaded as sites; a missing preset is
+  skipped with a warning, and circular `extends` chains are detected.
+- **`{base}` URL token** in listing templates, filled with the site's `base_url`
+  at runtime so presets stay site-agnostic (e.g. `"{base}page/{page}/"`).
+- **Labeled-group mirror mode** (`detail.mirror_mode: "labeled_group"`) for
+  download blocks where the hoster name is plain text in front of one or more
+  `<a>` links (`Torrent – Click Here – or – Click Here`). Each link becomes a
+  mirror tagged with the leading hoster label; empty labels and
+  `group_skip_hosters` entries are skipped. Supports `group_link_selector`,
+  `group_skip_hosters`, and optional `group_label_pattern`.
+- **`resolve.mode: "none"`** for sites whose mirror links only resolve through a
+  JS/countdown/captcha gate. The engine skips final-link resolution and keeps
+  the mirror URL as-is (new `SiteAdapter.resolves_final_link` flag).
+- **DODI Repacks onboarded** as the first real Windows site (`--site dodi`),
+  config-only via the new WordPress-repack preset: search, `/page/N/`
+  pagination, size parsed from the title, and per-hoster mirrors.
+- **Tests.** Extended `tests/test_config_adapter.py` with preset/`extends`
+  merging, missing-preset handling, `{base}` token URLs, and labeled-group +
+  resolve-none parsing.
+
+---
+
 ## [4.5.0] - 2026-07-15
 
 ### Added
@@ -227,7 +256,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.6.0...HEAD
+[4.6.0]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...v4.5.0
 [4.4.0]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...v4.3.0

@@ -144,6 +144,25 @@ def extract_value(scope, spec: Any, base_url: str) -> Optional[str]:
     return value
 
 
+def _leading_text(el) -> str:
+    """Return the text of `el` that appears BEFORE its first <a> descendant,
+    cleaned up. Used for 'labeled group' download blocks where the hoster name is
+    plain text in front of one or more <a> 'Click Here' links, e.g.:
+        <p><strong>Torrent – <a>Click Here</a> – or – <a>Click Here</a></strong></p>
+    -> "Torrent".
+    """
+    parts: List[str] = []
+    for node in el.descendants:
+        if getattr(node, "name", None) == "a":
+            break
+        if isinstance(node, str):
+            parts.append(str(node))
+    text = re.sub(r"\s+", " ", "".join(parts)).strip()
+    # drop trailing separators/dashes left dangling before the first link
+    text = re.sub(r"[\s|:•·\-\u2013\u2014]+$", "", text).strip()
+    return text
+
+
 def _parse_locs(xml: str) -> List[str]:
     """Return every <loc> URL from a sitemap / sitemap index."""
     soup = BeautifulSoup(xml, "html.parser")
@@ -178,20 +197,77 @@ def validate_config(cfg: Dict[str, Any], source: str = "<config>") -> Dict[str, 
     if not isinstance(detail, dict) or not detail.get("mirror_item"):
         raise ConfigError(f"{source}: 'detail.mirror_item' selector is required.")
 
-    resolve = cfg.get("resolve")
-    if not isinstance(resolve, dict) or not resolve.get("final_link"):
-        raise ConfigError(f"{source}: 'resolve.final_link' is required.")
+    resolve = cfg.get("resolve") or {}
+    if resolve.get("mode") != "none" and not resolve.get("final_link"):
+        raise ConfigError(
+            f"{source}: 'resolve.final_link' is required "
+            f"(or set 'resolve.mode' to \"none\" when mirror links are already final)."
+        )
 
     return cfg
 
 
-def load_config(path: str) -> Dict[str, Any]:
-    """Read + validate a single JSON config file."""
+def _deep_merge(base: Dict[str, Any], over: Dict[str, Any]) -> Dict[str, Any]:
+    """Recursively merge `over` onto `base` (values in `over` win). Nested dicts
+    are merged; everything else is replaced. Used for config presets."""
+    result = dict(base)
+    for key, val in over.items():
+        if isinstance(result.get(key), dict) and isinstance(val, dict):
+            result[key] = _deep_merge(result[key], val)
+        else:
+            result[key] = val
+    return result
+
+
+def _preset_path(name: str, configs_dir: str) -> Optional[str]:
+    for fname in (f"_preset_{name}.json", f"_{name}.json"):
+        p = os.path.join(configs_dir, fname)
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def _resolve_extends(
+    cfg: Dict[str, Any], configs_dir: str, source: str = "<config>",
+    _seen: Optional[set] = None,
+) -> Dict[str, Any]:
+    """If `cfg` has an "extends": "<preset>" key, deep-merge the preset
+    (`_preset_<preset>.json` in `configs_dir`) UNDER it so the child overrides the
+    preset. Presets may themselves extend other presets."""
+    parent = cfg.get("extends")
+    if not parent:
+        return cfg
+    _seen = _seen or set()
+    if parent in _seen:
+        raise ConfigError(f"{source}: circular 'extends' chain via '{parent}'.")
+    _seen.add(parent)
+    path = _preset_path(parent, configs_dir)
+    if not path:
+        raise ConfigError(
+            f"{source}: preset '{parent}' not found "
+            f"(expected _preset_{parent}.json in {configs_dir})."
+        )
     try:
         with open(path, "r", encoding="utf-8") as fh:
-            cfg = json.load(fh)
+            preset_raw = json.load(fh)
     except json.JSONDecodeError as exc:
         raise ConfigError(f"{path}: invalid JSON — {exc}") from exc
+    preset = _resolve_extends(preset_raw, configs_dir, os.path.basename(path), _seen)
+    merged = _deep_merge(preset, cfg)
+    merged.pop("extends", None)
+    return merged
+
+
+def load_config(path: str, configs_dir: Optional[str] = None) -> Dict[str, Any]:
+    """Read + validate a single JSON config file (resolving `extends` presets)."""
+    if configs_dir is None:
+        configs_dir = os.path.dirname(os.path.abspath(path))
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            raw = json.load(fh)
+    except json.JSONDecodeError as exc:
+        raise ConfigError(f"{path}: invalid JSON — {exc}") from exc
+    cfg = _resolve_extends(raw, configs_dir, source=os.path.basename(path))
     validate_config(cfg, source=os.path.basename(path))
     cfg["name"] = str(cfg["name"]).strip().lower()
     cfg["__source__"] = path
@@ -231,10 +307,15 @@ def config_meta(cfg: Dict[str, Any]) -> SiteMeta:
     )
 
 
-def _fill(template: str, page: int, query: str) -> str:
+def _fill(template: str, page: int, query: str, base: str = "") -> str:
     """Fill a URL template. Uses str.replace (not .format) so real braces in a
-    URL never break, and only the {page} / {query} tokens are substituted."""
-    return template.replace("{page}", str(page)).replace("{query}", query)
+    URL never break, and only the {base} / {page} / {query} tokens are
+    substituted. {base} lets a shared preset stay site-agnostic."""
+    return (
+        template.replace("{base}", base)
+        .replace("{page}", str(page))
+        .replace("{query}", query)
+    )
 
 
 # ══ The adapter ══════════════════════════════
@@ -246,26 +327,29 @@ class GenericConfigAdapter(SiteAdapter):
         self.config = config
         self.meta = config_meta(config)
         self.supports_full_site = bool(config.get("full_site"))
+        # When resolve.mode == "none", the mirror's own link is already the final
+        # link (or only resolvable via JS/captcha), so the engine must NOT fetch
+        # and resolve each redirect page.
+        self.resolves_final_link = (config.get("resolve") or {}).get("mode") != "none"
 
     # ── listing ────────────────────────────────────────────────────
     def build_listing_url(self, page: int, query: Optional[str] = None) -> str:
         listing = self.config["listing"]
+        base = self.base_url
         if query:
             q = quote_plus(query)
             if page == 1 and listing.get("search_first_url"):
-                return _fill(listing["search_first_url"], page, q)
+                return _fill(listing["search_first_url"], page, q, base)
             tpl = listing.get("search_url") or listing.get("page_url")
             if tpl:
-                return _fill(tpl, page, q)
-            return self.base_url.rstrip("/") + "/?s=" + q
+                return _fill(tpl, page, q, base)
+            return base.rstrip("/") + "/?s=" + q
         if page == 1 and listing.get("first_page_url"):
-            return listing["first_page_url"]
+            return _fill(listing["first_page_url"], page, "", base)
         tpl = listing.get("page_url")
         if not tpl:
-            return self.base_url
-        if page == 1 and "{page}" not in tpl:
-            return tpl
-        return _fill(tpl, page, "")
+            return base
+        return _fill(tpl, page, "", base)
 
     def parse_listing(self, html: str) -> List[Game]:
         soup = BeautifulSoup(html, "html.parser")
@@ -300,6 +384,8 @@ class GenericConfigAdapter(SiteAdapter):
     ) -> List[Mirror]:
         soup = BeautifulSoup(html, "html.parser")
         detail = self.config["detail"]
+        if detail.get("mirror_mode") == "labeled_group":
+            return self._parse_mirrors_labeled_group(soup, detail, format_filter, hoster_filter)
         mfields = detail.get("mirror_fields", {})
         split = detail.get("raw_text_split")
         default_redirect = {"attr": "href", "transform": ["absolute_url"]}
@@ -344,6 +430,40 @@ class GenericConfigAdapter(SiteAdapter):
                 hoster=hoster,
                 redirect_url=redirect_url,
             ))
+        return mirrors
+
+    def _parse_mirrors_labeled_group(
+        self, soup, detail, format_filter: str, hoster_filter: str,
+    ) -> List[Mirror]:
+        """Parse download blocks where the hoster name is plain text in front of
+        one or more <a> links (e.g. "Torrent – Click Here – or – Click Here").
+        Each <a> becomes its own Mirror tagged with the group's hoster label.
+        Groups with an empty label (e.g. a bare YouTube link) are skipped.
+        """
+        link_sel = detail.get("group_link_selector", "a[href]")
+        label_pattern = detail.get("group_label_pattern")
+        lrx = re.compile(label_pattern, re.I) if label_pattern else None
+        skip = {h.lower() for h in detail.get("group_skip_hosters", [])}
+        mirrors: List[Mirror] = []
+        for group in soup.select(detail["mirror_item"]):
+            hoster = _leading_text(group)
+            if not hoster or hoster.lower() in skip:
+                continue
+            if lrx and not lrx.search(hoster):
+                continue
+            if hoster_filter != "ALL" and hoster_filter not in hoster.upper():
+                continue
+            for a in group.select(link_sel):
+                href = a.get("href")
+                if not href:
+                    continue
+                mirrors.append(Mirror(
+                    raw_text=hoster,
+                    format="N/A",
+                    size="N/A",
+                    hoster=hoster,
+                    redirect_url=urljoin(self.base_url, href),
+                ))
         return mirrors
 
     def resolve_final_link(self, html: str) -> str:

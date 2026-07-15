@@ -49,6 +49,12 @@ class SiteAdapter(ABC):
     #: (e.g. via an XML sitemap). If False, only paginated/search scraping runs.
     supports_full_site: bool = False
 
+    #: Whether the engine must fetch each mirror's redirect page and call
+    #: resolve_final_link() to obtain the final URL. Set False when a site's
+    #: mirror links are already final, or only resolvable via JS/captcha (the
+    #: engine then keeps redirect_url as the mirror link, e.g. DODI Repacks).
+    resolves_final_link: bool = True
+
     # ── convenience passthroughs ───────────────────────────────────────
     @property
     def name(self) -> str:
