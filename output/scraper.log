@@ -998,3 +998,32 @@
 2026-07-14 20:28:29 │ INFO     │ [96m[93mProgress: 5859/5859 links checked…[0m[0m
 2026-07-14 20:28:29 │ INFO     │ [96m[1m[92m[FINISHED][0m Link check complete.[0m
 2026-07-14 20:28:29 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m
+2026-07-15 14:37:42 │ INFO     │ [96mConfiguration: mode=ALL SITE | format=ALL | hoster=ALL | output=both | workers=5[0m
+2026-07-15 14:37:42 │ INFO     │ [96m[96mTarget site:[0m dodi (Windows PC)[0m
+2026-07-15 14:37:42 │ INFO     │ [96m[96m--- Starting FULL SITE scrape: dodi (Windows PC) ---[0m[0m
+2026-07-15 14:37:42 │ WARNING  │ [93mSite 'dodi' does not support full-site discovery — falling back to paginated sweep with de-duplication.[0m
+2026-07-15 14:37:42 │ INFO     │ [96m[PAGE 1] Fetching: https://dodi-repacks.site/?s=spider-man[0m
+2026-07-15 14:37:46 │ INFO     │ [96mFound 7 games on page 1.[0m
+2026-07-15 14:37:48 │ INFO     │ [96m  [1] [1m612- The Amazing Spider-Man 2 Bundle (All DLCs + MULTi6) – [DODI Repack][0m — 3 mirrors[0m
+2026-07-15 14:37:48 │ INFO     │ [96m  [2] [1m1401- Marvel’s Spider-Man Remastered (v4.630 + DLCs + Bonus Content + MULTi22) (From 38.5 GB) [DODI Repack][0m — 8 mirrors[0m
+2026-07-15 14:37:48 │ INFO     │ [96m  [3] [1m610- Spider-Man: Web of Shadows (v 1.1) (From 3.66 GB) [DODI Repack][0m — 4 mirrors[0m
+2026-07-15 14:37:48 │ INFO     │ [96m  [4] [1m2080- Marvel’s Spider-Man 2 – Digital Deluxe Edition (v2.629 + All DLCs + Bonus PSN Items + MULTi26) (From 65.9 GB) [DODI Repack][0m — 6 mirrors[0m
+2026-07-15 14:37:48 │ INFO     │ [96m  [5] [1m1479- Marvel’s Spider-Man: Miles Morales (v4.630 + DLCs + Bonus Content + MULTi23) (From 27.7 GB) [DODI Repack][0m — 6 mirrors[0m
+2026-07-15 14:37:51 │ INFO     │ [96m  [6] [1m611- The Amazing Spider-Man (Update1 + All DLCs + Fixes + MULTi6) – [DODI Repack][0m — 4 mirrors[0m
+2026-07-15 14:37:51 │ INFO     │ [96m  [7] [1m411- Spider-Man: Shattered Dimensions – [DODI Repack][0m — 3 mirrors[0m
+2026-07-15 14:37:51 │ INFO     │ [96m[93mProgress: 7 unique games scraped so far…[0m[0m
+2026-07-15 14:37:51 │ INFO     │ [96m[PAGE 2] Fetching: https://dodi-repacks.site/page/2/?s=spider-man[0m
+2026-07-15 14:37:53 │ INFO     │ [96mFound 1 games on page 2.[0m
+2026-07-15 14:37:56 │ INFO     │ [96m  [1] Hot, Featured, New and Upcoming Repacks — no mirrors matched filters.[0m
+2026-07-15 14:37:56 │ INFO     │ [96m[93mProgress: 7 unique games scraped so far…[0m[0m
+2026-07-15 14:37:56 │ INFO     │ [96m[PAGE 3] Fetching: https://dodi-repacks.site/page/3/?s=spider-man[0m
+2026-07-15 14:37:58 │ ERROR    │ [91mHTTP 404 Not Found: https://dodi-repacks.site/page/3/?s=spider-man[0m
+2026-07-15 14:37:58 │ WARNING  │ [93mCould not retrieve page 3 — skipping.[0m
+2026-07-15 14:37:58 │ INFO     │ [96mStopping auto-paginate (page 3 unreachable).[0m
+2026-07-15 14:37:58 │ INFO     │ [96m[96m--- Exporting results ---[0m[0m
+2026-07-15 14:37:58 │ INFO     │ [96m[92m✔[0m JSON saved: output\switch_games.json[0m
+2026-07-15 14:37:58 │ INFO     │ [96m[92m✔[0m CSV saved: output\switch_games.csv[0m
+2026-07-15 14:37:58 │ INFO     │ [96m[96m--- Database history (run #1) ---[0m[0m
+2026-07-15 14:37:58 │ INFO     │ [96m  [92mNew[0m: 7   [93mChanged[0m: 0   [91mRemoved[0m: 0   Unchanged: 0[0m
+2026-07-15 14:37:58 │ INFO     │ [96m  [92mNEW:[0m 612- The Amazing Spider-Man 2 Bundle (All DLCs + MULTi6) – [DODI Repack], 1401- Marvel’s Spider-Man Remastered (v4.630 + DLCs + Bonus Content + MULTi22) (From 38.5 GB) [DODI Repack], 610- Spider-Man: Web of Shadows (v 1.1) (From 3.66 GB) [DODI Repack], 2080- Marvel’s Spider-Man 2 – Digital Deluxe Edition (v2.629 + All DLCs + Bonus PSN Items + MULTi26) (From 65.9 GB) [DODI Repack], 1479- Marvel’s Spider-Man: Miles Morales (v4.630 + DLCs + Bonus Content + MULTi23) (From 27.7 GB) [DODI Repack], … (+2 more)[0m
+2026-07-15 14:37:58 │ INFO     │ [96m[1m[92m[FINISHED][0m System terminated successfully.[0m
