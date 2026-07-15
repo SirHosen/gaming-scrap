@@ -87,8 +87,14 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 **Hasil:** seluruh fitur NESTfetch kini bisa dijalankan & dipantau dari browser, bukan hanya terminal.
 
 ### (Berjalan paralel) Menambah situs baru ➕
-Setelah Phase 1 selesai, situs baru bisa ditambah kapan saja (butuh contoh HTML
-live dari tiap situs — sama seperti proses Gemini sebelumnya):
+**Pondasi config-driven ✅ SELESAI (v4.5):** situs standar kini bisa ditambah
+**tanpa nulis kode** — cukup drop file JSON di `sites/configs/` (dibaca otomatis
+oleh `GenericConfigAdapter`). Situs yang terlalu "liar" (JS berat / ad-gate aneh)
+tetap bisa pakai adapter Python sebagai escape hatch. Lihat
+`sites/configs/README.md` untuk skema-nya. Tetap butuh contoh HTML live per situs
+(dari proses Gemini) untuk mengisi selector-nya.
+
+Situs yang masih mau ditambah (butuh sampel HTML):
 - [ ] Situs game Windows
 - [ ] Situs emulator
 - [ ] Situs game Linux

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nestfetch"
-version = "4.4.0"
+version = "4.5.0"
 description = "A professional, modular, multi-site game-download metadata scraper."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -53,6 +53,10 @@ py-modules = [
 
 [tool.setuptools.packages.find]
 include = ["sites*"]
+
+[tool.setuptools.package-data]
+# Ship the config-driven site definitions with the package.
+sites = ["configs/*.json", "configs/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

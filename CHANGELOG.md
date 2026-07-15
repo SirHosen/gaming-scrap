@@ -10,7 +10,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- More site adapters (Windows games, emulators, Linux, ...).
+- More site adapters (Windows games, emulators, Linux, ...) — now mostly JSON configs.
+
+---
+
+## [4.5.0] - 2026-07-15
+
+### Added
+- **Config-driven site adapters.** Standard game-download sites can now be added
+  by dropping a JSON file in `sites/configs/` — **no Python required**. A single
+  `GenericConfigAdapter` reads the config and fulfils the whole SiteAdapter
+  contract (listing, detail/mirrors, redirect resolution, optional sitemap
+  full-site discovery). Configs are auto-loaded by the registry; invalid ones are
+  skipped with a warning instead of crashing.
+- **Flexible selector engine** to absorb per-site differences: fallback selector
+  chains, text-or-attribute extraction, optional regex, and value transforms
+  (`strip` / `lower` / `upper` / `title` / `collapse_ws` / `absolute_url` /
+  `number`), plus `raw_text_split` for sites that pack format/size/hoster into
+  one string.
+- **Schema guide + template** — `sites/configs/README.md` documents every field;
+  `sites/configs/_example.json` is a ready-to-copy starting point (files prefixed
+  with `_` are treated as disabled templates and skipped by the loader).
+- **Tests.** New offline suite `tests/test_config_adapter.py` covering the
+  selector engine, listing/mirror/final-link parsing, URL builders, config
+  validation errors, and sitemap discovery (with a fake client).
+
+### Changed
+- The site registry now serves two tiers — config-driven sites and hand-written
+  Python adapters (the escape hatch for weird sites) — with Python adapters
+  overriding configs of the same name.
+- Packaging now ships `sites/configs/*.json` and `*.md` as package data.
 
 ---
 
@@ -198,7 +227,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...HEAD
+[4.5.0]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...v4.5.0
 [4.4.0]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...v4.2.0

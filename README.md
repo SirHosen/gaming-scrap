@@ -1,9 +1,40 @@
-# NESTfetch v4.4
+# NESTfetch v4.5
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.5 — Config-driven sites (add a site without code)
+
+NESTfetch's multi-site foundation just got a huge upgrade: most standard
+game-download sites can now be added by **dropping a JSON file** into
+`sites/configs/` — no Python required.
+
+- **Config-first** — a single `GenericConfigAdapter` reads a declarative config
+  (CSS selectors for the listing, detail/mirror, and redirect pages) and does
+  the scraping. Auto-loaded on startup; a bad config is skipped with a warning,
+  never a crash.
+- **Flexible selector engine** — handles the fact that every site is different:
+  fallback selector chains, text-or-attribute extraction (`"attr": "href"`),
+  optional regex, and transforms (`strip`, `absolute_url`, `number`, ...).
+  Sites that pack `NSP | 4 GB | MediaFire` into one string can split it.
+- **Escape hatch preserved** — sites too weird for config (JS-rendered content,
+  timer ad-gates) can still ship a hand-written Python adapter
+  (`sites/switchroms.py` is the reference). Both tiers live in one registry;
+  a Python adapter overrides a config of the same name.
+- **Optional full-site mode** — a config can enable `--all` via XML-sitemap
+  discovery with a URL pattern, no code.
+
+```bash
+cp sites/configs/_example.json sites/configs/mysite.json   # then edit selectors
+python scraper.py --site mysite --search "test"            # try it
+python scraper.py --list-sites                             # your site shows up
+```
+
+The full schema (with every field and transform) lives in
+`sites/configs/README.md`. Adding a site now takes HTML samples + a JSON file
+instead of a code change. New offline suite: `tests/test_config_adapter.py`.
 
 ## What's New in v4.4 — Web dashboard (Phase 5)
 
