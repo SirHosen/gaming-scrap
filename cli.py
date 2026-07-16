@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from typing import Tuple
+from typing import Dict, Tuple
 
 from config import (
     FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP,
@@ -16,7 +16,7 @@ from config import (
     WEB_DEFAULT_HOST, WEB_DEFAULT_PORT,
 )
 from logger import log, Colours
-from sites.registry import available_sites, site_names, DEFAULT_SITE
+from sites.registry import available_sites, site_names, DEFAULT_SITE, get_adapter
 
 
 # ── Banner ─────────────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.6 — Multi-Site Game Download Scraper
+              NESTfetch v4.7 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -44,6 +44,23 @@ def _prompt(label: str, default: str = "") -> str:
     suffix = f" (default: {default})" if default else ""
     val = input(f"{label}{suffix}: ").strip()
     return val if val else default
+
+
+def _prompt_choice(title: str, choices: Dict[str, str], default_value: str = "ALL") -> str:
+    """Render a {menu-number: value} choice dict and return the picked value.
+
+    Choices come from the selected site adapter, so each site shows only its own
+    valid formats / hosters instead of a hard-coded switchroms list.
+    """
+    print(f"\n{Colours.BOLD}{title}:{Colours.RESET}")
+    default_key = next((k for k, v in choices.items() if v == default_value), None)
+    if default_key is None:
+        default_key = next(iter(choices), "1")
+    for key, value in choices.items():
+        marker = f"  {Colours.GREY}(default){Colours.RESET}" if key == default_key else ""
+        print(f"  [{key}] {value}{marker}")
+    picked = _prompt("Select", default_key)
+    return choices.get(picked, choices.get(default_key, default_value))
 
 
 def interactive_menu() -> Tuple[str, dict]:
@@ -209,21 +226,16 @@ def interactive_menu() -> Tuple[str, dict]:
         print(f"\n{Colours.BOLD}2. Pages to sweep:{Colours.RESET}")
         print(f"  {Colours.GREY}(Auto-paginate — will sweep all pages automatically){Colours.RESET}")
 
-    print(f"\n{Colours.BOLD}3. Filter File Format:{Colours.RESET}")
-    print("  [1] NSP (Standard Base Games)")
-    print("  [2] XCI (Cartridge Dumps)")
-    print("  [3] UPDATE (NSP Game Patches)")
-    print("  [4] DLC (Add-on Contents)")
-    print("  [5] ALL Formats")
-    format_opt = _prompt("Select format filter", "5")
-    format_filter = FORMAT_MAP.get(format_opt, "ALL")
+    # Filters are per-site: render the chosen adapter's own format/hoster menus.
+    try:
+        _adapter = get_adapter(site)
+        _fmt_choices = _adapter.format_choices()
+        _hoster_choices = _adapter.hoster_choices()
+    except Exception:
+        _fmt_choices, _hoster_choices = {"1": "ALL"}, {"1": "ALL"}
 
-    print(f"\n{Colours.BOLD}4. Filter File Hosting Provider:{Colours.RESET}")
-    print("  [1] Mediafire   [2] MegaUp     [3] 1fichier")
-    print("  [4] Buzzheavier  [5] Terabox   [6] Send.cm")
-    print("  [7] Up-4ever     [8] ALL Providers")
-    hoster_opt = _prompt("Select hoster filter", "8")
-    hoster_filter = HOSTER_MAP.get(hoster_opt, "ALL")
+    format_filter = _prompt_choice("3. Filter File Format", _fmt_choices, "ALL")
+    hoster_filter = _prompt_choice("4. Filter File Hosting Provider", _hoster_choices, "ALL")
 
     print(f"\n{Colours.BOLD}5. Choose Output Format:{Colours.RESET}")
     print("  [1] Excel Spreadsheet (CSV)")
@@ -256,7 +268,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.6 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.7 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -286,12 +298,11 @@ Examples:
     parser.add_argument("--all", "-a", action="store_true",
                         help="Scrape ALL games on the entire website (auto-paginate until empty)")
     parser.add_argument("--format", "-f", type=str, default="ALL",
-                        choices=["NSP ROM", "XCI ROM", "UPDATE", "DLC", "ALL"],
-                        help="Filter by ROM format")
+                        help="Filter by file format. Valid values depend on --site "
+                             "(run --list-sites to see them). Default: ALL")
     parser.add_argument("--hoster", "-H", type=str, default="ALL",
-                        choices=["MEDIAFIRE", "MEGAUP", "1FICHIER", "BUZZHEAVIER",
-                                 "TERABOX", "SEND.CM", "UP-4EVER", "ALL"],
-                        help="Filter by file hosting provider")
+                        help="Filter by file hosting provider. Valid values depend on "
+                             "--site (run --list-sites to see them). Default: ALL")
     parser.add_argument("--output", "-o", type=str, default="both",
                         choices=["csv", "json", "both"],
                         help="Output format")
@@ -456,6 +467,8 @@ def parse_args() -> Tuple[str, dict]:
             "db_path": args.db,
             "notify": args.notify,
             "config": args.config,
+            "use_cache": args.use_cache,
+            "rate_limit": args.rate_limit,
         }
 
     return "scrape", {

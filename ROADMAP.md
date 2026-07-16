@@ -86,6 +86,13 @@ Merombak core jadi arsitektur adapter. Tanpa ini, fitur lain sulit dibangun.
 - [x] Fungsi data (stats/games/runs/dead-links/sites) dipisah dari layer HTTP sehingga teruji penuh offline (`tests/test_webapp.py`).
 **Hasil:** seluruh fitur NESTfetch kini bisa dijalankan & dipantau dari browser, bukan hanya terminal.
 
+### Phase 6 — Multi-site depth 🎯 ✅ SELESAI (v4.7)
+- [x] **Filter format/hoster per-situs** — `--format`/`--hoster`, menu interaktif, dan `--list-sites` kini menampilkan pilihan milik situs terpilih (dari `filters` di config), bukan daftar Switch yang di-hardcode. Nilai tak dikenal lolos dengan peringatan (non-fatal).
+- [x] **Mode full-catalogue DODI** — `full_site` di preset WordPress-repack: `--all` tanpa query menyapu seluruh situs via XML sitemap, fallback ke paginasi bila sitemap tak terjangkau.
+- [x] **Fix `--all --search`** — kombinasi ini kini auto-paginasi hasil *pencarian*, bukan malah men-crawl seluruh situs.
+- [x] **Link checker lebih pintar** — `--check-links` menghormati `--rate-limit` (jeda sopan per-host) dan `--cache` (cache verdict on-disk; hanya ACTIVE/DEAD yang di-cache).
+**Hasil:** mesin multi-situs benar-benar terasa multi-situs — filter, full-scrape, dan cek link semuanya menyesuaikan situs yang dipilih.
+
 ### (Berjalan paralel) Menambah situs baru ➕
 **Pondasi config-driven ✅ SELESAI (v4.5):** situs standar kini bisa ditambah
 **tanpa nulis kode** — cukup drop file JSON di `sites/configs/` (dibaca otomatis

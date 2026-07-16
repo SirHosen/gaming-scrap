@@ -14,6 +14,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.7.0] - 2026-07-15
+
+### Added
+- **Per-site format/hoster filters.** `--format` / `--hoster` and the interactive
+  menu now render the *selected site's own* choices (from each adapter's
+  `format_choices()` / `hoster_choices()`) instead of a hard-coded Switch list.
+  `--list-sites` now prints each site's valid `Formats` and `Hosters`. The
+  argparse `choices=` allow-lists were removed so cross-site values are accepted;
+  an unknown filter is passed through with a non-fatal warning
+  (`scraper._validate_filter`).
+- **DODI full-catalogue mode.** The WordPress-repack preset gained a `full_site`
+  block (`sitemap_candidates`, `skip_keywords`, `game_url_pattern`), so DODI now
+  supports `--all` (no query) to crawl the entire site via its XML sitemap, with
+  automatic fallback to paginated discovery. Every future repack site inherits it.
+- **Link-checker rate limiting + verdict cache.** `check_csv_links` /
+  `check_link` accept `rate_limit` (polite per-host spacing, enforced under a lock
+  so different hosts never block each other) and `use_cache` (an on-disk
+  `ResponseCache` of `status/code/detail` verdicts under `.http_cache/linkcheck`,
+  honouring `CACHE_TTL`; only ACTIVE/DEAD are cached). The `check` CLI action now
+  forwards `--rate-limit` and `--cache`.
+- **Tests.** `tests/test_engine.py` now covers `--all --search` using pagination
+  (not sitemap) vs. `--all` alone using sitemap discovery;
+  `tests/test_config_adapter.py` verifies the shipped DODI config inherits
+  `full_site` + per-site hoster filters from the preset.
+
+### Fixed
+- **`--all --search "..."`** no longer triggers full-site sitemap discovery (which
+  ignored the query); it now auto-paginates through all *search-result* pages.
+- **`--list-sites` / `usage` no longer advertise Switch-only `--format`/`--hoster`
+  values** regardless of the chosen `--site`.
+
+---
+
 ## [4.6.0] - 2026-07-15
 
 ### Added
@@ -256,7 +289,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.6.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.7.0...HEAD
+[4.7.0]: https://github.com/USERNAME/nestfetch/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...v4.5.0
 [4.4.0]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...v4.4.0

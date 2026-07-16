@@ -73,7 +73,7 @@ class ScraperEngine:
         all_games: List[Game] = []
         site_label = f"{self.adapter.name} ({self.adapter.platform})"
 
-        if scrape_all:
+        if scrape_all and not search_query:
             log.info("%s--- Starting FULL SITE scrape: %s ---%s", Colours.CYAN, site_label, Colours.RESET)
             if self.adapter.supports_full_site:
                 # Preferred path: discover every game via the adapter's own
@@ -97,6 +97,12 @@ class ScraperEngine:
                     "Site '%s' does not support full-site discovery — falling back "
                     "to paginated sweep with de-duplication.", self.adapter.name,
                 )
+        elif scrape_all:
+            # scrape_all + a search query = auto-paginate through ALL result
+            # pages for that query. Full-site sitemap discovery would ignore the
+            # query, so we deliberately fall through to the paginated sweep.
+            log.info("%s--- Full search sweep (auto-paginate all result pages): %s ---%s",
+                     Colours.CYAN, site_label, Colours.RESET)
         else:
             log.info("%s--- Starting scraping session: %s ---%s", Colours.CYAN, site_label, Colours.RESET)
 

@@ -339,6 +339,28 @@ def test_labeled_group_and_resolve_none():
     print("  [ok] labeled_group + resolve mode none")
 
 
+def test_real_dodi_preset_full_site_and_filters():
+    # The shipped DODI config inherits full_site + per-site hoster filters from
+    # _preset_wordpress-repack.json (real files, not a synthetic fixture).
+    import re
+    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    configs_dir = os.path.join(here, "sites", "configs")
+    loaded = {c["name"]: c for c in discover_configs(configs_dir)}
+    assert "dodi" in loaded, list(loaded)
+    dodi = loaded["dodi"]
+    a = GenericConfigAdapter(dodi)
+    assert a.supports_full_site is True
+    assert a.resolves_final_link is False               # inherited resolve.mode=none
+    hosters = list(a.hoster_choices().values())
+    assert "TORRENT" in hosters and "ONEDRIVE" in hosters, hosters
+    fs = dodi["full_site"]
+    assert "wp-sitemap.xml" in fs["sitemap_candidates"]
+    rx = re.compile(fs["game_url_pattern"])
+    assert rx.search("https://dodi-repacks.site/some-game/")
+    assert not rx.search("https://dodi-repacks.site/page/2/")
+    print("  [ok] real DODI preset full_site + filters")
+
+
 TESTS = [
     test_build_listing_url,
     test_parse_listing,
@@ -354,6 +376,7 @@ TESTS = [
     test_missing_preset_skipped,
     test_base_token_urls,
     test_labeled_group_and_resolve_none,
+    test_real_dodi_preset_full_site_and_filters,
 ]
 
 

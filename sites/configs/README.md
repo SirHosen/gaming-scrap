@@ -181,6 +181,48 @@ can only be passed in a real browser (e.g. DODI's `zovo.ink` → `go.zovo.ink` �
 and the engine keeps the mirror link **as-is** instead of trying (and failing) to
 resolve a final link. `resolve.final_link` is then not required.
 
+### Per-site filters (`filters`)
+
+Each site advertises its *own* format and hoster choices. These drive the
+interactive menu, the `--format` / `--hoster` values, and `--list-sites`:
+
+```jsonc
+"filters": {
+  "format": { "1": "ALL" },
+  "hoster": { "1": "ALL", "2": "TORRENT", "3": "ONEDRIVE", "4": "DATANODES",
+              "5": "GOFILE", "6": "BUZZHEAVIER", "7": "FILESFM" }
+}
+```
+
+- Keys are menu numbers; values are the filter labels (match is
+  case-insensitive substring against each mirror's format/hoster).
+- Always include an `ALL` entry (usually `"1": "ALL"`) as the default.
+- If omitted, the site falls back to `{ "1": "ALL" }`. Unknown `--format` /
+  `--hoster` values aren't rejected — they pass through with a warning.
+
+### Full-catalogue scraping (`full_site`)
+
+Lets `--all` (with **no** search query) crawl the entire site via its XML
+sitemap instead of paginating listing pages:
+
+```jsonc
+"full_site": {
+  "sitemap_candidates": ["wp-sitemap.xml", "sitemap.xml", "sitemap_index.xml"],
+  "skip_keywords": ["category", "tag", "author", "page", "feed"],
+  "game_url_pattern": "^https?://[^/]+/[^/]+/?$"
+}
+```
+
+- `sitemap_candidates` are tried in order (relative to `base_url`); sub-sitemaps
+  ending in `.xml` are followed automatically.
+- `skip_keywords` drops non-game URLs; `game_url_pattern` keeps only URLs that
+  match (a single path segment = a game page on most WordPress repack sites).
+- If discovery yields nothing (sitemap blocked/absent), the engine falls back to
+  the normal paginated sweep, so this is safe to enable optimistically.
+- Presence of a `full_site` block sets `supports_full_site = True` for the site.
+- Note: `--all` **combined with** `--search "..."` deliberately ignores this and
+  auto-paginates the search results instead.
+
 ## Adding a site in 3 steps
 
 1. Grab HTML samples of (a) the listing page, (b) one detail/download page, and

@@ -40,9 +40,14 @@ from config import (
     RESOLVE_LINKS_DEFAULT,
     RESOLVE_MAX_HOPS,
     RESOLVE_TIMEOUT,
+    CACHE_DIRNAME,
+    CACHE_TTL,
+    PER_HOST_RATE_LIMIT,
 )
 from logger import log, Colours
 from link_resolver import resolve_url, classify_url
+from http_client import ResponseCache
+from urllib.parse import urlparse
 
 
 # ── Status constants ───────────────────────────────────────────────────────
@@ -130,6 +135,44 @@ def _session() -> requests.Session:
     return sess
 
 
+# ── Per-host rate limiting + optional on-disk verdict cache ────────────────
+_rate_lock = threading.Lock()
+_last_hit: Dict[str, float] = {}
+
+
+def _respect_rate_limit(url: str, rate_limit: float) -> None:
+    """Ensure at least `rate_limit` seconds pass between hits to the same host.
+
+    The next slot per host is reserved under a lock, then we sleep OUTSIDE the
+    lock so requests to *different* hosts never block one another.
+    """
+    if not rate_limit or rate_limit <= 0:
+        return
+    host = urlparse(url).netloc.lower()
+    with _rate_lock:
+        now = time.time()
+        earliest = _last_hit.get(host, 0.0) + rate_limit
+        wait = earliest - now
+        _last_hit[host] = max(now, earliest)
+    if wait > 0:
+        time.sleep(wait)
+
+
+def _verdict_cache(use_cache: bool) -> Optional[ResponseCache]:
+    """Build an on-disk cache of link verdicts (status/code/detail), or None.
+
+    Reuses the same ResponseCache machinery as the scraper's HTTP cache, in a
+    dedicated sub-folder so link-check verdicts never collide with page bodies.
+    """
+    if not use_cache:
+        return None
+    try:
+        return ResponseCache(Path(OUTPUT_DIR) / CACHE_DIRNAME / "linkcheck", ttl=CACHE_TTL)
+    except Exception as exc:  # pragma: no cover - defensive
+        log.debug("Could not create link-check cache: %s", exc)
+        return None
+
+
 def _host_key(hoster: str, url: str) -> str:
     """Best-effort identification of the file host from the hoster label or URL."""
     h = (hoster or "").lower()
@@ -163,6 +206,7 @@ def check_link(
     hoster: str = "",
     session: Optional[requests.Session] = None,
     timeout: int = DEFAULT_TIMEOUT,
+    rate_limit: float = 0.0,
 ) -> Tuple[str, str, str]:
     """
     Check a single link.
@@ -179,6 +223,7 @@ def check_link(
 
     sess = session or _session()
     try:
+        _respect_rate_limit(url, rate_limit)
         resp = sess.get(
             url, timeout=timeout, allow_redirects=True, stream=True,
         )
@@ -328,6 +373,8 @@ def check_csv_links(
     fallback_column: str = DEFAULT_FALLBACK_COLUMN,
     hoster_column: str = DEFAULT_HOSTER_COLUMN,
     resolve: bool = RESOLVE_LINKS_DEFAULT,
+    rate_limit: float = 0.0,
+    use_cache: bool = False,
 ) -> Optional[Path]:
     """
     Read a scraped CSV, check every link, and write an annotated report CSV.
@@ -372,15 +419,33 @@ def check_csv_links(
     unique_urls = list(hoster_by_url.keys())
     total_unique = len(unique_urls)
     log.info("Checking %d unique links with %d workers…", total_unique, workers)
+    if rate_limit and rate_limit > 0:
+        log.info("Per-host rate limit: %s%.2fs between requests%s",
+                 Colours.GREY, rate_limit, Colours.RESET)
+    cache = _verdict_cache(use_cache)
+    if cache is not None:
+        log.info("Verdict cache: %sON%s (skips re-checking recently-seen links)",
+                 Colours.GREEN, Colours.RESET)
 
     def _worker(u: str):
+        # Reuse a recent ACTIVE/DEAD verdict if cached (avoids re-hitting hosts).
+        if cache is not None:
+            hit = cache.get(u)
+            if hit is not None:
+                parts = hit.split("\t", 2)
+                if len(parts) == 3:
+                    return u, None, (parts[0], parts[1], parts[2])
         if delay:
             time.sleep(delay)
         sess = _session()
         rr = resolve_url(u, session=sess, max_hops=RESOLVE_MAX_HOPS,
                          timeout=RESOLVE_TIMEOUT) if resolve else None
         target = rr.final_url if (rr and rr.final_url) else u
-        chk = check_link(target, hoster_by_url.get(u, ""), session=sess, timeout=timeout)
+        chk = check_link(target, hoster_by_url.get(u, ""), session=sess,
+                         timeout=timeout, rate_limit=rate_limit)
+        # Only cache definitive verdicts; UNKNOWN (timeout/blocked) may be transient.
+        if cache is not None and chk[0] in (STATUS_ACTIVE, STATUS_DEAD):
+            cache.set(u, "\t".join(chk))
         return u, rr, chk
 
     results: Dict[str, Tuple[object, Tuple[str, str, str]]] = {}

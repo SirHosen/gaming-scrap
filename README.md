@@ -1,9 +1,41 @@
-# NESTfetch v4.6
+# NESTfetch v4.7
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.7 — Per-site filters, DODI full-catalogue & smarter link checking
+
+This release makes the multi-site engine feel truly multi-site: filters, full-site
+scraping, and link-checking all now adapt to whichever site you pick.
+
+- **Per-site format/hoster filters.** `--format` / `--hoster` (and the interactive
+  menu) now show *the selected site's own* choices instead of a hard-coded Switch
+  list. Run `python scraper.py --list-sites` to see each site's valid `Formats` and
+  `Hosters`. An unrecognised value is no longer rejected outright — it's passed
+  through with a warning, so custom hoster names still work.
+- **DODI full-catalogue mode.** DODI now supports `--all` with no search query to
+  sweep the *entire* site via its XML sitemap (`wp-sitemap.xml` / `sitemap.xml`),
+  falling back to paginated discovery if the sitemap isn't reachable. Both live in
+  a reusable `full_site` block on the WordPress-repack preset, so every future
+  repack site inherits it for free.
+- **`--all --search "..."` fixed.** Combining `--all` with a search query now
+  correctly auto-paginates *the search results* (it no longer falls into full-site
+  sitemap discovery, which would have ignored your query).
+- **Smarter link checking.** `--check-links` now honours `--rate-limit` (polite
+  per-host spacing between requests) and `--cache` (an on-disk verdict cache that
+  skips re-checking links seen recently — only definitive ACTIVE/DEAD verdicts are
+  cached, never transient UNKNOWNs).
+
+```bash
+# see each site's own valid formats & hosters:
+python scraper.py --list-sites
+# scrape DODI's ENTIRE catalogue (sitemap-driven):
+python scraper.py --site dodi --all
+# re-check a report politely, reusing cached verdicts:
+python scraper.py --check-links output/dodi.csv --rate-limit 1.0 --cache
+```
 
 ## What's New in v4.6 — Config presets + first real Windows site (DODI Repacks)
 
@@ -31,7 +63,10 @@ The config engine grew up so that families of similar sites share one reusable
   per-hoster mirrors, all config-only.
 
 ```bash
-python scraper.py --site dodi --search "spider-man" --all-pages
+# search one page:
+python scraper.py --site dodi --search "spider-man"
+# search + auto-paginate through every result page:
+python scraper.py --site dodi --search "spider-man" --all
 ```
 
 ## What's New in v4.5 — Config-driven sites (add a site without code)

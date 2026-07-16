@@ -33,6 +33,40 @@ class FakeAdapter(SiteAdapter):
         return "https://mediafire.com/final"
 
 
+class FullSiteFakeAdapter(FakeAdapter):
+    """Full-site-capable adapter that records whether sitemap discovery ran."""
+    supports_full_site = True
+
+    def __init__(self):
+        super().__init__()
+        self.discover_called = False
+
+    def discover_all_urls(self, client) -> List[str]:
+        self.discover_called = True
+        return ["https://fake.test/g1", "https://fake.test/g2"]
+
+
+def test_scrape_all_with_search_uses_pagination_not_sitemap():
+    # --all + a search query must auto-paginate the SEARCH results, never invoke
+    # full-site sitemap discovery (which would ignore the query).
+    a = FullSiteFakeAdapter()
+    engine = ScraperEngine(a, delay=0.0)
+    engine.client.get = lambda url, use_cache=True: "<html>stub</html>"
+    games, _ = engine.run(search_query="mario", max_pages=1, scrape_all=True)
+    assert a.discover_called is False
+    assert len(games) == 2
+
+
+def test_scrape_all_without_search_uses_sitemap():
+    # --all with no query on a full-site adapter => sitemap discovery path.
+    a = FullSiteFakeAdapter()
+    engine = ScraperEngine(a, delay=0.0)
+    engine.client.get = lambda url, use_cache=True: "<html>stub</html>"
+    games, _ = engine.run(search_query=None, max_pages=1, scrape_all=True)
+    assert a.discover_called is True
+    assert len(games) == 2
+
+
 def test_engine_dedup_and_resolution():
     engine = ScraperEngine(FakeAdapter(), delay=0.0)
     # Replace the network entirely with a constant HTML stub.

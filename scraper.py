@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NESTfetch v4.6 — Main entry point.
+NESTfetch v4.7 — Main entry point.
 
 A professional, modular, MULTI-SITE game-download metadata scraper.
 (Originally a single-site Nintendo Switch ROM scraper.)
@@ -68,6 +68,12 @@ def print_sites() -> None:
         print(f"      URL      : {m.base_url}")
         if m.description:
             print(f"      {Colours.GREY}{m.description}{Colours.RESET}")
+        try:
+            a = get_adapter(m.name)
+            print(f"      Formats  : {', '.join(a.format_choices().values())}")
+            print(f"      Hosters  : {', '.join(a.hoster_choices().values())}")
+        except Exception:
+            pass
     print()
 
 
@@ -87,6 +93,8 @@ def run_link_check(params: dict) -> dict:
         output_path=params.get("output"),
         workers=params.get("workers", 5),
         delay=params.get("delay", 0.0),
+        rate_limit=params.get("rate_limit", 0.0),
+        use_cache=params.get("use_cache", False),
     )
     if report:
         # Persist link health to the database (first_dead_at tracking).
@@ -108,6 +116,26 @@ def run_link_check(params: dict) -> dict:
     else:
         log.warning("Link check did not produce a report (see errors above).")
     return stats
+
+
+def _validate_filter(value: str, choices: dict, kind: str, site_name: str) -> str:
+    """Validate a format/hoster filter against the chosen site's own choices.
+
+    Non-fatal: an unknown value is passed through with a warning (hoster/format
+    matching is substring-based, so a custom value may still be intentional).
+    """
+    if not value or str(value).upper() == "ALL":
+        return "ALL"
+    allowed = {str(v).upper() for v in choices.values()}
+    if str(value).upper() in allowed:
+        return value
+    log.warning(
+        "%s'%s' is not a listed %s filter for site '%s' (valid: %s). "
+        "Proceeding anyway — results may be empty.%s",
+        Colours.YELLOW, value, kind, site_name,
+        ", ".join(sorted(allowed)) or "ALL", Colours.RESET,
+    )
+    return value
 
 
 def do_scrape(params: dict):
@@ -136,6 +164,11 @@ def do_scrape(params: dict):
     site = params.get("site") or "switchroms"
     adapter = get_adapter(site)
     log.info("%sTarget site:%s %s (%s)", Colours.CYAN, Colours.RESET, adapter.name, adapter.platform)
+
+    # Filters are per-site: validate the requested format/hoster against this
+    # site's own advertised choices (see --list-sites).
+    fmt_filter = _validate_filter(fmt_filter, adapter.format_choices(), "format", adapter.name)
+    hoster_filter = _validate_filter(hoster_filter, adapter.hoster_choices(), "hoster", adapter.name)
 
     # Run scraper.
     engine = ScraperEngine(
