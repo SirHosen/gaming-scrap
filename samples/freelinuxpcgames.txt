@@ -1,0 +1,77 @@
+### HALAMAN LISTING: https://freelinuxpcgames.com/
+
+**1. HTML SATU blok item game di daftar**
+```html
+<article id="post-2096" class="post-2096 post type-post status-publish format-standard has-post-thumbnail hentry category-action tag-hearthlands-free-download-linux-game tag-hearthlands-full-linux-native-game tag-hearthlands-linux-game-download layout-grid ">
+<div class="article-content-col">
+<div class="content">
+<div class="nv-post-thumbnail-wrap img-wrap"><a href="https://freelinuxpcgames.com/hearthlands/" rel="bookmark" title="Hearthlands (1.3.1)"><img width="678" height="381" src="https://i0.wp.com/freelinuxpcgames.com/wp-content/uploads/Hearthlands.jpg?resize=678%2C381&amp;ssl=1" class="skip-lazy wp-post-image" alt="Hearthlands" decoding="async" fetchpriority="high" /></a></div><h2 class="blog-entry-title entry-title"><a href="https://freelinuxpcgames.com/hearthlands/" rel="bookmark">Hearthlands (1.3.1)</a></h2><ul class="nv-meta-list"></ul>		</div>
+</div>
+</article>
+```
+
+**2. HTML navigasi paginasi**
+```html
+<ul class='page-numbers'>
+<li><span aria-current="page" class="page-numbers current">1</span></li>
+<li><a class="page-numbers" href="https://freelinuxpcgames.com/page/2/">2</a></li>
+<li><a class="page-numbers" href="https://freelinuxpcgames.com/page/3/">3</a></li>
+<li><span class="page-numbers dots">&hellip;</span></li>
+<li><a class="page-numbers" href="https://freelinuxpcgames.com/page/34/">34</a></li>
+<li><a rel="next" class="next page-numbers" href="https://freelinuxpcgames.com/page/2/">Next &raquo;</a></li>
+</ul>
+```
+
+**3. HTML form/box pencarian**
+```html
+<form role="search"
+method="get"
+class="search-form"
+action="https://freelinuxpcgames.com/">
+<label>
+<span class="screen-reader-text">Search for...</span>
+</label>
+<input type="search"
+class="search-field"
+aria-label="Search"
+placeholder="Search for..."
+value=""
+name="s"/>
+<button type="submit"
+class="search-submit nv-submit"
+aria-label="Search">
+<span class="nv-search-icon-wrap">
+<span class="nv-icon nv-search" >
+<svg width="15" height="15" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z" /></svg>
+</span>			</span>
+</button>
+</form>
+```
+
+### HALAMAN DETAIL: https://freelinuxpcgames.com/terraria/
+
+**4. HTML elemen judul game**
+```html
+<h1 class="title entry-title">Terraria (1.4.5.6)</h1>
+```
+
+**5. HTML blok metadata (genre, developer, dll)**
+```html
+<p>Genre : Action, Adventure, Sandbox<br />
+Developer : Re-Logic<br />
+Developer site : https://terraria.org/<br />
+Publisher : Re-Logic<br />
+Architecture : amd64<br />
+Version : 1.4.5.5 updated to 1.4.5.6<br />
+License : proprietary<br />
+Interface language : multilingual<br />
+Voice language : no<br />
+Tablet : not required</p>
+```
+
+**6. HTML LENGKAP blok download (beserta informasi ukuran file di sekitarnya)**
+```html
+<h2 style="text-align: center;">Terraria Linux Free Download</h2>
+<p style="text-align: center;"><em>File Size: 622 MB</em></p>
+<p style="text-align: center;"><a href="magnet:?xt=urn:btih:D1E89B902254F9826875AD97468254C06275593F&#038;tr=http%3A%2F%2Fbt4.t-ru.org%2Fann%3Fmagnet&#038;dn=Terraria%20%5Bamd64%5D%20%5BMulti%5D%20%5BMono%5D%20%5BGOG%5D"><strong>Terraria v1.4.5.6 [amd64][Multi][Mono][GOG]</strong></a></p>
+```

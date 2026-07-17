@@ -1,9 +1,46 @@
-# NESTfetch v4.7
+# NESTfetch v4.8
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.8 — 7 new sites & a reusable two-step download engine
+
+This release is about **breadth and depth of site coverage**. Seven new game
+sites were onboarded one-by-one from live HTML samples — every one a **pure JSON
+config with zero new site-specific code** — and the engine gained a reusable
+**two-step download flow** for sites that hide their real download links behind a
+second page.
+
+- **7 new sites** (`python scraper.py --list-sites` now shows **9** total):
+  - `freelinuxpcgames`, `skidrowcodex`, `ovagames` — WordPress repack/ROM sites.
+  - `romsfun` — multi-console ROMs; two-step hop to a `post_id`-keyed download page.
+  - `coolrom` — classic-console ROMs; two-step hop to `dlpop.php?id=…`, dual
+    grid/list listings, raw-byte size parsing.
+  - `nxbrew` — Switch NSP/XCI; download link embedded inside an
+    `onclick="window.open('…')"` gate button.
+  - `elamigos` — PC repacks with a whole block of multi-host mirrors (MEGA,
+    MediaFire, DataNodes, GoFile, Torrent, …).
+- **Reusable two-step engine.** A new `detail.index_from_detail` config block lets
+  any site declare "the download page URL is built from a value scraped off the
+  detail page" (e.g. a hidden `post_id` or numeric `id`). The engine fetches the
+  detail page, builds the real download/index URL, then parses mirrors from it —
+  no per-site code.
+- **Richer config extraction** exercised across the new sites: regex-filtered
+  listing links (ignore navbar/category anchors), gate URLs pulled out of
+  `onclick` handlers, hoster names cleaned of leading symbols (`★ ROOTZ` →
+  `ROOTZ`), and scoped mirror blocks. Every new site ships with a
+  `test_real_<site>_config` regression test.
+
+```bash
+python scraper.py --list-sites                          # 9 sites now
+python scraper.py --site romsfun --all --search "god of war"
+python scraper.py --site elamigos --pages 2
+```
+
+> Note: some search-result / full-site URLs for the new sites are best-effort and
+> flagged for live verification; listing + detail parsing is sample-verified.
 
 ## What's New in v4.7 — Per-site filters, DODI full-catalogue & smarter link checking
 

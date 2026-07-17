@@ -1,0 +1,114 @@
+### HALAMAN LISTING: `https://nxbrew.me/`
+
+**1. HTML LENGKAP dari SATU blok item game:**
+```html
+<article id="post-21883" class="hitmag-post post-21883 post type-post status-publish format-standard has-post-thumbnail hentry category-eshop-games category-game-updates category-switch-games category-switch-nsps">
+
+		
+			<a href="https://nxbrew.me/inferno-2/" title="Inferno 2 Switch NSP [Update] (eShop)">
+			<div class="archive-thumb">
+			<img width="348" height="215" src="https://nxbrew.me/wp-content/uploads/2026/07/Inferno-2-2-348x215.png" class="attachment-hitmag-grid size-hitmag-grid wp-post-image" alt="Inferno 2" decoding="async" fetchpriority="high" />			</div><!-- .archive-thumb -->
+		</a>
+		
+	<div class="archive-content">
+
+		
+		<header class="entry-header">
+			<h3 class="entry-title"><a href="https://nxbrew.me/inferno-2/" rel="bookmark">Inferno 2 Switch NSP [Update] (eShop)</a></h3>			<div class="entry-meta">
+							</div><!-- .entry-meta -->
+					</header><!-- .entry-header -->
+
+		<div class="entry-summary">
+			
+		</div><!-- .entry-summary -->
+		
+	</div><!-- .archive-content -->
+
+	
+</article><!-- #post-## -->
+```
+
+**2. HTML navigasi paginasi:**
+```html
+	<nav class="navigation pagination" aria-label="Posts pagination">
+		<h2 class="screen-reader-text">Posts pagination</h2>
+		<div class="nav-links"><span aria-current="page" class="page-numbers current">1</span>
+<a class="page-numbers" href="https://nxbrew.me/page/2/">2</a>
+<span class="page-numbers dots">&hellip;</span>
+<a class="page-numbers" href="https://nxbrew.me/page/213/">213</a>
+<a class="next page-numbers" href="https://nxbrew.me/page/2/">Next</a></div>
+	</nav>
+```
+
+---
+
+### HALAMAN DETAIL
+**URL yang dibuka:** `https://nxbrew.me/inferno-2/`
+
+**3. HTML Elemen Judul:**
+```html
+<h1 class="entry-title">Inferno 2 Switch NSP [Update] (eShop)</h1>
+```
+
+**4. HTML blok Info/Size Game:**
+*(Pada nxbrew, blok info berbentuk list `<ul>`)*
+```html
+<ul class="wp-block-list">
+<li>Title ID: 010063200AB12000</li>
+<li>Release Date: September 19, 2019</li>
+<li>Genre: Action, Arcade, RPG, Shooter</li>
+<li>Publisher: 2Awesome Studio</li>
+<li>Developer: 2Awesome Studio</li>
+<li>Region: [Europe, USA]</li>
+<li>Languages: English, Spanish, French, German, Italian</li>
+<li>Platform : <a href="https://www.nintendo.com/us/store/products/inferno-2-switch/?srsltid=AfmBOop3EgNz0wX7cEnyl0g1a-k8oxrWuIcGFJ-5cMyi-6cq1lmoPhmH" target="_blank" rel="noreferrer noopener">Nintendo Switch</a></li>
+<li>Required Firmware: Base – v8.0.1  |  Update – v9.0.0</li>
+<li>Rom Type: .NSP</li>
+</ul>
+```
+
+**5. HTML LENGKAP blok download/mirror:**
+*(Nxbrew tidak memberikan `<a href>` langsung ke hoster, melainkan menyembunyikan link di dalam button ber-script `onclick` menuju domain `secureclouds.org`)*
+```html
+<div class='code-block code-block-1' style='margin: 8px auto; text-align: center; display: block; clear: both;'>
+<!--googleoff: index-->
+
+<style>
+.nsp-download{
+display:inline-flex;
+align-items:center;
+gap:10px;
+padding:15px 35px;
+background:#28a745;
+color:#fff;
+font-size:18px;
+font-weight:700;
+border:none;
+border-radius:10px;
+box-shadow:0 6px 20px rgba(40,167,69,.3);
+cursor:pointer;
+transition:.3s;
+}
+
+.nsp-download:hover{
+background:#218838;
+transform:translateY(-2px);
+}
+
+.nsp-download span{
+font-size:22px;
+}
+</style>
+
+<center>
+<button
+type="button"
+class="nsp-download"
+rel="nofollow noopener noreferrer"
+onclick="window.open('https://secureclouds.org/?h=f6e20e656eb477ecb20f13a236ae4125&z=382','_blank','noopener,noreferrer');">
+<span>⬇</span> Download NSP
+</button>
+</center>
+
+<!--googleon: index--></div>
+```

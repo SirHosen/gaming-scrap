@@ -14,6 +14,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.8.0] - 2026-07-17
+
+### Added
+- **7 new site configs (pure JSON, no new code):** `freelinuxpcgames`,
+  `skidrowcodex`, `ovagames`, `romsfun`, `coolrom`, `nxbrew`, `elamigos`.
+  `--list-sites` now reports **9** sites. Each was onboarded from a live HTML
+  sample and locked in with a dedicated
+  `tests/test_config_adapter.py::test_real_<site>_config` regression test.
+- **Reusable two-step download engine.** New optional `detail.index_from_detail`
+  config block (`url_template`, `value` selector/attr, `slug`); `SiteAdapter`
+  gained `needs_detail_page` + `build_index_url_from_detail()`. When set, the
+  engine (`_scrape_single_game`) fetches the detail page first, builds the real
+  download/index URL from a scraped value (e.g. `post_id`, numeric `id`), and only
+  then parses mirrors. Used by `romsfun` (`/download/{slug}-{post_id}`) and
+  `coolrom` (`/dlpop.php?id={id}`). Covered by
+  `tests/test_engine.py::test_engine_two_step_fetches_detail_then_index`.
+- **Extraction capabilities exercised by the new configs:** regex-filtered listing
+  links (skip navbar/category anchors), gate URLs regex-extracted from
+  `onclick="window.open('…')"` (nxbrew), hoster names cleaned of leading symbols
+  (elamigos `★ ROOTZ` → `ROOTZ`), dual grid/list listing layouts + raw-byte sizes
+  (coolrom), and scoped mirror blocks (`#notiene` to exclude "complements").
+
+### Notes
+- Several search-result and full-site URLs for the new sites are best-effort and
+  flagged for live verification; browse + detail parsing is sample-verified.
+
+---
+
 ## [4.7.0] - 2026-07-15
 
 ### Added
@@ -289,7 +317,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.7.0...HEAD
+[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.8.0...HEAD
+[4.8.0]: https://github.com/USERNAME/nestfetch/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/USERNAME/nestfetch/compare/v4.6.0...v4.7.0
 [4.6.0]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...v4.6.0
 [4.5.0]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...v4.5.0

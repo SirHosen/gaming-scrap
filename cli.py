@@ -29,7 +29,7 @@ BANNER = f"""{Colours.CYAN}{Colours.BOLD}
    ██║╚██╗██║██╔══╝  ╚════██║   ██║   ██╔══╝  ██╔══╝     ██║   ██║     ██╔══██║
    ██║ ╚████║███████╗███████║   ██║   ██║     ███████╗   ██║   ╚██████╗██║  ██║
    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   ╚═╝     ╚══════╝   ╚═╝    ╚═════╝╚═╝  ╚═╝
-              NESTfetch v4.7 — Multi-Site Game Download Scraper
+              NESTfetch v4.8 — Multi-Site Game Download Scraper
   ════════════════════════════════════════════════════════════════════════════{Colours.RESET}"""
 
 
@@ -139,7 +139,7 @@ def interactive_menu() -> Tuple[str, dict]:
             "verbose": False,
         }
 
-    # ── Mode 7: watch mode (scheduler + notifications) ──────────────────
+    # ── Mode 7: watch mode (scheduler + notifications) ──────────���───────
     if mode == "7":
         import os
         from config import OUTPUT_DIR, CSV_FILENAME
@@ -268,7 +268,7 @@ def interactive_menu() -> Tuple[str, dict]:
 def build_arg_parser() -> argparse.ArgumentParser:
     """Build the argparse-based CLI for non-interactive / automated usage."""
     parser = argparse.ArgumentParser(
-        description="NESTfetch v4.7 — Multi-Site Game Download Scraper",
+        description="NESTfetch v4.8 — Multi-Site Game Download Scraper",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

@@ -1,0 +1,113 @@
+### HALAMAN LISTING: https://www.skidrowcodex.net/
+
+**1. HTML LENGKAP dari SATU blok postingan game (pembungkusnya):**
+```html
+                    <div class="blog-post " >
+
+		<div class="blog-twrapper">
+			<div class="blog-image right">
+							 					  <a href="https://www.skidrowcodex.net/worldwide-rush-update-v1324-tenoke/" data-wpel-link="internal"> 				   
+                       <center><center><img loading="lazy" style="width:352px;height: 167px;object-fit: cover;" src="https://www.skidrowcodex.net/wp-content/uploads/2026/01/Worldwide-Rush-1515977121.webp" alt="Worldwide Rush Update v1.3.24-TENOKE" title="Worldwide Rush Update v1.3.24-TENOKE" /></center></a></center>					   			   
+					   <div class="request-game">
+					   </div>
+					   					   				 				 <div class="blog-date">
+				 					<span class="date" data-toggle="tooltip" data-html="true" title="5 days ago" data-placement="left">Jul<br />11</span>
+					<div class="plove"><a href="#" class="heart-love" id="heart-love-174815" title="Love this"><span class="heart-love-count"><i class="fas fa-heart"></i>0</span></a></div>
+				 </div>
+
+			</div><!-- blog-image -->
+
+			  <div class="blog-content ">
+						<h2><a href="https://www.skidrowcodex.net/worldwide-rush-update-v1324-tenoke/" data-wpel-link="internal"> Worldwide Rush Update v1.3.24-TENOKE </a></h2>
+						<p>Worldwide Rush lets you experience passenger transportation and management on a global scale. Experience the challenges and triumphs of managing a vast transportation network and become a global tycoon. Construct your headquarters, assemble a powerful fleet [&hellip;]</p>
+			  </div><!-- blog-content -->
+		  </div>
+ <div class="flex-container">
+
+<div class="button_skidrowcodex">
+<span class="fas fa-hashtag" style="letter-spacing: 4px;vertical-align: middle;color: darkgrey;"></span><a><a href="https://www.skidrowcodex.net/category/updates/tenoke-update-dlc/" rel="category tag" data-wpel-link="internal">TENOKE</a></a>
+</div>
+
+            <a class="button_skidrowcodex" href="https://www.skidrowcodex.net/worldwide-rush-update-v1324-tenoke/#comments" data-wpel-link="internal">
+      <span class="far fa-comments" style="letter-spacing: 3px;vertical-align: middle;color: darkgrey;"></span> No comments      </a> 
+      
+     <a class="button_skidrowcodex" href="https://www.skidrowcodex.net/tag/worldwide-rush/" data-wpel-link="internal"><i class="fas fa-tags" style="letter-spacing: 3px;vertical-align: middle;color: darkgrey;"></i> Worldwide Rush</a> 
+</div>
+
+<a href="https://www.skidrowcodex.net/worldwide-rush-update-v1324-tenoke/" class="button1_skidrowcodex" data-wpel-link="internal"><i class="fa-solid fa-angles-right" style="letter-spacing: 4px;vertical-align: middle;color: #000;"></i>Read more</a>
+
+<div class="clear"></div>        
+
+               <!-- blog-info -->
+        </div><!-- /.blog-post -->
+```
+
+**2. HTML navigasi paginasi:**
+```html
+                <div class="pagination" style="font-size: 10px;width: 100%;"><span>1 OF 4667</span><span class="current">1</span> <a href="https://www.skidrowcodex.net/page/2/" class="inactive" data-wpel-link="internal">2</a> <a href="https://www.skidrowcodex.net/page/3/" class="inactive" data-wpel-link="internal">3</a> <a href="https://www.skidrowcodex.net/page/4/" class="inactive" data-wpel-link="internal">4</a> <a href="https://www.skidrowcodex.net/page/5/" class="inactive" data-wpel-link="internal">5</a> <a href="https://www.skidrowcodex.net/page/6/" class="inactive" data-wpel-link="internal">6</a> <a href="https://www.skidrowcodex.net/page/7/" class="inactive" data-wpel-link="internal">7</a> <a href="https://www.skidrowcodex.net/page/8/" class="inactive" data-wpel-link="internal">8</a> <a href="https://www.skidrowcodex.net/page/9/" class="inactive" data-wpel-link="internal">9</a> <a href="https://www.skidrowcodex.net/page/10/" class="inactive" data-wpel-link="internal">10</a><a href="https://www.skidrowcodex.net/page/4667/" data-wpel-link="internal">LAST</a></div>
+```
+
+**3. HTML form pencarian (Search Form AJAX):**
+```html
+        <form id="asp-search-form" action="" method="post">
+            <div id="asp-search-container">
+                <input type="text" name="asp_search" id="asp-search-input" placeholder="TYPE HERE TO SEARCH. FIND YOUR GAME ...">
+                <div id="asp-category-switches">
+                    <label class="switch">
+                        <input type="checkbox" name="asp_category[]" value="25955">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="switch-label">GAMES</span>
+                    <label class="switch">
+                        <input type="checkbox" name="asp_category[]" value="25956">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="switch-label">UPDATES</span>
+                </div>
+            </div>
+            <div id="asp-search-results"></div>
+        </form>
+```
+
+
+---
+
+### HALAMAN DETAIL: https://www.skidrowcodex.net/palworld-rune/
+
+**4. HTML elemen judul:**
+```html
+            <h1>Palworld-RUNE            </h1>
+```
+
+**5. HTML baris/elemen yang memuat "SIZE:" dan info rilis (GENRE, PROTECTION, dll):**
+Untuk blok info rilis (genre, developer, dll):
+```html
+<div class="game-info">
+<ul>
+<li><img decoding="async" src="/title.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Game Title:</strong> Palworld</li>
+<li><img decoding="async" src="/steam.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Store Page:</strong> <a href="https://store.steampowered.com/app/1623730" rel="nofollow external noopener noreferrer" data-wpel-link="external" target="_blank">https://store.steampowered.com/app/1623730</a> <span class="discount-rate" data-toggle="tooltip" data-html="true" data-placement="right" title="Discount is available for this game.</br><strike>$14.99</strike> | <b>$10.49</b>"> -30%</span></li>
+<li><img loading="lazy" decoding="async" src="/metacritic.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Metacritic:</strong> <a href="https://www.metacritic.com/game/palworld" rel="nofollow external noopener noreferrer" data-wpel-link="external" target="_blank">https://www.metacritic.com/game/palworld</a> <span class="metacritic-score" data-toggle="tooltip" data-placement="right" data-html="true" title=" ">75</span></li>
+<li><img loading="lazy" decoding="async" src="/genres.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Genre:</strong> <a href="https://www.skidrowcodex.net/genre/open-world/" style="font-size: 14px !important; background-color: transparent !important;" data-wpel-link="internal"><button class="genres-btn"><span>Open World</span></button></a> <a href="https://www.skidrowcodex.net/genre/survival/" style="font-size: 14px !important; background-color: transparent !important;" data-wpel-link="internal"><button class="genres-btn"><span>Survival</span></button></a> <a href="https://www.skidrowcodex.net/genre/creature-collector/" style="font-size: 14px !important; background-color: transparent !important;" data-wpel-link="internal"><button class="genres-btn"><span>Creature Collector</span></button></a> <a href="https://www.skidrowcodex.net/genre/multiplayer/" style="font-size: 14px !important; background-color: transparent !important;" data-wpel-link="internal"><button class="genres-btn"><span>Multiplayer</span></button></a> <a href="https://www.skidrowcodex.net/genre/open-world-survival-craft/" style="font-size: 14px !important; background-color: transparent !important;" data-wpel-link="internal"><button class="genres-btn"><span>Open World Survival Craft</span></button></a>  <span class="dropdown" style="padding: 0px;"><a class="dropdown-toggle" data-toggle="dropdown" style="padding: 0px !important; border-bottom: none !important; border: none !important;"><button class="genres-btn" style="background: cadetblue;border-radius: 0px;"><span>SHOW MORE <i class="fa-solid fa-chevron-down fa-lg"></i></span></button></a><ul class="dropdown-menu" style="border-color: darkgray !important;column-count: 3;width: max-content;background-color: darkgray;margin-top: 5px;border-radius: 0;"><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/online-co-op/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Online Co-Op</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/indie/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Indie</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/crafting/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Crafting</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/co-op/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Co-op</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/adventure/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Adventure</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/base-building/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Base Building</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/sandbox/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Sandbox</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/building/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Building</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/automation/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Automation</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/third-person-shooter/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Third-Person Shooter</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/rpg/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>RPG</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/action/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Action</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/anime/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Anime</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/early-access/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Early Access</span></button></a></li><li role="presentation" style="padding: 0px;border-bottom: none !important;right: 0px;width: auto;margin-bottom: 0px;border-top: 1px solid #a9a9a9;"><a href="https://www.skidrowcodex.net/genre/exploration/" style="font-size: 10px !important;background-color: darkgray !important;color: #000000;font-weight: 700;letter-spacing: 1px;text-transform: uppercase;padding-left: 20px !important;background-image: none;" data-wpel-link="internal"><button class="genres-btn"><span>Exploration</span></button></a></li></ul></span>
+<li><img loading="lazy" decoding="async" src="/developer.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Developer:</strong> Pocketpair</li>
+<li><img loading="lazy" decoding="async" src="/publisher.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Publisher:</strong> Pocketpair</li>
+<li><img loading="lazy" decoding="async" src="/playtime.svg" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Game Length:</strong> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" /><div style="font-size: 14px; width: fit-content; display: inline-block;" data-toggle="tooltip" data-html="true" data-placement="right" title="Game not found"><i class="ph ph-hourglass-medium" style="font-size: 20px; vertical-align: sub;"></i> <strong>Main:</strong> N/A <i class="ph ph-minus"></i> <i class="ph ph-sword" style="font-size: 20px; vertical-align: sub;"></i> <strong>Extra:</strong> N/A <i class="ph ph-minus"></i> <i class="ph ph-trophy" style="font-size: 20px; vertical-align: sub;"></i> <strong>All:</strong> N/A</div></li>
+<li><img loading="lazy" decoding="async" src="/rating.svg" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>User Rating:</strong> <span data-toggle="tooltip" data-placement="right" title="94.33％ of the 438,299 user reviews for this game are positive." data-html="true" style="color:#65DDB9;"><i class="fa-solid fa-arrow-up" style="letter-spacing: 2px;font-size: 13px;"></i>413,433&nbsp;&nbsp;<span style="color:#E64C3C;"><i class="fa-solid fa-arrow-down" style="letter-spacing: 2px;font-size: 13px;"></i>24,866&nbsp;&nbsp;<span style="color:#ccc;">Very Positive&nbsp;&nbsp;<a href="https://store.steampowered.com/app/1623730/#app_reviews_hash" target="_blank" data-wpel-link="external" rel="external noopener noreferrer"><i class="fas fa-external-link-alt"></i></a></span> </li>
+<li><img loading="lazy" decoding="async" src="/date.png" alt="" width="22" height="22" style="float: left;"/> &nbsp; <strong>Release Date:</strong> 9 Jul, 2026</li>
+</ul>
+</div>
+```
+
+Dan ini untuk baris info SIZE-nya:
+```html
+<blockquote><p>Palworld-RUNE</p>
+<p>SIZE: 32.3 GB</p></blockquote>
+```
+
+**6. HTML LENGKAP blok daftar host download:**
+Berbeda dari situs sebelumnya, SkidrowCodex menggunakan format teks hoster, lalu menyembunyikan link aslinya di dalam tag `<links>`. Berikut adalah HTML mentah dari bagian tersebut yang memuat nama host dan linknya:
+```html
+<div style="margin-bottom: 10px;color:#fff;font-size:13px;font-family:verdana,geneva,sans-serif;">1fichier.com, dailyuploads.net, ddownload.com, gofile.io, megaup.net, usersdrive.com, vikingfile.com</div>
+<links><a href="https://fileguard.cc/0b52e85cfb" rel="nofollow external noopener noreferrer" data-wpel-link="external" target="_blank">https://fileguard.cc/0b52e85cfb</a></links>
+```
+
+Silakan beritahu saya situs dan target berikutnya yang ingin diekstrak!

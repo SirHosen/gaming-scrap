@@ -55,6 +55,12 @@ class SiteAdapter(ABC):
     #: engine then keeps redirect_url as the mirror link, e.g. DODI Repacks).
     resolves_final_link: bool = True
 
+    #: Two-step sites link from a detail page to a *separate* download-index
+    #: page whose URL cannot be derived from the detail URL alone (it needs a
+    #: value scraped from the detail page, e.g. a numeric post id). When True,
+    #: the engine fetches the detail page and calls build_index_url_from_detail().
+    needs_detail_page: bool = False
+
     # ── convenience passthroughs ───────────────────────────────────────
     @property
     def name(self) -> str:
@@ -124,6 +130,11 @@ class SiteAdapter(ABC):
 
     def parse_detail_title(self, html: str) -> Optional[str]:
         """Recover a game's real title from its detail page (used for sitemap stubs)."""
+        return None
+
+    def build_index_url_from_detail(self, detail_html: str, detail_url: str) -> Optional[str]:
+        """Given a fetched detail page, return the download-index URL to fetch
+        next (for two-step sites). Default: None (single-step sites)."""
         return None
 
     # ── OPTIONAL: interactive filter menus (per-site) ──────────────────

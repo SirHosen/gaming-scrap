@@ -253,7 +253,25 @@ class ScraperEngine:
         # Ensure provenance is stamped even for listing-sourced games.
         self.adapter.stamp(game)
 
-        download_index_url = self.adapter.build_download_index_url(game.detail_url)
+        # Two-step sites (e.g. ROM catalogues) link from the detail page to a
+        # separate download-index page whose URL cannot be derived from the
+        # detail URL alone (it needs a value scraped from the detail page, such
+        # as a numeric post id). For those, fetch the detail page first and let
+        # the adapter build the real index URL from it.
+        if getattr(self.adapter, "needs_detail_page", False):
+            detail_html = self.client.get(game.detail_url)
+            if not detail_html:
+                return None
+            if game.title == self.adapter.slug_to_title(game.detail_url):
+                real_title = self.adapter.parse_detail_title(detail_html)
+                if real_title:
+                    game.title = real_title
+            download_index_url = (
+                self.adapter.build_index_url_from_detail(detail_html, game.detail_url)
+                or self.adapter.build_download_index_url(game.detail_url)
+            )
+        else:
+            download_index_url = self.adapter.build_download_index_url(game.detail_url)
         log.debug("Scraping mirror index: %s", download_index_url)
 
         html = self.client.get(download_index_url)

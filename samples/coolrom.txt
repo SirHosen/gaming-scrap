@@ -1,0 +1,91 @@
+### HALAMAN LISTING
+
+**1. HTML LENGKAP dari SATU blok item ROM di daftar (elemen pembungkus)**
+Di halaman listing CoolROM, terdapat dua format daftar (Thumbnail Grid & List Tabel).
+Format *Thumbnail Grid (Top Games)*:
+```html
+<td width="118" align="center" valign="top"><a href="/roms/psx/39843/Yu-Gi-Oh!_Forbidden_Memories.php"><img src="/screenshots/psx/Yu-Gi-Oh%21 Forbidden Memories.jpg?v=1781297703" width="118" height="102" border="0"><br><font size="1">Yu-Gi-Oh! Forbidden Memories</font></a></td>
+```
+
+Format *List Tabel (Top 50 Downloaded)*:
+```html
+<tr><td><a href="/roms/psx/39136/Jackie_Chan_Stuntmaster.php">Jackie Chan Stuntmaster</a></td><td width="65" align="right">23,944,030</td></tr>
+```
+
+**2. HTML navigasi paginasi**
+Situs ini tidak menggunakan navigasi halaman (Next/Prev) klasik pada halaman tersebut, melainkan menggunakan *toggle* JavaScript untuk memunculkan tabel berikutnya:
+```html
+<a href="#" onclick="if (!window.__cfRLUnblockHandlers) return false; $('#dl25').toggle();return false;" class="blue">Show Next 25...</a>
+```
+
+**3. HTML box pencarian + menu/daftar console**
+Ini adalah bagian dari navbar global yang menampung form search dan dropdown console/emulators:
+```html
+<table width="980" class="navbar" bgcolor="#5685c4">
+<tbody><tr><td width="*" class="nav" align="left" style="padding-top:3px;margin-top:2px;margin-bottom:0px;padding-bottom:0px;">
+
+&nbsp;<a href="/" class="nav"><b>Home</b></a> |
+<a href="/faq.php" class="nav"><b>FAQ</b></a> |
+<a href="/tutorial.php" class="nav"><b>Tutorial</b></a> |
+<div class="dropdown">
+  <button class="dropbtn">Emulators</button> |
+  <div class="dropdown-content">
+  	<a href="/emulators/android/">Android</a>
+	<a href="/emulators/ios/">iOS</a>
+	<a href="/emulators/arcade/">Arcade</a>
+	<a href="/emulators/psx/">Sony Playstation</a>
+  </div></div>
+<div class="dropdown">
+  <button class="dropbtn">ROMs</button> |
+  <div class="dropdown-content">
+  	<a href="/roms/atari2600/">Atari 2600</a>
+	<a href="/roms/psx/">Sony Playstation</a>
+  </div>
+</div>
+<a href="/bios/" class="nav"><b>BIOS</b></a> |
+<a href="/queue.php" class="nav"><b>Queue (0)
+</b></a></td><td width="240" align="right" style="padding-top:0px;margin-top:0px;margin-bottom:0px;padding-bottom:0px;"><form style="padding-top:0px;margin-top:5px;margin-bottom:0px;padding-bottom:0px;" method="GET" action="/search" class="nav"><input type="text" name="q" size="18" placeholder="ROM Search" maxlength="100" class="search"><input type="submit" style="font: 9pt verdana;" value="Go"></form></td></tr>
+
+</tbody></table>
+```
+
+---
+
+### HALAMAN DETAIL
+
+**4. HTML elemen judul game**
+```html
+<div style="font-size:20px;font-weight:bold;">Aladdin</div>
+```
+
+**5. HTML blok info (console/platform, region, ukuran/size, genre, rating/downloads)**
+```html
+<font size="2"><center><font color="#FFFFFF"><b>Game Info</b></font></center><font color="#FFFFFF"><br>
+
+	<b>Game:</b> <span class="fn">Aladdin</span><br><br>
+ 	<b>File Name:</b> Aladdin.zip<br><br>
+ 	<b>File Size:</b> 1.09 MB<br><br><b>Genre:</b> <a href="/roms/genesis/action/">Action/Platform</a><br><br><b>System:</b> <a href="/roms/genesis/">Sega Genesis</a><br><br><b>Downloads:</b> 1,114,436<br><br><b>Rating:</b> <img src="/images/star_full_small.png" width="15" height="15"><img src="/images/star_full_small.png" width="15" height="15"><img src="/images/star_full_small.png" width="15" height="15"><img src="/images/star_full_small.png" width="15" height="15"><img src="/images/star_full_small.png" width="15" height="15"><br>(<span class="rating">4.86</span>/5, <span class="votes">4,482</span> votes)<br><br></font><form method="post" action="/rate.php" style="margin:0px; padding: 0px;">
+		<input type="hidden" name="id" value="1205">
+		<input type="hidden" name="host" value="coolrom.com">
+		<input type="hidden" name="csrf_token" value="c46d131d1d8b9c1c1989765349676038">
+		<select name="rating" size="1" onchange="if (!window.__cfRLUnblockHandlers) return false; submit(this.form)" style="font-family: Verdana; font-size: 12px; color: #000000">
+		<option value="6">Rate This Game!</option>
+		<option value="5">5 (Excellent)</option>
+		<option value="4">4 (Good)</option>
+		<option value="3">3 (Average)</option>
+		<option value="2">2 (Poor)</option>
+		<option value="1">1 (Awful)</option>
+		</select>
+		</form></font>
+```
+
+**6. HTML LENGKAP tombol/link download**
+Pada halaman awal detail, terdapat tombol Download yang menggunakan trigger script:
+```html
+<a class="linkdownload" href="javascript:void(0)"><img src="/images/download_button2.png" alt="Download File" style="width:300px;"><div class="download-button">DOWNLOAD FILE</div></a>
+```
+
+Setelah tombol tersebut diklik (mengaktifkan *modal* / *redirect perantara*), link unduhan final (direct link ke CDN yang tersembunyi) terlihat seperti ini:
+```html
+<a onclick="if (!window.__cfRLUnblockHandlers) return false; redirect()" href="https://dl.coolrom.com/roms/genesis/Aladdin.zip/yHPfNaHnGk58iqdCBQ2C_NJbwWERgl52Ss-qFRciVWE/1784207192/" data-google-interstitial="false"><font style="font-size:12px;">Continue to download in my current browser</font></a>
+```

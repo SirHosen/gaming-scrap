@@ -106,12 +106,21 @@ tetap bisa pakai adapter Python sebagai escape hatch. Lihat
 dukungan token `{base}`, mode mirror `labeled_group` (nama hoster = teks di depan
 link), dan `resolve.mode: "none"` untuk situs yang link-nya lewat shortener/captcha.
 
-Situs yang masih mau ditambah (butuh sampel HTML):
+**Batch situs baru ✅ SELESAI (v4.8):** 7 situs di-onboard satu per satu dari
+sampel HTML live, semuanya **config JSON murni tanpa kode baru**, plus mesin
+**two-step** (detail → halaman download via nilai yang di-scrape, mis. `post_id`/
+`id`) yang kini reusable lewat blok `detail.index_from_detail`.
+
+Status situs:
 - [x] Situs game Windows — **DODI Repacks** (`--site dodi`) via preset `_preset_wordpress-repack.json`
-- [ ] Situs game Windows lain (tinggal file ~4 baris `extends`)
+- [x] **freelinuxpcgames**, **skidrowcodex**, **ovagames** — situs repack/ROM (config standalone)
+- [x] **romsfun** — ROM multi-console, two-step `post_id`
+- [x] **coolrom** — ROM konsol klasik, two-step `dlpop.php?id=`, listing grid+list
+- [x] **nxbrew** — Switch NSP/XCI, link di dalam `onclick="window.open()"`
+- [x] **elamigos** — repack PC multi-mirror (gate zpaste)
 - [ ] Situs emulator
-- [ ] Situs game Linux
-- [ ] dst.
+- [ ] Situs game Linux tambahan
+- [ ] dst. (tinggal drop file JSON di `sites/configs/`)
 
 ---
 

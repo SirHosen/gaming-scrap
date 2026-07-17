@@ -46,6 +46,45 @@ class FullSiteFakeAdapter(FakeAdapter):
         return ["https://fake.test/g1", "https://fake.test/g2"]
 
 
+class TwoStepFakeAdapter(FakeAdapter):
+    """Two-step adapter: the engine must fetch the detail page first, then use
+    build_index_url_from_detail() to derive the real download-index URL."""
+    needs_detail_page = True
+
+    def __init__(self):
+        super().__init__()
+        self.index_built_from = []
+
+    def build_index_url_from_detail(self, detail_html, detail_url):
+        self.index_built_from.append((detail_url, detail_html))
+        return detail_url + "/index-from-detail"
+
+
+def test_engine_two_step_fetches_detail_then_index():
+    a = TwoStepFakeAdapter()
+    engine = ScraperEngine(a, delay=0.0)
+    fetched = []
+
+    def rec(url, use_cache=True):
+        fetched.append(url)
+        return f"<html>{url}</html>"
+
+    engine.client.get = rec
+    games, _ = engine.run(search_query=None, max_pages=1, scrape_all=False)
+
+    assert len(games) == 2
+    # The detail page itself was fetched for each game...
+    assert "https://fake.test/g1" in fetched
+    assert "https://fake.test/g2" in fetched
+    # ...and the index URL derived from that detail page was fetched next.
+    assert "https://fake.test/g1/index-from-detail" in fetched
+    # build_index_url_from_detail received the fetched detail HTML + detail URL.
+    assert ("https://fake.test/g1", "<html>https://fake.test/g1</html>") in a.index_built_from
+    for g in games:
+        assert len(g.mirrors) == 1
+        assert g.mirrors[0].final_link == "https://mediafire.com/final"
+
+
 def test_scrape_all_with_search_uses_pagination_not_sitemap():
     # --all + a search query must auto-paginate the SEARCH results, never invoke
     # full-site sitemap discovery (which would ignore the query).

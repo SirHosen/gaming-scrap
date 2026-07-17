@@ -1,0 +1,57 @@
+### HALAMAN LISTING: `https://www.ovagames.com/`
+
+**1. HTML LENGKAP dari SATU blok postingan game:**
+```html
+<div class="home-post-wrap"><div class="home-post-titles"><h2><a href="https://www.ovagames.com/age-of-empires-iv-anniversary-edition-multi24-elamigos.html" title="Permanent Link to Age of Empires IV Anniversary Edition MULTi24-ElAmigos" data-wpel-link="internal">
+Age of Empires IV Anniversary Editio...            </a></h2></div><div class="post-inside">
+<a href="https://www.ovagames.com/age-of-empires-iv-anniversary-edition-multi24-elamigos.html" title="Permanent Link to Age of Empires IV Anniversary Edition MULTi24-ElAmigos" data-wpel-link="internal">
+<img src="https://blogger.googleusercontent.com/img/a/AVvXsEgfABj74Cx60SFTj96u3IHspWi6NhLiX2NXnLxAZYe0dFvJ5XpMQ5xX0U2BYYvCSzAlW8M4a-meAn5dOHJW7uYLd-8Py6N5n0rsSTUvrgz6tNrEJn7zuL2-kmgHiiMl0tRyV7o8mK2tDIU79uHNM5ut6FWjtJOHKVbfNlZipnc94lcfZKuJgCAopW25=s460" class='thumbnail'  alt='Age of Empires IV Anniversary Edition MULTi24-ElAmigos' width='90' height='90' />            </a><div style="clear: both;"></div><a href="https://www.ovagames.com/age-of-empires-iv-anniversary-edition-multi24-elamigos.html" rel="bookmark" style="float: right;" title="Permanent Link to Age of Empires IV Anniversary Edition MULTi24-ElAmigos" data-wpel-link="internal"><img src="https://www.ovagames.com/wp-content/themes/eGamer/images/readmore.gif" alt="Read More of Age of Empires IV Anniversary Edition MULTi24-ElAmigos" style="border: none;" /></a></div></div>
+```
+
+**2. HTML navigasi paginasi:**
+```html
+<div class='wp-pagenavi' role='navigation'>
+<span class='pages'>Page 1 of 414</span><span aria-current='page' class='current'>1</span><a class="page larger" title="Page 2" href="https://www.ovagames.com/page/2" data-wpel-link="internal">2</a><a class="page larger" title="Page 3" href="https://www.ovagames.com/page/3" data-wpel-link="internal">3</a><a class="page larger" title="Page 4" href="https://www.ovagames.com/page/4" data-wpel-link="internal">4</a><a class="page larger" title="Page 5" href="https://www.ovagames.com/page/5" data-wpel-link="internal">5</a><a class="page larger" title="Page 6" href="https://www.ovagames.com/page/6" data-wpel-link="internal">6</a><a class="page larger" title="Page 7" href="https://www.ovagames.com/page/7" data-wpel-link="internal">7</a><a class="page larger" title="Page 8" href="https://www.ovagames.com/page/8" data-wpel-link="internal">8</a><a class="page larger" title="Page 9" href="https://www.ovagames.com/page/9" data-wpel-link="internal">9</a><a class="page larger" title="Page 10" href="https://www.ovagames.com/page/10" data-wpel-link="internal">10</a><span class='extend'>...</span><a class="nextpostslink" rel="next" aria-label="Next Page" href="https://www.ovagames.com/page/2" data-wpel-link="internal">»</a><a class="last" aria-label="Last Page" href="https://www.ovagames.com/page/414" data-wpel-link="internal">Last »</a></div>
+```
+
+**3. HTML form pencarian:**
+```html
+<div class="search_bg"><div id="search"><form method="get" action="https://www.ovagames.com/" style="padding:0px 0px 0px 0px; margin:0px 0px 0px 0px">
+<input type="text"  name="s" value=""/>
+<input type="image" class="input" src="https://www.ovagames.com/wp-content/themes/eGamer/images/search-button-Rust.gif" value="submit"/></form></div></div>
+```
+
+---
+
+### HALAMAN DETAIL: `https://www.ovagames.com/age-of-empires-iv-anniversary-edition-multi24-elamigos.html`
+
+**4. HTML elemen judul:**
+```html
+<h1 class="post-title"><a href="https://www.ovagames.com/age-of-empires-iv-anniversary-edition-multi24-elamigos.html" rel="bookmark" title="Permanent Link to Age of Empires IV Anniversary Edition MULTi24-ElAmigos" data-wpel-link="internal">
+Age of Empires IV Anniversary Edition MULTi24-ElAmigos            </a></h1>
+```
+
+**5. HTML blok info game (genre, ukuran, dll):**
+```html
+<p><span style="color: #ff0000;"><strong>Title</strong></span>: Age of Empires IV Anniversary Edition MULTi24-ElAmigos<br />
+<span style="color: #ff0000;"><strong>Genre</strong></span>: Strategy<br />
+<span style="color: #ff0000;"><strong>Developer</strong></span>: Relic Entertainment, World&#8217;s Edge<br />
+<span style="color: #ff0000;"><strong>Publisher</strong></span>: Xbox Game Studios<br />
+<span style="color: #ff0000;"><strong>Release Date</strong></span>: 28 Oct, 2021<br />
+<span style="color: #ff0000;"><strong>Languages</strong></span>: English, French, Italian, German, Spanish, Etc &#8230;<br />
+<span style="color: #ff0000;"><strong>File Size</strong></span>: 39.33 GB / Split 8 parts 4.95 GB Compressed<br />
+<span style="color: #ff0000;"><strong>Mirrors</strong></span>: Datanodes, Filekeeper, Fileq, Google Drive, Mediafire, Torrent</p>
+```
+
+**6. HTML LENGKAP blok download/mirror:**
+*(OvaGames tidak memiliki halaman "mirror" sendiri, melainkan melempar seluruh link ke container `filecrypt.cc`. Tautan-tautan di bawah ini adalah list hoster yang merujuk pada kontainer filecrypt).*
+```html
+<div class="dl-wraps-dl cl"><div class="dl-wraps-item"><b>AGE OF EMPIRES IV ANNIVERSARY EDITION MULTI24-ELAMIGOS</b></p><p><a href="https://www.filecrypt.cc/Container/5A7600206A.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">DATANODES</a><br />
+<a href="https://www.filecrypt.cc/Container/4A58475266.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">FILEKEEPER</a><br />
+<a href="https://www.filecrypt.cc/Container/4FA9B83B5F.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">FILEQ</a><br />
+<a href="https://www.filecrypt.cc/Container/0DF4A83CA2.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">GOOGLE DRIVE</a><br />
+<a href="https://www.filecrypt.cc/Container/7E993049F6.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">MEDIAFIRE</a></p></div></div><div class="dl-wraps-dl cl"><div class="dl-wraps-item"><b>AGE OF EMPIRES IV ANNIVERSARY EDITION UPDATE V16.3.11214-ELAMIGOS</b></p><p><a href="https://www.filecrypt.cc/Container/AE880974D6.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">DATANODES</a><br />
+<a href="https://www.filecrypt.cc/Container/AE880974D6.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">FILEKEEPER</a><br />
+<a href="https://www.filecrypt.cc/Container/AE880974D6.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">FILEQ</a><br />
+<a href="https://www.filecrypt.cc/Container/AE880974D6.html" data-wpel-link="external" target="_blank" rel="nofollow noopener">MEDIAFIRE</a></p></div></div>
+```

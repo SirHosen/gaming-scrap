@@ -331,6 +331,9 @@ class GenericConfigAdapter(SiteAdapter):
         # link (or only resolvable via JS/captcha), so the engine must NOT fetch
         # and resolve each redirect page.
         self.resolves_final_link = (config.get("resolve") or {}).get("mode") != "none"
+        # Two-step download flow: a detail page links to a separate index page
+        # whose URL is built from a value scraped off the detail page.
+        self.needs_detail_page = bool((config.get("detail") or {}).get("index_from_detail"))
 
     # ── listing ────────────────────────────────────────────────────
     def build_listing_url(self, page: int, query: Optional[str] = None) -> str:
@@ -374,6 +377,42 @@ class GenericConfigAdapter(SiteAdapter):
         if tpl:
             return tpl.replace("{detail_url}", detail_url.rstrip("/"))
         return detail_url
+
+    def build_index_url_from_detail(self, detail_html: str, detail_url: str) -> Optional[str]:
+        """Two-step sites: build the real download-index URL from the detail page.
+
+        Config shape (detail.index_from_detail):
+            {
+              "url_template": "{base}download/{slug}-{value}",
+              "slug": "path_stem",          # last path segment, extension stripped
+              "value": {"selector": "[data-post_id]", "attr": "data-post_id"}
+            }
+        Tokens: {base} {slug} {value} {detail_url}.
+        """
+        spec = (self.config.get("detail") or {}).get("index_from_detail")
+        if not spec:
+            return None
+        soup = BeautifulSoup(detail_html, "html.parser")
+        value = extract_value(soup, spec.get("value"), self.base_url)
+        if not value:
+            return None
+        slug = self._detail_slug(detail_url, spec.get("slug"))
+        tpl = spec.get("url_template", "{detail_url}")
+        return (
+            tpl.replace("{base}", self.base_url)
+            .replace("{slug}", slug or "")
+            .replace("{value}", value)
+            .replace("{detail_url}", detail_url.rstrip("/"))
+        )
+
+    @staticmethod
+    def _detail_slug(detail_url: str, mode: Optional[str]) -> str:
+        path = detail_url.split("://", 1)[-1]
+        path = path.split("#", 1)[0].split("?", 1)[0]
+        last = path.rstrip("/").split("/")[-1]
+        if mode in (None, "", "path_stem"):
+            return re.sub(r"\.[a-z0-9]+$", "", last, flags=re.I)
+        return last
 
     def parse_mirrors(
         self,
