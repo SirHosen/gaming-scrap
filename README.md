@@ -484,6 +484,26 @@ pip install -e ".[dev,config]"
 pip install -r requirements-dev.txt
 ```
 
+> **Important:** because of the `src/` layout you must install the package
+> (`pip install -e .`) — or set `PYTHONPATH=src` — before `python -m nestfetch`
+> can find it. Run the commands from the folder that contains `pyproject.toml`.
+
+### Windows notes
+
+- `make` isn't built into Windows. A drop-in **`make.bat`** ships with the repo,
+  so the same targets work:
+  ```powershell
+  .\make.bat install-dev
+  .\make.bat check      # ruff + mypy + health-check + pytest
+  .\make.bat run
+  ```
+  (In `cmd.exe` you can just type `make check`.)
+- Without installing, set the path for the current session first:
+  ```powershell
+  $env:PYTHONPATH = "src"
+  python -m nestfetch --list-sites
+  ```
+
 ## Usage
 
 > Run via the module (`python -m nestfetch …`) or, after `pip install`, the

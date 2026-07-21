@@ -4,18 +4,18 @@ beautifulsoup4>=4.12.3
 # Optional — async fetching (Phase 3). Speeds up large full-site scrapes; the
 # code falls back to the threaded client automatically if this isn't installed.
 #   pip install aiohttp        (or: pip install nestfetch[async])
-aiohttp>=3.9.0
+# aiohttp>=3.9.0
 
 # Optional — headless-browser fallback for JS/timer ad-gates (off by default).
 # Enable RESOLVE_USE_BROWSER_FALLBACK=True in config.py, then install:
 #   pip install playwright && python -m playwright install chromium
-playwright>=1.44.0
+# playwright>=1.44.0
 
 # Optional — YAML config files (Phase 4). JSON config needs no extra deps; only
 # install this if you prefer config.yaml over config.json.
 #   pip install pyyaml        (or: pip install nestfetch[config])
-pyyaml>=6.0
+# pyyaml>=6.0
 
 # Dev / test only:
 #   pip install pytest        (or: pip install nestfetch[dev])
-pytest>=8.0.0
+# pytest>=8.0.0
