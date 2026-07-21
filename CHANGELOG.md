@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `tests/test_healthcheck.py` (4).
 
 ### Fixed
+- **Lint clean-up so `make check` passes with zero findings.** Removed
+  unused imports (`cli.py`, `link_checker.py`, `models.py`,
+  `config_adapter.py`), added a `TYPE_CHECKING` import for the
+  `RobotsPolicy` forward reference in `http_client.py` (F821), bound the
+  loop variable in the config-adapter `pick()` closure (B023), and split
+  multi-import / multi-statement lines in the test bootstraps (E401/E702).
 - **`.gitignore` config-preserve path** updated for the new layout
   (`!src/nestfetch/sites/configs/`), so shipped JSON configs are still tracked.
 - Added per-case `log.debug` diagnostics to previously silent `except` blocks

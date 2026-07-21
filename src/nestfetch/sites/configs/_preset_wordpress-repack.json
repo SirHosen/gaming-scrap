@@ -7,17 +7,26 @@
     "page_url": "{base}page/{page}/",
     "search_first_url": "{base}?s={query}",
     "search_url": "{base}page/{page}/?s={query}",
-    "item": "article",
+    "item": "article, div.post, div.type-post",
     "fields": {
       "title": [
-        "h2.entry-title a",
+        ".entry-title a",
         "h1.entry-title a",
-        "h2 a"
+        "h2.entry-title a",
+        "h3.entry-title a",
+        "h1 a",
+        "h2 a",
+        "h3 a"
       ],
       "detail_url": {
         "selector": [
+          ".entry-title a",
+          "h1.entry-title a",
           "h2.entry-title a",
-          "h2 a"
+          "h3.entry-title a",
+          "h1 a",
+          "h2 a",
+          "h3 a"
         ],
         "attr": "href",
         "transform": [
@@ -69,7 +78,12 @@
       "tag",
       "author",
       "page-sitemap",
-      "sitemap"
+      "user",
+      "faq",
+      "donate",
+      "troubleshooting",
+      "contact",
+      "requests"
     ],
     "game_url_pattern": "^https?://[^/]+/[^/]+/?$"
   }

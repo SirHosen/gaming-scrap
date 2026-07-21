@@ -72,6 +72,26 @@ Most sites need **zero Python** — they are pure JSON configs.
 Only reach for a hand-written Python adapter (like `switchroms.py`) when a site
 needs logic a config can't express.
 
+## Linting & style policy
+
+`make lint` runs `ruff check .`. The enabled rule set is deliberate and
+documented in `pyproject.toml`:
+
+- **Enabled:** `E`/`W` (pycodestyle), `F` (pyflakes), `B` (bugbear),
+  `C4` (comprehensions). These catch real problems: undefined names,
+  unused imports, likely bugs, and inefficient comprehensions.
+- **Intentionally NOT enabled:** `I` (isort) and `UP` (pyupgrade).
+  The project targets **Python 3.9** and keeps human-curated, grouped
+  imports plus `typing.List` / `Optional[...]` annotations. Every module
+  uses `from __future__ import annotations`, so these annotations are
+  strings at runtime and cost nothing; rewriting them to `list[...]` /
+  `X | None` is purely cosmetic and is left as an optional future change
+  (see `docs/ROADMAP.md`). If you bump the minimum Python version, you may
+  re-enable `UP`/`I` and run `ruff check --fix` in a dedicated PR.
+
+Keep the linter green rather than sprinkling `# noqa`; reach for an
+inline ignore only when a rule is genuinely wrong for a specific line.
+
 ## Pull requests
 
 - Keep PRs focused; update `CHANGELOG.md` under the top section.

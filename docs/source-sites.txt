@@ -1,3 +1,9 @@
+# NESTfetch — supported source sites
+#
+# Reference list of the game-download sites NESTfetch has adapters/configs for.
+# Scraping is gated by each site's robots.txt (see src/nestfetch/robots.py) and
+# governed by SECURITY.md (responsible-use stance). One URL per line.
+
 https://nxbrew.me/
 https://www.skidrowcodex.net/
 https://freelinuxpcgames.com/

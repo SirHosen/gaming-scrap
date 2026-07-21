@@ -65,9 +65,13 @@ target-version = "py39"
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-# A pragmatic, non-noisy rule set: pyflakes (F), pycodestyle (E/W),
-# isort (I), bugbear (B), pyupgrade (UP), comprehensions (C4).
-select = ["E", "W", "F", "I", "B", "UP", "C4"]
+# Deliberate rule set for a Python 3.9 target: pyflakes (F),
+# pycodestyle (E/W), flake8-bugbear (B), and comprehensions (C4).
+# isort (I) and pyupgrade (UP) are intentionally NOT enabled: the
+# project supports Python 3.9 and keeps curated, human-grouped imports
+# plus typing.List/Optional style (safe under `from __future__ import
+# annotations`). See CONTRIBUTING.md for the rationale.
+select = ["E", "W", "F", "B", "C4"]
 ignore = [
     "E501",  # line length is enforced by the formatter, not the linter
     "B008",  # allow function calls (config constants) as argument defaults

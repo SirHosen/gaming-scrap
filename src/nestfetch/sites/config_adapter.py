@@ -567,8 +567,9 @@ class GenericConfigAdapter(SiteAdapter):
                     urls.append(u)
 
         if sub_sitemaps:
+            sub_skip = [k for k in skip if k not in ("sitemap", "xml")]
             for sm in sub_sitemaps:
-                if any(k in sm.lower() for k in skip):
+                if any(k in sm.lower() for k in sub_skip):
                     continue
                 log.info("Reading sub-sitemap: %s", sm)
                 xml = client.get(sm)
