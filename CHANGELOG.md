@@ -7,10 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [4.9.0] - 2026-07-21
+
+### Changed
+- **Restructured into a `src/` package layout.** All modules moved from the repo
+  root into an importable `src/nestfetch/` package (with `__init__.py` and
+  `__main__.py`). Run with `python -m nestfetch` or the installed `nestfetch`
+  command. All internal imports rewritten to absolute `nestfetch.*` form; test
+  path bootstraps, `conftest.py`, and packaging (`package-dir`, `packages.find`,
+  `package-data`) updated accordingly. No behavioural changes.
+- **Docs consolidated under `docs/`** (`ARCHITECTURE.md`, `AUDIT.md`,
+  `ROADMAP.md`); repo root is now clean and scannable.
+- **Dashboard/CLI/package version bumped to `4.9`** across `webapp.py`,
+  `cli.py`, `__init__.py`, and `pyproject.toml`.
+
+### Added
+- **robots.txt politeness** (`nestfetch/robots.py`, on by default via
+  `RESPECT_ROBOTS_TXT`). The engine consults each host's `robots.txt` before
+  fetching and skips disallowed URLs; `robots.txt` itself is always fetched;
+  unreachable robots fails open (allow) with a debug log. Wired into
+  `HttpClient` (opt-in) and enabled by `ScraperEngine`.
+- **Config health-check** (`nestfetch/healthcheck.py`,
+  `python -m nestfetch.healthcheck`, `tools/healthcheck.py`): re-parses saved
+  `samples/` pages with each adapter and flags configs that extract 0 items.
+- **Continuous Integration** (`.github/workflows/ci.yml`): ruff + mypy +
+  9-site load check + health-check + pytest on Python 3.9 / 3.11 / 3.12.
+- **Dev tooling & scaffolding**: `[tool.ruff]` / `[tool.mypy]` config,
+  `requirements-dev.txt` (pinned), `Makefile` (`make check`), `.editorconfig`,
+  `CONTRIBUTING.md`, `SECURITY.md`, and `docs/ARCHITECTURE.md`.
+- **New tests** (suite now 82, all offline): `tests/test_robots.py` (6) and
+  `tests/test_healthcheck.py` (4).
+
+### Fixed
+- **`.gitignore` config-preserve path** updated for the new layout
+  (`!src/nestfetch/sites/configs/`), so shipped JSON configs are still tracked.
+- Added per-case `log.debug` diagnostics to previously silent `except` blocks
+  (adapter introspection, browser auto-open); documented the error-handling
+  policy that intentional best-effort cleanup (e.g. closing a connection) stays
+  quiet by design.
+
+---
+
+## [4.8.1] - 2026-07-21
+
+### Fixed
+- **Shipped site configs were being excluded from the package.** The blanket
+  `*.json` rule in `.gitignore` also swallowed `sites/configs/*.json`, so only the
+  built-in `switchroms` Python adapter was registered (`--list-sites` showed 1
+  site instead of 9) and all 8 `test_real_<site>_config` tests failed without the
+  files present. Added explicit `!sites/configs/` and `!sites/configs/*.json`
+  whitelist exceptions and restored the 8 configs + shared preset.
+- **Dashboard version mismatch.** `webapp.py` reported `4.4`; bumped to `4.8` to
+  match `pyproject.toml`, `scraper.py`, and `cli.py`.
+- **Placeholder project URLs.** Replaced `github.com/USERNAME/nestfetch` with the
+  real owner in `pyproject.toml` and `CHANGELOG.md`.
+- **Leftover single-site branding.** Default logger name `switchroms` →
+  `nestfetch`; `config.py` module docstring updated to "NESTfetch scraper".
+- **Stale README "Project Structure".** Rewritten to reflect the current
+  multi-site layout and to document the `sites/configs/` packaging exception.
+
+### Added
+- **Registry smoke tests** (`tests/test_registry_smoke.py`) that fail loudly if the
+  registry ever drops below the full 9-site roster — guarding against the config
+  packaging regression above.
+- **`AUDIT.md`** — full audit report (findings, root causes, fixes, verification).
+- **Strengthened Legal & Ethical Notice** in the README.
 
 ### Planned
 - More site adapters (Windows games, emulators, Linux, ...) — now mostly JSON configs.
+- Verify the best-effort search/full-site URLs for the newer sites against live pages.
 
 ---
 
@@ -317,17 +382,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added retries + exponential backoff, concurrency, coloured logging, and both
   JSON and CSV export.
 
-[Unreleased]: https://github.com/USERNAME/nestfetch/compare/v4.8.0...HEAD
-[4.8.0]: https://github.com/USERNAME/nestfetch/compare/v4.7.0...v4.8.0
-[4.7.0]: https://github.com/USERNAME/nestfetch/compare/v4.6.0...v4.7.0
-[4.6.0]: https://github.com/USERNAME/nestfetch/compare/v4.5.0...v4.6.0
-[4.5.0]: https://github.com/USERNAME/nestfetch/compare/v4.4.0...v4.5.0
-[4.4.0]: https://github.com/USERNAME/nestfetch/compare/v4.3.0...v4.4.0
-[4.3.0]: https://github.com/USERNAME/nestfetch/compare/v4.2.0...v4.3.0
-[4.2.0]: https://github.com/USERNAME/nestfetch/compare/v4.1.0...v4.2.0
-[4.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.1.0
-[4.0.0]: https://github.com/USERNAME/nestfetch/releases/tag/v4.0.0
-[3.3.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.3.0
-[3.2.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.2.0
-[3.1.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.1.0
-[3.0.0]: https://github.com/USERNAME/nestfetch/releases/tag/v3.0.0
+[Unreleased]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.8.0...HEAD
+[4.8.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.7.0...v4.8.0
+[4.7.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.6.0...v4.7.0
+[4.6.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.5.0...v4.6.0
+[4.5.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.4.0...v4.5.0
+[4.4.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.3.0...v4.4.0
+[4.3.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.2.0...v4.3.0
+[4.2.0]: https://github.com/CitraGivenchyA/nestfetch/compare/v4.1.0...v4.2.0
+[4.1.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v4.1.0
+[4.0.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v4.0.0
+[3.3.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v3.3.0
+[3.2.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v3.2.0
+[3.1.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v3.1.0
+[3.0.0]: https://github.com/CitraGivenchyA/nestfetch/releases/tag/v3.0.0

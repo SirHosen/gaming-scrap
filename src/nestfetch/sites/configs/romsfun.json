@@ -1,0 +1,70 @@
+{
+  "name": "romsfun",
+  "base_url": "https://romsfun.com/",
+  "category": "emulator",
+  "platform": "Multi-console ROM",
+  "description": "RomsFun — multi-console ROM catalogue (two-step download index).",
+  "listing": {
+    "first_page_url": "{base}browse-all-roms/",
+    "page_url": "{base}browse-all-roms/page/{page}/",
+    "search_first_url": "{base}?s={query}",
+    "search_url": "{base}page/{page}/?s={query}",
+    "item": "div.bg-white",
+    "fields": {
+      "title": [
+        "h3.font-bold a",
+        "h3 a"
+      ],
+      "detail_url": {
+        "selector": [
+          "h3.font-bold a",
+          "h3 a"
+        ],
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      },
+      "meta_size": {
+        "selector": "span.text-xs",
+        "transform": [
+          "strip"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "index_from_detail": {
+      "url_template": "{base}download/{slug}-{value}",
+      "slug": "path_stem",
+      "value": {
+        "selector": "[data-post_id]",
+        "attr": "data-post_id"
+      }
+    },
+    "mirror_item": "table.table-auto tbody tr",
+    "mirror_fields": {
+      "redirect_url": {
+        "selector": "td a",
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      },
+      "raw_text": "td a",
+      "format": "td:nth-of-type(2)",
+      "size": "td:nth-of-type(3)",
+      "hoster": {
+        "selector": "x-nonexistent",
+        "default": "ROMSFUN"
+      }
+    },
+    "title": [
+      "h1.text-xl",
+      "h1"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  }
+}

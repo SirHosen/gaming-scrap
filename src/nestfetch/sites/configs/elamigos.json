@@ -1,0 +1,58 @@
+{
+  "name": "elamigos",
+  "base_url": "https://www.elamigosgames.net/",
+  "category": "windows",
+  "platform": "Windows PC",
+  "description": "ElAmigos — multi-mirror PC game repacks (zpaste gates).",
+  "listing": {
+    "first_page_url": "{base}",
+    "page_url": "https://www.elamigosgames.net?page={page}",
+    "search_first_url": "https://www.elamigosgames.net?s={query}",
+    "search_url": "https://www.elamigosgames.net?page={page}&s={query}",
+    "item": "div.portfolio-item",
+    "fields": {
+      "title": [
+        "h6.card-title a",
+        "h6 a"
+      ],
+      "detail_url": {
+        "selector": [
+          "h6.card-title a",
+          "h6 a"
+        ],
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      },
+      "meta_size": {
+        "selector": "small.text-body-secondary",
+        "transform": [
+          "strip"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "mirror_item": "#notiene #dw a[href]",
+    "mirror_fields": {
+      "redirect_url": {
+        "attr": "href"
+      },
+      "hoster": {
+        "regex": "([A-Za-z0-9].*)",
+        "regex_group": 1,
+        "transform": [
+          "strip"
+        ]
+      }
+    },
+    "title": [
+      "h2.my-4",
+      "h1"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "name": "coolrom",
+  "base_url": "https://coolrom.com/",
+  "category": "emulator",
+  "platform": "Multi-console ROM",
+  "description": "CoolROM — classic console ROM downloads (two-step dlpop index).",
+  "listing": {
+    "first_page_url": "{base}roms/psx/",
+    "page_url": "{base}roms/psx/",
+    "search_first_url": "{base}search?q={query}",
+    "search_url": "{base}search?q={query}",
+    "item": "a[href]",
+    "fields": {
+      "title": {
+        "transform": [
+          "collapse_ws"
+        ]
+      },
+      "detail_url": {
+        "attr": "href",
+        "regex": "(/roms/[^/]+/\\d+/[^/]+\\.php)",
+        "regex_group": 1,
+        "transform": [
+          "absolute_url"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "index_from_detail": {
+      "url_template": "{base}dlpop.php?id={value}",
+      "value": {
+        "selector": "input[name='id']",
+        "attr": "value"
+      }
+    },
+    "mirror_item": "a[href^='http']",
+    "mirror_fields": {
+      "redirect_url": {
+        "attr": "href"
+      },
+      "hoster": {
+        "selector": "x-nonexistent",
+        "default": "COOLROM"
+      }
+    },
+    "title": [
+      "span.fn",
+      "h1"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  }
+}

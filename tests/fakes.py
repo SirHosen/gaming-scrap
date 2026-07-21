@@ -32,7 +32,7 @@ class FakeSession:
         self.calls: List[str] = []
         self.headers: dict = {}
 
-    def get(self, url, timeout=None, allow_redirects=True, stream=False):
+    def get(self, url, timeout=None, allow_redirects=True, stream=False, **kwargs):
         self.calls.append(url)
         r = self._responses
         if callable(r):

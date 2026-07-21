@@ -1,7 +1,7 @@
 """Tests for the link classifier + resolver (offline techniques only)."""
 from urllib.parse import quote
 
-import link_resolver as lr
+from nestfetch import link_resolver as lr
 
 
 def test_classify_url():
@@ -31,7 +31,7 @@ def test_extract_embedded_target():
 
 if __name__ == "__main__":
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
             fn(); print("ok", name)

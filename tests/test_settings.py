@@ -9,9 +9,9 @@ import os
 import sys
 import tempfile
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
 
-import settings as st
+from nestfetch import settings as st
 
 # A path that is guaranteed not to exist -> loader treats it as "no file".
 NOFILE_JSON = os.path.join(tempfile.gettempdir(), "nestfetch_nope_xyz.json")

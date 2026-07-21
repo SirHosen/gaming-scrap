@@ -1,0 +1,6 @@
+{
+  "extends": "wordpress-repack",
+  "name": "dodi",
+  "base_url": "https://dodi-repacks.site/",
+  "description": "DODI Repacks — highly-compressed PC game repacks (full-site sitemap sweep)."
+}

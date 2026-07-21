@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nestfetch"
-version = "4.8.0"
+version = "4.9.0"
 description = "A professional, modular, multi-site game-download metadata scraper."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -35,30 +35,53 @@ config = ["pyyaml>=6.0"]
 dev = ["pytest>=8.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/USERNAME/nestfetch"
-Changelog = "https://github.com/USERNAME/nestfetch/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/CitraGivenchyA/nestfetch"
+Changelog = "https://github.com/CitraGivenchyA/nestfetch/blob/main/CHANGELOG.md"
 
 [project.scripts]
 # Installs a `nestfetch` command that runs scraper.main().
-nestfetch = "scraper:main"
+nestfetch = "nestfetch.scraper:main"
 
 [tool.setuptools]
-# Flat module layout (each .py at the repo root) + the sites/ package.
-py-modules = [
-    "config", "logger", "models", "http_client", "async_client",
-    "parsers", "engine", "exporters", "cli", "scraper",
-    "link_checker", "link_resolver", "database",
-    "settings", "notifier", "scheduler", "webapp",
-]
+# src/ layout: the importable package lives in src/nestfetch/.
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
-include = ["sites*"]
+where = ["src"]
 
 [tool.setuptools.package-data]
 # Ship the config-driven site definitions with the package.
-sites = ["configs/*.json", "configs/*.md"]
+"nestfetch.sites" = ["configs/*.json", "configs/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 addopts = "-q"
+pythonpath = ["src", "tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# A pragmatic, non-noisy rule set: pyflakes (F), pycodestyle (E/W),
+# isort (I), bugbear (B), pyupgrade (UP), comprehensions (C4).
+select = ["E", "W", "F", "I", "B", "UP", "C4"]
+ignore = [
+    "E501",  # line length is enforced by the formatter, not the linter
+    "B008",  # allow function calls (config constants) as argument defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests deliberately tweak sys.path before imports and use bare asserts.
+"tests/*" = ["E402"]
+
+[tool.mypy]
+python_version = "3.9"
+files = ["src/nestfetch"]
+ignore_missing_imports = true   # optional deps (aiohttp, playwright, yaml) may be absent
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true

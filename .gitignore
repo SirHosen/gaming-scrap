@@ -23,6 +23,9 @@ output/
 *.csv
 *.json
 !requirements*.txt
+# ...but the shipped site configs ARE part of the package
+!src/nestfetch/sites/configs/
+!src/nestfetch/sites/configs/*.json
 
 # ── Secrets / config ────────────────────────────────────
 .env

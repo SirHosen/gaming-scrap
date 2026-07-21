@@ -16,7 +16,7 @@ import tempfile
 
 from bs4 import BeautifulSoup
 
-from sites.config_adapter import (
+from nestfetch.sites.config_adapter import (
     ConfigError,
     GenericConfigAdapter,
     discover_configs,
@@ -343,8 +343,8 @@ def test_real_dodi_preset_full_site_and_filters():
     # The shipped DODI config inherits full_site + per-site hoster filters from
     # _preset_wordpress-repack.json (real files, not a synthetic fixture).
     import re
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "dodi" in loaded, list(loaded)
     dodi = loaded["dodi"]
@@ -364,8 +364,8 @@ def test_real_dodi_preset_full_site_and_filters():
 def test_real_freelinuxpcgames_config():
     # Standalone (non-preset) WordPress config: single magnet/torrent download,
     # genre derived from the article's category-* class, resolve.mode=none.
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "freelinuxpcgames" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["freelinuxpcgames"])
@@ -396,8 +396,8 @@ def test_real_skidrowcodex_config():
     # Standalone config: cracked-scene WordPress theme where the real download
     # links are hidden behind a single gate (<links> custom tag). resolve=none;
     # hoster is labelled from the gate domain; per-host filtering is impossible.
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "skidrowcodex" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["skidrowcodex"])
@@ -426,8 +426,8 @@ def test_real_ovagames_config():
     # Standalone eGamer-theme config: title comes from the anchor's title attr
     # (visible text is truncated); each hoster is a labelled <a> to a filecrypt
     # container, so per-host filtering works even though resolve=none.
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "ovagames" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["ovagames"])
@@ -462,8 +462,8 @@ def test_real_romsfun_config():
     # Standalone two-step ROM catalogue: the detail page carries data-post_id,
     # and the real download-index URL is /download/{slug}-{post_id} whose table
     # lists per-region/version links (resolve=none, so those links are final).
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "romsfun" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["romsfun"])
@@ -511,8 +511,8 @@ def test_real_coolrom_config():
     # page is /dlpop.php?id={id} whose "Continue to download" link is the CDN
     # file (resolve=none). Listing links are filtered to game URLs by regex so
     # navbar/console links are ignored.
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "coolrom" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["coolrom"])
@@ -559,8 +559,8 @@ def test_real_nxbrew_config():
     # <button class=nsp-download> whose gate URL is embedded in the onclick
     # window.open('...') call, so redirect_url/hoster are regex-extracted from
     # the onclick attribute (resolve=none; secureclouds gate is not resolvable).
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "nxbrew" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["nxbrew"])
@@ -600,8 +600,8 @@ def test_real_elamigos_config():
     # each linking to a zpaste.net gate (resolve=none). Hoster name is the link
     # text with any leading star/symbol stripped. The separate "Game complements"
     # block (a bare #dw without #notiene) must be excluded.
-    here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    configs_dir = os.path.join(here, "sites", "configs")
+    here = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src')
+    configs_dir = os.path.join(here, "nestfetch", "sites", "configs")
     loaded = {c["name"]: c for c in discover_configs(configs_dir)}
     assert "elamigos" in loaded, list(loaded)
     a = GenericConfigAdapter(loaded["elamigos"])

@@ -2,9 +2,9 @@
 fake in-memory adapter (no network)."""
 from typing import List, Optional
 
-from engine import ScraperEngine
-from models import Game, Mirror
-from sites.base import SiteAdapter, SiteMeta
+from nestfetch.engine import ScraperEngine
+from nestfetch.models import Game, Mirror
+from nestfetch.sites.base import SiteAdapter, SiteMeta
 
 
 class FakeAdapter(SiteAdapter):
@@ -127,7 +127,7 @@ def test_engine_dedup_and_resolution():
 
 if __name__ == "__main__":
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
             fn(); print("ok", name)

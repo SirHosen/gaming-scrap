@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install package + dev tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[async,config,dev]"
+          pip install -r requirements-dev.txt
+
+      - name: Verify all 9 sites load on a clean checkout
+        run: |
+          python - <<'PY'
+          from nestfetch.sites.registry import site_names
+          names = site_names()
+          print("registered sites:", names)
+          assert len(names) == 9, f"expected 9 sites, got {len(names)}: {names}"
+          PY
+
+      - name: Config health-check (offline, re-parses samples/)
+        run: python -m nestfetch.healthcheck
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Type-check (mypy)
+        run: mypy
+
+      - name: Tests (pytest)
+        run: pytest

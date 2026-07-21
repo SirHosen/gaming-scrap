@@ -1,0 +1,76 @@
+{
+  "category": "windows",
+  "platform": "Windows PC",
+  "description": "WordPress-based PC game repack site (shared preset).",
+  "listing": {
+    "first_page_url": "{base}",
+    "page_url": "{base}page/{page}/",
+    "search_first_url": "{base}?s={query}",
+    "search_url": "{base}page/{page}/?s={query}",
+    "item": "article",
+    "fields": {
+      "title": [
+        "h2.entry-title a",
+        "h1.entry-title a",
+        "h2 a"
+      ],
+      "detail_url": {
+        "selector": [
+          "h2.entry-title a",
+          "h2 a"
+        ],
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "mirror_mode": "labeled_group",
+    "mirror_item": ".entry-content p",
+    "group_link_selector": "a[href]",
+    "group_skip_hosters": [
+      "youtube",
+      "subscribe",
+      "how to download",
+      "notes"
+    ],
+    "title": [
+      {
+        "selector": "meta[property='og:title']",
+        "attr": "content"
+      },
+      "h1.entry-title"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  },
+  "filters": {
+    "hoster": {
+      "1": "ALL",
+      "2": "TORRENT",
+      "3": "ONEDRIVE",
+      "4": "GOOGLE DRIVE",
+      "5": "MEGA",
+      "6": "MEDIAFIRE",
+      "7": "FILECRYPT"
+    }
+  },
+  "full_site": {
+    "sitemap_candidates": [
+      "wp-sitemap.xml",
+      "sitemap.xml",
+      "sitemap_index.xml"
+    ],
+    "skip_keywords": [
+      "category",
+      "tag",
+      "author",
+      "page-sitemap",
+      "sitemap"
+    ],
+    "game_url_pattern": "^https?://[^/]+/[^/]+/?$"
+  }
+}

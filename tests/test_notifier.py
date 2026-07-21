@@ -7,10 +7,10 @@ nothing ever touches the network. Settings are built directly (no files/env).
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
 
-import notifier as nf
-from settings import (
+from nestfetch import notifier as nf
+from nestfetch.settings import (
     Settings, TelegramSettings, DiscordSettings, EmailSettings, NotifySettings,
 )
 

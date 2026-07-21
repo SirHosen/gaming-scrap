@@ -1,0 +1,68 @@
+{
+  "name": "freelinuxpcgames",
+  "base_url": "https://freelinuxpcgames.com/",
+  "category": "linux",
+  "platform": "Linux PC",
+  "description": "Free Linux PC Games — native Linux game downloads (magnet/torrent).",
+  "listing": {
+    "first_page_url": "{base}",
+    "page_url": "{base}page/{page}/",
+    "search_first_url": "{base}?s={query}",
+    "search_url": "{base}page/{page}/?s={query}",
+    "item": "article",
+    "fields": {
+      "title": [
+        "h2.blog-entry-title a",
+        "h2.entry-title a",
+        "h2 a"
+      ],
+      "detail_url": {
+        "selector": [
+          "h2.blog-entry-title a",
+          "h2 a"
+        ],
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      },
+      "meta_genre": {
+        "attr": "class",
+        "regex": "category-([a-z0-9-]+)",
+        "regex_group": 1,
+        "transform": [
+          "title"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "mirror_item": ".entry-content p a[href]",
+    "mirror_fields": {
+      "redirect_url": {
+        "attr": "href"
+      },
+      "hoster": {
+        "selector": "x-nonexistent",
+        "default": "TORRENT"
+      }
+    },
+    "title": [
+      {
+        "selector": "meta[property='og:title']",
+        "attr": "content"
+      },
+      "h1.entry-title",
+      "h1.title"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  },
+  "filters": {
+    "hoster": {
+      "1": "ALL",
+      "2": "TORRENT"
+    }
+  }
+}

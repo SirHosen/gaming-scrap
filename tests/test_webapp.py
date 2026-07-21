@@ -17,14 +17,14 @@ import threading
 import time
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
-_ROOT = os.path.dirname(_HERE)
+_ROOT = os.path.join(os.path.dirname(_HERE), "src")
 for _p in (_ROOT, _HERE):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-import database as db
-import webapp
-from models import Game, Mirror
+from nestfetch import database as db
+from nestfetch import webapp
+from nestfetch.models import Game, Mirror
 
 
 def _seed(conn):

@@ -3,8 +3,8 @@ Retry-After, and per-host rate limiting — all fully offline."""
 import contextlib
 import tempfile
 
-import http_client
-from http_client import HttpClient, ResponseCache
+from nestfetch import http_client
+from nestfetch.http_client import HttpClient, ResponseCache
 from fakes import FakeResp, FakeSession, FakeClock
 
 
@@ -93,7 +93,7 @@ def test_per_host_rate_limit():
 
 if __name__ == "__main__":
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

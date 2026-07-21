@@ -1,7 +1,7 @@
 """Tests for the optional async fetcher — exercises the threaded fallback
 (aiohttp is not installed in CI, so fetch_many must still work)."""
-import http_client
-import async_client
+from nestfetch import http_client
+from nestfetch import async_client
 
 
 def test_aiohttp_available_returns_bool():
@@ -28,7 +28,7 @@ def test_fetch_many_threaded_fallback_and_dedup():
 
 if __name__ == "__main__":
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):

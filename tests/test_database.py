@@ -3,8 +3,8 @@
 import os
 import tempfile
 
-import database as db
-from models import Game, Mirror
+from nestfetch import database as db
+from nestfetch.models import Game, Mirror
 
 
 def _game(title, url, size="1 GB", final="https://mediafire.com/f1"):
@@ -70,7 +70,7 @@ def test_search_mode_does_not_mark_removed():
 
 if __name__ == "__main__":
     import sys, os as _os
-    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    sys.path.insert(0, _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'src'))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
             fn(); print("ok", name)

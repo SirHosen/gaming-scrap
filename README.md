@@ -1,9 +1,42 @@
-# NESTfetch v4.8
+# NESTfetch v4.9
 
 A professional, modular, **multi-site game-download metadata scraper**.
 Started life as a single-site Nintendo Switch ROM scraper (`switchroms.io`) and is
 now being rebuilt into a platform that can scrape many game-download sites
 (Switch ROMs, Windows games, emulators, Linux, and more).
+
+## What's New in v4.9 — Professional restructure, robots.txt & CI
+
+This release is about **engineering quality and ethics** — no behavioural
+regressions, just a cleaner, more trustworthy, more professional project.
+
+- **`src/` package layout.** All modules now live in an importable
+  `src/nestfetch/` package instead of loose files at the repo root. Run it with
+  `python -m nestfetch` or the installed `nestfetch` command. This removes
+  import ambiguity and matches modern Python packaging best practice.
+- **robots.txt is respected by default** (`nestfetch/robots.py`). Before every
+  page fetch the engine consults the site's `robots.txt` and skips anything it
+  disallows. `robots.txt` itself is always fetched; an unreachable file fails
+  open (allow) with a debug log. Toggle via `RESPECT_ROBOTS_TXT` in `config.py`.
+- **Config health-check** (`python -m nestfetch.healthcheck`). Re-parses the
+  saved reference pages in `samples/` with each site's adapter and flags any
+  config that has drifted (0 items = broken) — an early warning when a site
+  changes its HTML. Runs offline and in CI.
+- **Continuous Integration** (`.github/workflows/ci.yml`): on every push/PR it
+  lints (**ruff**), type-checks (**mypy**), verifies all 9 sites load on a clean
+  checkout, runs the health-check, and runs the full test suite on Python
+  3.9 / 3.11 / 3.12.
+- **Cleaner repo** — docs consolidated under `docs/`, plus `CONTRIBUTING.md`,
+  `SECURITY.md`, `.editorconfig`, a `Makefile` (`make check`), and pinned dev
+  tooling in `requirements-dev.txt`.
+- **Tests grew to 82** (added robots.txt + health-check coverage); still 100%
+  offline and green.
+
+```bash
+pip install -e ".[dev,config]"      # editable install + tooling
+python -m nestfetch --list-sites    # 9 sites
+make check                          # ruff + mypy + health-check + pytest
+```
 
 ## What's New in v4.8 — 7 new sites & a reusable two-step download engine
 
@@ -377,36 +410,88 @@ python scraper.py --check-links path/ke/data.csv --workers 20 --check-output rep
 ## Project Structure
 
 ```
-switchroms-scraper/
-├── scraper.py          # Main entry point
-├── cli.py              # Argparse CLI + interactive menu
-├── config.py           # All configuration constants
-├── logger.py           # Logging setup (console + file)
-├── models.py           # Dataclass models (Game, Mirror)
-├── http_client.py      # HTTP client with retry/backoff
-├── parsers.py          # Pure BeautifulSoup parsing functions
-├── engine.py           # Scraper orchestration + concurrency + auto-paginate
-├── exporters.py        # JSON / Excel-friendly CSV export
-├── link_checker.py     # Dead / expired link validator (reads CSV → report CSV)
-├── requirements.txt    # Python dependencies
-├── README.md           # This file
-└── output/             # Generated output files (auto-created)
-    ├── switch_games.json
-    ├── switch_games.csv   ← Buka di Excel, langsung rapi!
+nestfetch/
+├── src/nestfetch/          # 📦 the importable Python package
+│   ├── __init__.py         #   package metadata (__version__)
+│   ├── __main__.py         #   enables `python -m nestfetch`
+│   ├── scraper.py          #   CLI entry point (main() + run modes)
+│   ├── cli.py              #   Argparse CLI + interactive menu
+│   ├── config.py           #   Global configuration constants
+│   ├── logger.py           #   Logging setup (coloured console + file)
+│   ├── models.py           #   Dataclass models (Game, Mirror, ...)
+│   ├── http_client.py      #   Sync HTTP client (retry/backoff, cache, rate-limit)
+│   ├── robots.py           #   robots.txt politeness policy (ethics gate)
+│   ├── async_client.py     #   Optional aiohttp fetcher (threaded fallback)
+│   ├── parsers.py          #   Pure BeautifulSoup parsing helpers
+│   ├── engine.py           #   Site-agnostic scrape orchestration + two-step flow
+│   ├── exporters.py        #   JSON / Excel-friendly CSV export
+│   ├── database.py         #   SQLite history + run diffing
+│   ├── link_checker.py     #   Dead / expired link validator
+│   ├── link_resolver.py    #   Shortener / ad-gate link resolver
+│   ├── notifier.py         #   Telegram / Discord / email notifications
+│   ├── scheduler.py        #   Interval scheduler for automated runs
+│   ├── webapp.py           #   Local web dashboard (stdlib http.server)
+│   ├── settings.py         #   Env / .env / JSON settings loader
+│   ├── healthcheck.py      #   Re-parse samples/ to detect config drift
+│   └── sites/              #   Site adapters (the multi-site core)
+│       ├── base.py         #     SiteAdapter + SiteMeta interfaces
+│       ├── registry.py     #     Single source of truth for supported sites
+│       ├── config_adapter.py  #  GenericConfigAdapter (drives JSON-config sites)
+│       ├── switchroms.py   #     Reference hand-written Python adapter
+│       └── configs/        #     Config-driven sites (SHIPPED JSON — see note)
+│           ├── _preset_wordpress-repack.json
+│           ├── dodi.json  freelinuxpcgames.json  skidrowcodex.json
+│           ├── ovagames.json  romsfun.json  coolrom.json
+│           └── nxbrew.json  elamigos.json
+├── tests/                  # 🧪 offline unit + regression + smoke tests
+├── samples/                # saved HTML pages used by the health-check
+├── tools/                  # helper scripts (e.g. tools/healthcheck.py)
+├── docs/                   # 📚 ARCHITECTURE.md · AUDIT.md · ROADMAP.md
+├── .github/workflows/      # CI pipeline (ci.yml)
+├── requirements.txt        # runtime dependencies
+├── requirements-dev.txt    # pinned dev/CI tooling (pytest, ruff, mypy)
+├── pyproject.toml          # packaging + tool config (ruff, mypy, pytest)
+├── Makefile                # make install-dev / lint / type / health / test / check
+├── .editorconfig           # consistent formatting across editors
+├── CONTRIBUTING.md         # dev setup, quality gates, how to add a site
+├── SECURITY.md             # vulnerability reporting + responsible-use policy
+├── CHANGELOG.md            # version history
+├── README.md               # this file
+└── output/                 # generated output (auto-created, git-ignored)
+    ├── <site>_games.json
+    ├── <site>_games.csv        ← opens cleanly in Excel
     └── scraper.log
 ```
+
+> **Note — shipping `configs/*.json`:** the repo `.gitignore` ignores `*.json`
+> by default (to avoid committing scraped data dumps), so it explicitly
+> re-includes the packaged site configs via
+> `!src/nestfetch/sites/configs/` and `!src/nestfetch/sites/configs/*.json`.
+> If you add a new config-driven site, drop its JSON in
+> `src/nestfetch/sites/configs/` — it is already whitelisted.
 
 ## Installation
 
 ```bash
+# Runtime only:
 pip install -r requirements.txt
+
+# Or install the package (gives you a `nestfetch` command):
+pip install -e .
+
+# Contributors — package + dev tooling (pytest, ruff, mypy):
+pip install -e ".[dev,config]"
+pip install -r requirements-dev.txt
 ```
 
 ## Usage
 
+> Run via the module (`python -m nestfetch …`) or, after `pip install`, the
+> `nestfetch …` command. Both are equivalent.
+
 ### Interactive Mode (default)
 ```bash
-python scraper.py
+python -m nestfetch
 ```
 
 Menu yang muncul:
@@ -488,8 +573,27 @@ Salinan CSV hasil scraping + 4 kolom tambahan: `Link Status` (ACTIVE/DEAD/UNKNOW
 
 ## Legal & Ethical Notice
 
-This tool is for educational and research purposes only. Scraping websites may violate their Terms of Service. Always:
-- Respect `robots.txt`
-- Use reasonable delays between requests
-- Do not redistribute copyrighted content
-- Check local laws regarding ROM downloads
+**NESTfetch is provided strictly for educational, research, and personal
+interoperability purposes.** It scrapes *publicly available metadata and links*;
+it does **not** host, mirror, crack, or distribute any game, ROM, or copyrighted
+file itself.
+
+By using this tool you accept full responsibility for how you use it. In
+particular:
+
+- **Respect each site's Terms of Service and `robots.txt`.** Scraping may be
+  prohibited by a site's terms even when technically possible.
+- **Scrape gently.** Keep the default request delays and modest worker counts;
+  do not hammer sites. Aggressive scraping can amount to abuse.
+- **Do not download, share, or redistribute copyrighted content** you do not own
+  or are not legally entitled to. Downloading commercial ROMs/games is illegal in
+  many jurisdictions.
+- **Know your local laws.** Copyright, DMCA-equivalent, and computer-misuse laws
+  vary by country — they are your responsibility.
+- **No warranty.** The software is provided "as is", without warranty of any
+  kind; the authors accept no liability for misuse or for damages arising from
+  its use (see `LICENSE`).
+
+The maintainers do not endorse piracy. If you are a rights holder and believe the
+tool is being used against your interests, the appropriate remedy is with the
+hosting sites, not this metadata reader.

@@ -1,0 +1,54 @@
+{
+  "name": "skidrowcodex",
+  "base_url": "https://www.skidrowcodex.net/",
+  "category": "windows",
+  "platform": "Windows PC",
+  "description": "SKIDROW CODEX — cracked-scene PC game releases (single gated link).",
+  "listing": {
+    "first_page_url": "{base}",
+    "page_url": "{base}page/{page}/",
+    "search_first_url": "{base}?s={query}",
+    "search_url": "{base}page/{page}/?s={query}",
+    "item": "div.blog-post",
+    "fields": {
+      "title": [
+        "h2 a",
+        "h2.entry-title a"
+      ],
+      "detail_url": {
+        "selector": "h2 a",
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "mirror_item": "links a[href], .download-links a[href]",
+    "mirror_fields": {
+      "redirect_url": {
+        "attr": "href"
+      },
+      "hoster": {
+        "attr": "href",
+        "regex": "https?://(?:www\\.)?([^/]+)",
+        "regex_group": 1,
+        "transform": [
+          "upper"
+        ]
+      }
+    },
+    "title": [
+      {
+        "selector": "meta[property='og:title']",
+        "attr": "content"
+      },
+      "h1.entry-title",
+      "h1"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  }
+}

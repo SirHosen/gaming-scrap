@@ -3,8 +3,8 @@ import json
 import tempfile
 from pathlib import Path
 
-import exporters
-from models import Game, Mirror
+from nestfetch import exporters
+from nestfetch.models import Game, Mirror
 
 
 def _sample():
@@ -47,7 +47,7 @@ def test_export_both_formats():
 
 if __name__ == "__main__":
     import sys, os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'src'))
     for name, fn in list(globals().items()):
         if name.startswith("test_") and callable(fn):
             fn(); print("ok", name)

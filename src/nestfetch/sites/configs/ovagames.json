@@ -1,0 +1,62 @@
+{
+  "name": "ovagames",
+  "base_url": "https://www.ovagames.com/",
+  "category": "windows",
+  "platform": "Windows PC",
+  "description": "OvaGames — PC game repacks and ISO downloads (filecrypt mirrors).",
+  "listing": {
+    "first_page_url": "{base}",
+    "page_url": "{base}page/{page}",
+    "search_first_url": "{base}?s={query}",
+    "search_url": "{base}page/{page}?s={query}",
+    "item": "div.home-post-wrap",
+    "fields": {
+      "title": {
+        "selector": "h2 a",
+        "attr": "title",
+        "regex": "^(?:Permanent Link to\\s+)?(.+)$",
+        "regex_group": 1,
+        "transform": [
+          "strip"
+        ]
+      },
+      "detail_url": {
+        "selector": "h2 a",
+        "attr": "href",
+        "transform": [
+          "absolute_url"
+        ]
+      }
+    }
+  },
+  "detail": {
+    "mirror_item": "div.dl-wraps-item a[href]",
+    "mirror_fields": {
+      "redirect_url": {
+        "attr": "href"
+      },
+      "hoster": {
+        "transform": [
+          "strip"
+        ]
+      }
+    },
+    "title": [
+      "h1.post-title",
+      "h1"
+    ]
+  },
+  "resolve": {
+    "mode": "none"
+  },
+  "filters": {
+    "hoster": {
+      "1": "ALL",
+      "2": "TORRENT",
+      "3": "DATANODES",
+      "4": "GOOGLE DRIVE",
+      "5": "MEDIAFIRE",
+      "6": "FILECRYPT"
+    }
+  }
+}
