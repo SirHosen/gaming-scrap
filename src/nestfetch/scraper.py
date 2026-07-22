@@ -125,10 +125,10 @@ def _validate_filter(value: str, choices: dict, kind: str, site_name: str) -> st
     Non-fatal: an unknown value is passed through with a warning (hoster/format
     matching is substring-based, so a custom value may still be intentional).
     """
-    if not value or value.upper() == "ALL":
+    if not value or str(value).upper() == "ALL":
         return "ALL"
     allowed = {str(v).upper() for v in choices.values()}
-    if value.upper() in allowed:
+    if str(value).upper() in allowed:
         return value
     log.warning(
         "%s'%s' is not a listed %s filter for site '%s' (valid: %s). "

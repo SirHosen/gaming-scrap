@@ -156,7 +156,7 @@ def _leading_text(el) -> str:
         if getattr(node, "name", None) == "a":
             break
         if isinstance(node, str):
-            parts.append(node)
+            parts.append(str(node))
     text = re.sub(r"\s+", " ", "".join(parts)).strip()
     # drop trailing separators/dashes left dangling before the first link
     text = re.sub(r"[\s|:•·\-\u2013\u2014]+$", "", text).strip()

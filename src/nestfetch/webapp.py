@@ -132,7 +132,7 @@ def games_payload(
     query += " ORDER BY title COLLATE NOCASE"
     if limit:
         query += " LIMIT ?"
-        params.append(limit)
+        params.append(int(limit))
 
     rows = conn.execute(query, params).fetchall()
 
@@ -195,7 +195,7 @@ def dead_links_payload(conn, limit: int = 100) -> list:
         "SELECT url, hoster, link_type, http_code, detail, first_dead_at, "
         "last_checked, consecutive_dead FROM link_checks WHERE status='DEAD' "
         "ORDER BY first_dead_at ASC, id ASC LIMIT ?",
-        (limit,),
+        (int(limit),),
     ).fetchall()
     return [_row_dict(r) for r in rows]
 
