@@ -38,7 +38,7 @@ from __future__ import annotations
 import logging
 
 from nestfetch import database as db
-from nestfetch.cli import parse_args, print_banner
+from nestfetch.cli_new import parse_args, print_banner
 from nestfetch.engine import ScraperEngine
 from nestfetch.exporters import export_data
 from nestfetch.logger import log, Colours
@@ -125,10 +125,10 @@ def _validate_filter(value: str, choices: dict, kind: str, site_name: str) -> st
     Non-fatal: an unknown value is passed through with a warning (hoster/format
     matching is substring-based, so a custom value may still be intentional).
     """
-    if not value or str(value).upper() == "ALL":
+    if not value or value.upper() == "ALL":
         return "ALL"
     allowed = {str(v).upper() for v in choices.values()}
-    if str(value).upper() in allowed:
+    if value.upper() in allowed:
         return value
     log.warning(
         "%s'%s' is not a listed %s filter for site '%s' (valid: %s). "
@@ -145,14 +145,14 @@ def do_scrape(params: dict):
     Returns (games, summary, elapsed) where `summary` is the DB RunSummary
     (or None if nothing was scraped / the DB was skipped).
     """
-    search_q = params["search"]
-    max_p = params["pages"]
-    fmt_filter = params["format"]
-    hoster_filter = params["hoster"]
-    out_fmt = params["output"]
-    delay = params["delay"]
-    workers = params["workers"]
-    scrape_all = params["scrape_all"]
+    search_q = params.get("search")
+    max_p = params.get("pages") or params.get("max_pages") or 1
+    fmt_filter = params.get("format", "ALL")
+    hoster_filter = params.get("hoster", "ALL")
+    out_fmt = params.get("output", "both")
+    delay = params.get("delay", 1.0)
+    workers = params.get("workers", 5)
+    scrape_all = params.get("scrape_all", False)
 
     if scrape_all:
         log.info("Configuration: mode=ALL SITE | format=%s | hoster=%s | output=%s | workers=%d",

@@ -298,5 +298,5 @@ def load_settings(
     return Settings(
         telegram=telegram, discord=discord, email=email,
         notify=notify, schedule=schedule,
-        source_files=[str(p) for p in (env_path, cfg_path) if p],
+        source_files=[p for p in (env_path, cfg_path) if p],
     )
