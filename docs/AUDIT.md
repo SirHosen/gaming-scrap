@@ -65,7 +65,7 @@ Setelah perbaikan: **`--list-sites` = 9 situs**, dan **seluruh 72 test lulus**
 ### M-2. Placeholder `USERNAME` di URL proyek
 - `pyproject.toml` dan `CHANGELOG.md` masih memakai
   `github.com/USERNAME/nestfetch`.
-- **Perbaikan:** diganti `github.com/CitraGivenchyA/nestfetch`.
+- **Perbaikan:** diganti `github.com/SirHosen/nestfetch`.
 
 ### M-3. Sisa penamaan lama ("switchroms") di tempat generik
 - `logger.py`: `setup_logger(name="switchroms")` → nama logger default proyek

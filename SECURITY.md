@@ -6,7 +6,7 @@ If you discover a security issue (e.g. a way NESTfetch could be abused to attack
 a host, a dependency vulnerability, or unsafe handling of credentials in
 `settings.py` / `.env`), please report it privately:
 
-- Email: **givenchyacitra@gmail.com** with the subject `NESTfetch security`.
+- Email: **hoseaoktarivanes@gmail.com** with the subject `NESTfetch security`.
 - Do **not** open a public issue for undisclosed vulnerabilities.
 - Include reproduction steps and the affected version (`nestfetch.__version__`).
 

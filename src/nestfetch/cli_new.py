@@ -66,8 +66,6 @@ def interactive_menu() -> Tuple[str, dict]:
 
     Returns (action, kwargs).
     """
-    print_banner()
-
     # ── Step 0: choose which site to scrape ───────────────────────────
     sites = available_sites()
     site = DEFAULT_SITE

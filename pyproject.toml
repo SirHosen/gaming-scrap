@@ -9,7 +9,7 @@ description = "A professional, modular, multi-site game-download metadata scrape
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Citra GivenchyA", email = "givenchyacitra@gmail.com" }]
+authors = [{ name = "SirHosen", email = "hoseaoktarivanes@gmail.com" }]
 keywords = ["scraper", "roms", "download", "games", "cli", "switch"]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -35,8 +35,8 @@ config = ["pyyaml>=6.0"]
 dev = ["pytest>=8.0.0"]
 
 [project.urls]
-Homepage = "https://github.com/CitraGivenchyA/nestfetch"
-Changelog = "https://github.com/CitraGivenchyA/nestfetch/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/SirHosen/nestfetch"
+Changelog = "https://github.com/SirHosen/nestfetch/blob/main/CHANGELOG.md"
 
 [project.scripts]
 # Installs a `nestfetch` command that runs scraper.main().
