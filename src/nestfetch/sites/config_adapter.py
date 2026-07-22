@@ -31,7 +31,7 @@ import json
 import os
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import quote_plus, urljoin, urlparse
+from urllib.parse import quote_plus, urljoin
 
 from bs4 import BeautifulSoup
 
@@ -580,8 +580,3 @@ class GenericConfigAdapter(SiteAdapter):
 
         log.info("Sitemap discovery found %d candidate game pages.", len(urls))
         return urls
-
-
-def build_config_adapters(configs_dir: Optional[str] = None) -> List[GenericConfigAdapter]:
-    """Convenience: load all configs and return ready adapter instances."""
-    return [GenericConfigAdapter(cfg) for cfg in discover_configs(configs_dir)]

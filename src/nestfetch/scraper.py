@@ -20,7 +20,7 @@ Architecture:
   notifier.py    → Telegram / Discord / email notifications
   scheduler.py   → Periodic "watch" runner
   webapp.py      → Zero-dependency web dashboard (Phase 5)
-  cli.py         → Argparse + interactive menu
+  cli_new.py     → Argparse + interactive menu
   scraper.py     → This file (entry point)
 
 Usage:

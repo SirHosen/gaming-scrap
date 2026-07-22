@@ -7,16 +7,14 @@ Supports both `--flags` for automation and interactive prompts for manual use.
 from __future__ import annotations
 
 import argparse
-import os
-import sys
 from typing import Dict, Tuple
 
 from nestfetch.config import (
-    FORMAT_MAP, HOSTER_MAP, OUTPUT_MAP,
+    OUTPUT_MAP,
     CACHE_ENABLED_DEFAULT, ASYNC_ENABLED_DEFAULT, PER_HOST_RATE_LIMIT,
     WEB_DEFAULT_HOST, WEB_DEFAULT_PORT,
 )
-from nestfetch.logger import log, Colours
+from nestfetch.logger import Colours
 from nestfetch.sites.registry import available_sites, site_names, DEFAULT_SITE, get_adapter
 
 

@@ -7,7 +7,7 @@ These models enforce a consistent shape for every scraped record.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
-from typing import List, Optional
+from typing import List
 
 
 @dataclass

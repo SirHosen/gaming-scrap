@@ -30,7 +30,6 @@ import requests
 
 from nestfetch.config import (
     OUTPUT_DIR,
-    CSV_FILENAME,
     LINK_CHECK_REPORT_FILENAME,
     LINK_CHECK_ACTIVE_FILENAME,
     LINK_CHECK_RECAP_FILENAME,
@@ -42,7 +41,6 @@ from nestfetch.config import (
     RESOLVE_TIMEOUT,
     CACHE_DIRNAME,
     CACHE_TTL,
-    PER_HOST_RATE_LIMIT,
 )
 from nestfetch.logger import log, Colours
 from nestfetch.link_resolver import resolve_url, classify_url, ResolveResult

@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from typing import List, Optional, Dict
 
-from nestfetch.config import OUTPUT_DIR, JSON_FILENAME, CSV_FILENAME
+from nestfetch.config import OUTPUT_DIR
 from nestfetch.logger import log, Colours
 from nestfetch.models import Game
 
