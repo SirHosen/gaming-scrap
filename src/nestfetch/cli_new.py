@@ -433,8 +433,10 @@ def parse_args() -> Tuple[str, dict]:
         args.search, args.all, args.pages > 1,
         args.format != "ALL", args.hoster != "ALL",
         args.output != "both", args.delay != 1.0,
-        args.workers != 5, args.verbose, args.use_async,
-        not args.use_cache, args.rate_limit != PER_HOST_RATE_LIMIT,
+        args.workers != 5, args.verbose,
+        args.use_async != ASYNC_ENABLED_DEFAULT,
+        args.use_cache != CACHE_ENABLED_DEFAULT,
+        args.rate_limit != PER_HOST_RATE_LIMIT,
         args.no_db, args.db is not None, args.site != DEFAULT_SITE,
     ]):
         return interactive_menu()
