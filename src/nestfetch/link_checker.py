@@ -45,7 +45,7 @@ from nestfetch.config import (
     PER_HOST_RATE_LIMIT,
 )
 from nestfetch.logger import log, Colours
-from nestfetch.link_resolver import resolve_url, classify_url
+from nestfetch.link_resolver import resolve_url, classify_url, ResolveResult
 from nestfetch.http_client import ResponseCache
 from urllib.parse import urlparse
 
@@ -256,7 +256,7 @@ def check_link(
             resp.close()
 
         low = body.lower()
-        key = _host_key(hoster, str(resp.url))
+        key = _host_key(hoster, resp.url)
         markers = DEAD_MARKERS.get(key, ()) + GENERIC_DEAD_MARKERS
         for marker in markers:
             if marker in low:
@@ -448,7 +448,7 @@ def check_csv_links(
             cache.set(u, "\t".join(chk))
         return u, rr, chk
 
-    results: Dict[str, Tuple[object, Tuple[str, str, str]]] = {}
+    results: Dict[str, Tuple[Optional[ResolveResult], Tuple[str, str, str]]] = {}
     done = 0
     with ThreadPoolExecutor(max_workers=workers) as pool:
         futures = {pool.submit(_worker, u): u for u in unique_urls}
@@ -576,6 +576,8 @@ def _print_summary(
     print()
 
 
-def default_csv_path() -> Path:
-    """Convenience: the default scraped CSV location."""
-    return Path(OUTPUT_DIR) / CSV_FILENAME
+def default_csv_path(site: Optional[str] = None) -> Path:
+    """Convenience: the default scraped CSV location for a given site."""
+    from nestfetch.sites.registry import DEFAULT_SITE
+    site_name = site or DEFAULT_SITE
+    return Path(OUTPUT_DIR) / site_name / f"{site_name}.csv"

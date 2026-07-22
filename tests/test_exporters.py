@@ -34,6 +34,11 @@ def test_export_both_formats():
         csv_path = next(p for p in paths if str(p).endswith(".csv"))
         json_path = next(p for p in paths if str(p).endswith(".json"))
 
+        assert Path(csv_path).parent.name == "switchroms"
+        assert Path(csv_path).name == "switchroms.csv"
+        assert Path(json_path).parent.name == "switchroms"
+        assert Path(json_path).name == "switchroms.json"
+
         csv_text = Path(csv_path).read_text(encoding="utf-8-sig")
         assert "Game Title" in csv_text          # header present
         assert "Alpha Quest" in csv_text
@@ -43,6 +48,27 @@ def test_export_both_formats():
         assert len(data) == 1
         assert data[0]["title"] == "Alpha Quest"
         assert data[0]["mirrors"][0]["hoster"] == "Mediafire"
+
+
+def test_export_custom_site_and_folder_creation():
+    orig = exporters.OUTPUT_DIR
+    with tempfile.TemporaryDirectory() as d:
+        exporters.OUTPUT_DIR = d
+        try:
+            paths = exporters.export_data([_sample()], "both", site_name="nxbrew")
+        finally:
+            exporters.OUTPUT_DIR = orig
+
+        assert len(paths) == 2
+        csv_path = next(p for p in paths if str(p).endswith(".csv"))
+        json_path = next(p for p in paths if str(p).endswith(".json"))
+
+        assert Path(csv_path).parent.name == "nxbrew"
+        assert Path(csv_path).name == "nxbrew.csv"
+        assert Path(json_path).parent.name == "nxbrew"
+        assert Path(json_path).name == "nxbrew.json"
+        assert Path(csv_path).exists()
+        assert Path(json_path).exists()
 
 
 if __name__ == "__main__":

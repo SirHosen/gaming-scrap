@@ -68,37 +68,10 @@ def interactive_menu() -> Tuple[str, dict]:
     Interactive CLI menu when no CLI args are provided.
     Returns an (action, params) tuple where action is "scrape" or "check".
     """
-    # ── Step 0: choose which site to scrape ────────────────────────
-    metas = available_sites()
-    print(f"\n{Colours.BOLD}Select Target Site:{Colours.RESET}")
-    for i, m in enumerate(metas, 1):
-        print(f"  [{i}] {m.name} — {m.platform} ({m.category})")
-    site_in = _prompt("Select site", "1")
-    if site_in.isdigit() and 1 <= int(site_in) <= len(metas):
-        site = metas[int(site_in) - 1].name
-    elif site_in in site_names():
-        site = site_in
-    else:
-        site = DEFAULT_SITE
-    print(f"  {Colours.GREEN}→ Using site: {site}{Colours.RESET}")
-
-    print(f"\n{Colours.BOLD}1. Select Action Mode:{Colours.RESET}")
-    print("  [1] Scrape latest games (Homepage)")
-    print("  [2] Search specific games by keyword")
-    print("  [3] Scrape ALL games on the entire website (auto-paginate)")
-    print("  [4] Check scraped links from a CSV (dead / expired link validator)")
-    print("  [5] Show scrape history (from the local database)")
-    print("  [6] Export previously scraped data from the database")
-    print("  [7] Watch mode — run scrape/check on a schedule with notifications")
-    print("  [8] Test notification setup (Telegram / Discord / email)")
-    print("  [9] Launch web dashboard (browse catalogue + run scrape/check in a browser)")
-    mode = _prompt("Select option", "1")
-
-    # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
+    # ── Step 0: choose which site to scrape ─�    # ── Mode 4: link checker (works on an existing CSV, no scraping) ─────
     if mode == "4":
-        import os
-        from nestfetch.config import OUTPUT_DIR, CSV_FILENAME
-        default_csv = os.path.join(OUTPUT_DIR, CSV_FILENAME)
+        from nestfetch.link_checker import default_csv_path
+        default_csv = str(default_csv_path(site))
         print(f"\n{Colours.BOLD}Link Checker — verify scraped download links{Colours.RESET}")
         print(f"  {Colours.GREY}Reads a scraped CSV and flags each link ACTIVE / DEAD / UNKNOWN.{Colours.RESET}")
         csv_path = _prompt("Path to scraped CSV", default_csv)
@@ -139,9 +112,45 @@ def interactive_menu() -> Tuple[str, dict]:
             "verbose": False,
         }
 
-    # ── Mode 7: watch mode (scheduler + notifications) ──────────���───────
+    # ── Mode 7: watch mode (scheduler + notifications) ───────────────────
     if mode == "7":
-        import os
+        from nestfetch.link_checker import default_csv_path
+        print(f"\n{Colours.BOLD}Watch mode — periodic scrape/check with notifications{Colours.RESET}")
+        print(f"  {Colours.GREY}Tip: configure channels in .env or config.yaml (see the *.example files).{Colours.RESET}")
+        print("  [1] Scrape only")
+        print("  [2] Check links only")
+        print("  [3] Both scrape + check")
+        task_opt = _prompt("Select task", "3")
+        task = {"1": "scrape", "2": "check", "3": "both"}.get(task_opt, "both")
+        interval_in = _prompt("Interval in minutes", "60")
+        try:
+            interval = float(interval_in)
+        except ValueError:
+            interval = 60.0
+        return "watch", {
+            "site": site,
+            "task": task,
+            "interval": interval,
+            "iterations": None,
+            "notify": True,
+            "config": None,
+            "search": None,
+            "pages": 1,
+            "format": "ALL",
+            "hoster": "ALL",
+            "output": "both",
+            "delay": 1.0,
+            "workers": 5,
+            "scrape_all": False,
+            "no_db": False,
+            "db_path": None,
+            "use_async": False,
+            "use_cache": CACHE_ENABLED_DEFAULT,
+            "rate_limit": PER_HOST_RATE_LIMIT,
+            "verbose": False,
+            "check_output": None,
+            "csv_path": str(default_csv_path(site)),
+        }port os
         from nestfetch.config import OUTPUT_DIR, CSV_FILENAME
         print(f"\n{Colours.BOLD}Watch mode — periodic scrape/check with notifications{Colours.RESET}")
         print(f"  {Colours.GREY}Tip: configure channels in .env or config.yaml (see the *.example files).{Colours.RESET}")

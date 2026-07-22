@@ -192,7 +192,7 @@ def do_scrape(params: dict):
     summary = None
     if games:
         log.info("%s--- Exporting results ---%s", Colours.CYAN, Colours.RESET)
-        export_data(games, out_fmt)
+        export_data(games, out_fmt, site_name=adapter.name)
 
         # Persist to the SQLite history database + report the diff.
         if not params.get("no_db"):
@@ -337,7 +337,7 @@ def main() -> None:
         conn.close()
         if games:
             log.info("%s--- Exporting %d games from database ---%s", Colours.CYAN, len(games), Colours.RESET)
-            export_data(games, params.get("output", "both"))
+            export_data(games, params.get("output", "both"), site_name=params.get("site"))
         else:
             log.warning("No games in the database to export (run a scrape first).")
         return
